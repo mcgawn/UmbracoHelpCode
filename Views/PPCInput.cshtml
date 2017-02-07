@@ -1,0 +1,186 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System.Data.Sql;
+@using Umbraco.Core.Models;
+@using System.Data.SqlClient;
+@{
+  //Layout = "master.cshtml";
+  //var db = Database.Open("umbracoDbDSNReport");
+  //var selectQueryString = "SELECT * FROM PPC_spend WHERE DATEDIFF(m, datetime, GETDATE()) = 0 ORDER BY datetime DESC";
+
+  //var Date = Request.Form["Date"];
+  //var PPCSpend = Request.Form["PPCSpend"];
+  //var Visits = Request.Form["Visits"];
+  //var UVisits = Request.Form["UVisits"];
+
+  //if (IsPost){
+  //    var insertQuery = "INSERT INTO PPC_spend (ppc_date, ppc_spend, ppc_visits, ppc_unique_visits) " +
+  //    "VALUES (@0, @1, @2, @3)";
+  //    db.Execute(insertQuery, Date, PPCSpend, Visits, UVisits);
+  //    Response.Redirect("~/PPCInput");
+  //}
+
+}
+
+@*<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <style>
+    table {width:100%;color: #333;font-family: Helvetica, Arial, sans-serif;border-collapse: collapse; border-spacing: 0; }
+    td, th {border: 1px solid transparent; height: 30px; transition: all 0.3s;}
+    th {background: #5ba5af;font-weight: bold;text-align: center;color:#fff;}
+    td {background: #FAFAFA;text-align: center;}
+    tr:nth-child(even) td { background: #F1F1F1;}
+    tr:nth-child(odd) td { background: #FEFEFE;}
+    tr td:hover {background: #666; color: #FFF;}
+    form{border:1px solid #5ba5af; padding:15px}
+    form section div {float: left;}
+    form section div.full {clear: both;}
+    form section div label {display: block;}
+  </style>*@
+
+@*<section class="grey page-title">
+      <div class="container">
+          <div class="row">
+              <div class="col-md-12 text-right">
+                  <h1>PPC Input Sheet....</h1>
+              </div><!-- end col -->
+          </div><!-- end row -->
+      </div><!-- end container -->
+  </section><!-- end section -->*@
+
+@*<section class="container-fluid" id="section1">
+      <div class="container">
+      <hr />
+          <div class="row">
+              <div class="col-sm-3">
+                  <div class="row">
+                      <div class="col-sm-12 text-left">
+                          <form method="post" action="">
+                              <fieldset>
+                                  <legend>Add PPC Spend</legend>
+                                  <div><label>Date:</label><br /><input type="Date" name="Date" value="@Date"></div>
+                                  <div><label>Spend:</label><br /><input name="PPCSpend" type="text" value="@PPCSpend" /></div>
+                                  <div><label>Visits:</label><br /><input name="Visits" type="text" value="@Visits" /></div>
+                                  <div><label>Unique:</label><br /><input name="UVisits" type="text" value="@UVisits" /></div>
+                                  <br />
+                                  <div><label>&nbsp;</label><input type="submit" value="Insert" class="submit" /></div>
+                              </fieldset>
+                          </form>
+                      </div>
+                  </div>
+                  <br />
+                  <div class="row">
+                      <div class="col-sm-12 text-left">
+                          <form method="post" action="" name="sortPPC">
+                              <fieldset>
+                                  <legend>Sort PPC Sheet</legend>
+                                  <div><label>Month:</label>
+                                      <select name="mStr">
+                                          <option value="0">Jan</option>
+                                          <option value="1">Feb</option>
+                                          <option value="2">Mar</option>
+                                          <option value="3">Apr</option>
+                                          <option value="4">May</option>
+                                          <option value="5">Jun</option>
+                                          <option value="6">Jul</option>
+                                          <option value="7">Aug</option>
+                                          <option value="8">Sep</option>
+                                          <option value="9">Oct</option>
+                                          <option value="10">Nov</option>
+                                          <option value="11">Dec</option>
+                                      </select>
+                                  </div>
+                                  <div>
+                                      <label>Year:</label>
+                                      <select name="yStr">
+                                          <option value="2016">2016</option>
+                                          <option value="2015">2015</option>
+                                          <option value="2014">2014</option>
+                                      </select>
+                                  </div>
+                              </fieldset>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-sm-9 text-center">
+                  <div class="row">
+                      <div class="col-sm-12 text-left">
+                          <table id="countit">
+                              <thead>
+                                  <tr>
+                                      <th>&nbsp;</th>
+                                      <th>&nbsp;</th>
+                                      <th>&nbsp;</th>
+                                      <th>&nbsp;</th>
+                                      <th>Total</th>
+                                      <th>Total</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <tr>
+                                      <td></td>
+                                      <td></td>
+                                      <td></td>
+                                      <td></td>
+                                      <td id="Sum1"></td>
+                                      <td id="Sum2"></td>
+                                  </tr>
+                              </tbody>
+                              <thead>
+                                  <tr>
+                                      <th>ID</th>
+                                      <th>Date</th>
+                                      <th>Spend</th>
+                                      <th>Budget</th>
+                                      <th>Visits</th>
+                                      <th>Unique</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  @foreach (var row in db.Query(selectQueryString))
+                                  {
+                                      <tr>
+                                          <td>@row.ppc_ID</td>
+                                          <td>@row.ppc_date</td>
+                                          <td>£@row.ppc_spend</td>
+                                          <td>£@row.ppc_budget</td>
+                                          <td class="count-me">@row.ppc_visits</td>
+                                          <td class="count-me2">@row.ppc_unique_visits</td>
+                                      </tr>
+                                  }
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+          </div><!--/row-->
+          <div class="row"><br></div>
+          <hr />
+      </div><!--/container-->
+  </section>
+  <p id="y"></p>*@
+
+@*<script>
+    //<![CDATA[
+    window.onload = init;
+     var myDate = new Date(),
+     theMonth = myDate.getMonth(),
+     theYear = myDate.getFullYear();
+    function init() {
+     document.sortPPC.mStr.options[theMonth].selected = true;
+     document.sortPPC.yStr.options[theYear].selected = true;
+    }
+    //]]>
+    var tds = document.getElementById('countit').getElementsByTagName('td');
+    var sum = 0;
+    var sum2 = 0;
+    for (var i = 0; i < tds.length; i++) {
+        if (tds[i].className == 'count-me') {
+            sum += isNaN(tds[i].innerHTML) ? 0 : parseInt(tds[i].innerHTML);
+        }
+        else if (tds[i].className == 'count-me2') {
+            sum2 += isNaN(tds[i].innerHTML) ? 0 : parseInt(tds[i].innerHTML);
+        }
+    }
+    document.getElementById('Sum1').innerHTML += sum;
+    document.getElementById('Sum2').innerHTML += sum2;
+  </script>*@

@@ -1,0 +1,86 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+  Layout = "Master.cshtml";
+}
+
+<section class="grey page-title">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-right">
+        <h1>@Umbraco.Field("pageName")</h1>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="grey section">
+  <div class="container">
+    <div class="row">
+      <div id="content" class="col-md-6">
+        <div class="blog-wrapper">
+          <section class="white section" itemscope itemtype="http://schema.org/Organization">
+            <div class="container">
+              <div class="row contact-wrapper">
+                <div class="col-md-12 content-widget">
+                  <div class="widget-title">
+                    <h4>Address Details</h4>
+                    <hr>
+                  </div>
+                  <div class="contact-details">
+                    <ul class=" contact-details" itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                      <meta itemprop="url" content="https://www.icslearn.co.uk" />
+                      <span itemprop="name">ICS Learn</span>
+                      <meta itemprop="description" content="Contact ICS Learn for general enquiries or for enquiries regarding online courses & student services. Find contact info & company details here" />
+                      <li>
+                        <i class="fa fa-home"></i> <span>Breckenridge House</span>
+                        <span itemprop="streetAddress">274 Sauchiehall Street</span>
+                        <span itemprop="addressLocality">Glasgow</span>
+                        <span itemprop="postalCode">G2 3EH</span>
+                        <span itemprop="addressCountry">Scotland</span>
+                      </li>
+                      <li><i class="fa fa-map-marker"></i> <a href="https://www.google.com/maps/dir/current/Glasgow+G2+3EH,+United+Kingdom" title="Google Map" target="_blank">Get Directions <span class="fa fa-angle-right"></span></a></li>
+                    </ul>
+                  </div>
+                  <br />
+                  <div class="widget-title">
+                    <h4>Opening Times</h4>
+                    <hr>
+                  </div>
+                  <div class="contact-list">
+                    <ul class="contact-details">
+                      <li><i class="fa fa-clock-o"></i> Call Centre: @Umbraco.Field("daysCA", recursive: true)</li>
+                      <li><i class="fa fa-clock-o"></i> Student Services: @Umbraco.Field("daysSS", recursive: true)</li>
+                    </ul>
+                  </div>
+                  <div class="widget-title">
+                    <h4>Contact Details</h4>
+                    <hr>
+                  </div>
+                  <div class="contact-list">
+                    <ul class="contact-details" itemprop="address">
+                      <li><i class="fa fa-link"></i> <a href="#">www.icslearn.co.uk</a></li>
+                      <li><i class="fa fa-envelope"></i> <a href="mailto:courseadvisors@icslearn.co.uk&#63;subject&#61;Course&nbsp;Enquiry&amp;body&#61;Which&nbsp;course&nbsp;are&nbsp;you&nbsp;interested&nbsp;in&#63;" title="Course Advisors"><span itemprop="email">courseadvisors@icslearn.co.uk</span></a> | <a href="mailto:studentservices@icslearn.co.uk" title="Student Services"><span itemprop="email">studentservices@icslearn.co.uk</span></a></li>
+                      <li><i class="fa fa-mobile"></i>Course Advisors: <span itemprop="telephone"><span id="RtapColor" class="rTapNumber199117">0800 056 3983</span></span></li>
+                      <li><i class="fa fa-fax"></i>Fax: <span itemprop="faxNumber">0141 221 8151</span></li>
+                      <li><i class="fa fa-mobile"></i>Student Services: 0141 306 1206</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div id="content" class="col-md-6">
+        <article id="contact" class="map-section">
+          <div id="map" class="wow slideInUp"></div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+@{Html.RenderPartial("~/Views/Partials/awarding bodies.cshtml", Model);}
+@{Html.RenderPartial("~/Views/Partials/Reviews.cshtml", Model);}
+<script src="https://maps.google.com/maps/api/js?sensor=false"></script>
+@*<script src="/scripts/contact.js"></script>*@
+<script src="/scripts/map.js"></script>

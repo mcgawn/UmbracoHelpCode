@@ -1,0 +1,10 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+
+@{var AccordianItems = CurrentPage.AccordianRepositories.First().AccordianItems.Where("Visible");}
+
+@foreach (var item in AccordianItems)
+{
+  <button class="accordion" style="background-color:#@Umbraco.Field("hexTitleColor") !important">@item.accordianHeaderText</button>
+  <div class="panel">@item.GetGridHtml("accordianBodyText", "Bootstrap2")</div>
+}
+<script>var acc = document.getElementsByClassName("accordion");var i;for (i = 0; i < acc.length; i++) {acc[i].onclick = function () {this.classList.toggle("active");this.nextElementSibling.classList.toggle("show");} }</script>

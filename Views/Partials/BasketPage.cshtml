@@ -1,0 +1,297 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using SimplestStore.Controllers;
+@using SimplestStore.Models;
+@{
+  var homePage = Model.Content.AncestorOrSelf(1);
+  var hasCheckoutPage = homePage.Descendants("Checkout").Any();
+  Cart basketCart = (Cart)Session["Cart"];
+
+  if (basketCart != null){
+    if (TempData["success"] != null){
+      <div role="alert" class="alert alert-success fade in col-sm-12"><p><strong>@TempData["success"]</strong></p></div><br/>
+    }
+    else if (TempData["failure"] != null){
+      <div role="alert" class="alert alert-danger fade in col-sm-12"><p><strong>@TempData["failure"]</strong></p></div><br />
+    }
+
+    <div class="">
+      <br />
+      <table class="table table-bordered">
+        <thead><tr><th>Qualification</th><th>Item Name</th>@*<th>Extras</th>*@<th>SchoolCode</th><th>Item Price</th><th>Sub Total</th><th>Actions</th></tr></thead>
+        <tbody>
+          @{int count = 0;
+          foreach (var basketItem in basketCart.Lines){
+            count += 1;
+            if (basketItem.IsMainProduct){
+              var currentMainProduct = basketItem.ProductPage;
+              var productImage = "/images/ProductPlaceholder.png";
+              var schoolCode = "/images/ProductPlaceholder.png";
+              if (basketItem.ProductPage.HasProperty("productImage") && basketItem.ProductPage.GetProperty("productImage").HasValue){
+                var mediaItem = Umbraco.TypedMedia(basketItem.ProductPage.GetProperty("productImage").Value);
+                productImage = mediaItem.Url();
+              }
+              if (basketItem.ProductPage.HasProperty("schoolCode") && basketItem.ProductPage.GetProperty("schoolCode").HasValue){
+                schoolCode = basketItem.ProductPage.GetPropertyValue("schoolCode").ToString();
+              }
+
+              var basketItemName = basketItem.ProductPage.Name;
+              var basketItemPrice = basketItem.Price;
+              var itemPrice = Convert.ToDecimal(basketItemPrice);
+              var basketItemQuantity = basketItem.Quantity;
+              var priceMessage = "";
+              if (basketItem.ProductPage.HasProperty("priceExtras") && basketItem.ProductPage.HasValue("priceExtras")){
+                var priceExtrasIds = basketItem.ProductPage.GetPropertyValue("priceExtras").ToString();
+                priceMessage = basketItem.GetCart().DiscountMessage(basketItem.ProductPage, priceExtrasIds, null, out itemPrice);
+              }
+
+              <tr>
+                <td data-label="Qualification"><img src="@productImage" alt="@basketItemName image" class="img-thumbnail" /></td>
+                <td data-label="Item Name">
+                  <strong><a href="@basketItem.ProductPage.Url" title="View @basketItemName page">@basketItemName</a></strong>
+                  @if (!string.IsNullOrEmpty(basketItem.Description)){
+                    <br /><span>@basketItem.Description</span>
+                  }
+                  @if (!string.IsNullOrEmpty(priceMessage)){
+                    <br /><span role="alert" class="basketAlert"><strong>@Html.Raw(priceMessage)</strong></span>
+                  }
+                </td>
+                @*<td data-label="Extras">
+                  @foreach (var basketExtraItem in basketCart.Lines){
+                    if (!basketExtraItem.IsMainProduct){
+                      if (basketExtraItem.ExtraMainProductPage.Id == currentMainProduct.Id){
+                        var isOptional = basketExtraItem.ProductPage.GetProperty("isOptionalExtra").Value.ToString();
+                        var extraPrice = basketExtraItem.Price;
+                        var basketExtraPriceMessage = "";
+                        if (basketExtraItem.ProductPage.HasProperty("priceExtras") && basketExtraItem.ProductPage.HasValue("priceExtras")){
+                          var priceExtrasIds = basketExtraItem.ProductPage.GetPropertyValue("priceExtras").ToString();
+                          basketExtraPriceMessage = basketItem.GetCart().DiscountMessage(basketExtraItem.ProductPage, priceExtrasIds, basketExtraItem.ExtraMainProductPage, out extraPrice);
+                        }
+                        <div class="extraProduct row">
+                          <hr />
+                          <div class="">
+                            <strong>@basketExtraItem.ProductPage.Name</strong>
+                            @if (!string.IsNullOrEmpty(basketExtraItem.Description)){
+                              <br /><span>@basketExtraItem.Description</span>
+                            }
+                          </div>
+                          <p class="text-right col-xs-6 col-md-4">@extraPrice.ToString("c")</p>
+                          @if (isOptional == "True"){
+                            using (Html.BeginUmbracoForm<BasketSurfaceController>("RemoveFromBasket", null, new { @class = "form-inline text-right col-md-2", role = "form" })){
+                              <input type="hidden" name="productPageId" id="productPageId" value="@basketExtraItem.ProductPage.Id" />
+                              <input class="btn btn-sm btn-warning" type="submit" value="X" />
+                            }
+                          }
+                          else{
+                            <p class="col-md-2"></p>
+                          }
+                        </div>
+                      }
+                    }
+                  }
+                  @if (basketItem.ProductPage.HasProperty("productExtras") && basketItem.ProductPage.GetProperty("productExtras").HasValue){
+                    var orderLineExtras = basketItem.ProductPage.GetPropertyValue("productExtras").ToString();
+                    if (!string.IsNullOrEmpty(orderLineExtras)){
+                      if (orderLineExtras.Contains(",")){
+                        var extras = orderLineExtras.Split(',');
+                        foreach (var extraId in extras){
+                          var extraPageId = Convert.ToInt32(extraId);
+                          IPublishedContent priceExtraPage = Umbraco.TypedContent(extraPageId);
+                          decimal productExtraPrice = 0;
+                          if (priceExtraPage != null && priceExtraPage.GetProperty("isOptionalExtra").HasValue){
+                            var isOptional = priceExtraPage.GetProperty("isOptionalExtra").Value.ToString();
+                            if (isOptional == "True"){
+                              var extraInCart = false;
+                              foreach (var checkedCartLine in basketCart.Lines){
+                                if (checkedCartLine.ProductPage.Id == priceExtraPage.Id && checkedCartLine.ExtraMainProductPage.Id == basketItem.ProductPage.Id)
+                                {
+                                  extraInCart = true;
+                                }
+                              }
+                              if (!extraInCart){
+                                var productExtraPriceMessage = "";
+                                if (priceExtraPage.GetProperty("price").HasValue){
+                                  productExtraPrice = Convert.ToDecimal(priceExtraPage.GetProperty("price").Value.ToString());
+                                  if (priceExtraPage.HasProperty("priceExtras") && priceExtraPage.HasValue("priceExtras")){
+                                    var priceExtrasIds = priceExtraPage.GetPropertyValue("priceExtras").ToString();
+                                    productExtraPriceMessage = basketItem.GetCart().DiscountMessage(priceExtraPage, priceExtrasIds, basketItem.ProductPage, out productExtraPrice);
+                                  }
+                                }
+                                else if (priceExtraPage.GetProperty("pricePercentage").HasValue){
+                                  var extraDiscount = Convert.ToDecimal(priceExtraPage.GetProperty("pricePercentage").Value.ToString());
+                                  var currentTotal = basketCart.ComputeTotalValue();
+                                  productExtraPrice = currentTotal * (extraDiscount / 100);
+                                  if (priceExtraPage.HasProperty("priceExtras") && priceExtraPage.HasValue("priceExtras")){
+                                    var priceExtrasIds = priceExtraPage.GetPropertyValue("priceExtras").ToString();
+                                    productExtraPriceMessage = basketItem.GetCart().DiscountMessage(priceExtraPage, priceExtrasIds, basketItem.ProductPage, out productExtraPrice);
+                                  }
+                                }
+                                <div class="">
+                                  @priceExtraPage.Name (@productExtraPrice.ToString("c"))
+                                  @if (!string.IsNullOrEmpty(productExtraPriceMessage)){
+                                    <br /><p role="alert" class="basketAlert alert alert-warning"><strong>@productExtraPriceMessage</strong></p>
+                                  }
+                                </div>
+                                using (Html.BeginUmbracoForm<BasketSurfaceController>("ExtraProductAddToBasket", null, new { @class = "form-inline text-right", role = "form" })){
+                                  <input type="hidden" name="mainProductPageId" id="mainProductPageId" value="@basketItem.ProductPage.Id" />
+                                  <input type="hidden" name="extraProductPageId" id="extraProductPageId" value="@priceExtraPage.Id" />
+                                  <input class="" type="submit" value="Add" />
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                      else{
+                        var extraPageId = Convert.ToInt32(orderLineExtras);
+                        IPublishedContent priceExtraPage = Umbraco.TypedContent(extraPageId);
+                        decimal productExtraPrice = 0;
+                        if (priceExtraPage != null && priceExtraPage.GetProperty("isOptionalExtra").HasValue){
+                          var isOptional = priceExtraPage.GetProperty("isOptionalExtra").Value.ToString();
+                          if (isOptional == "True"){
+                            var extraInCart = false;
+                            foreach (var checkedCartLine in basketCart.Lines){
+                              if (checkedCartLine.ProductPage.Id == priceExtraPage.Id && checkedCartLine.ExtraMainProductPage.Id == basketItem.ProductPage.Id){
+                                extraInCart = true;
+                              }
+                            }
+                            if (!extraInCart){
+                              var productExtraPriceMessage = "";
+                              if (priceExtraPage.GetProperty("price").HasValue){
+                                productExtraPrice = Convert.ToDecimal(priceExtraPage.GetProperty("price").Value.ToString());
+                                if (priceExtraPage.HasProperty("priceExtras") && priceExtraPage.HasValue("priceExtras")){
+                                  var priceExtrasIds = priceExtraPage.GetPropertyValue("priceExtras").ToString();
+                                  productExtraPriceMessage = basketItem.GetCart().DiscountMessage(priceExtraPage, priceExtrasIds, basketItem.ProductPage, out productExtraPrice);
+                                }
+                              }
+                              else if (priceExtraPage.GetProperty("pricePercentage").HasValue){
+                                var extraDiscount = Convert.ToDecimal(priceExtraPage.GetProperty("pricePercentage").Value.ToString());
+                                var currentTotal = basketCart.ComputeTotalValue();
+                                productExtraPrice = currentTotal * (extraDiscount / 100);
+                                if (priceExtraPage.HasProperty("priceExtras") && priceExtraPage.HasValue("priceExtras")){
+                                  var priceExtrasIds = priceExtraPage.GetPropertyValue("priceExtras").ToString();
+                                  productExtraPriceMessage = basketItem.GetCart().DiscountMessage(priceExtraPage, priceExtrasIds, basketItem.ProductPage, out productExtraPrice);
+                                }
+                              }
+                              <span class="">
+                                @priceExtraPage.Name ( @productExtraPrice.ToString("c") )
+                                @if (!string.IsNullOrEmpty(productExtraPriceMessage)){
+                                  <br /><p role="alert" class="basketAlert alert alert-warning"><strong>@productExtraPriceMessage</strong></p>
+                                }
+                              </span>
+                              <p></p>
+                              using (Html.BeginUmbracoForm<BasketSurfaceController>("ExtraProductAddToBasket", null, new { @class = "form-inline text-left", role = "form" })){
+                                <input type="hidden" name="mainProductPageId" id="mainProductPageId" value="@basketItem.ProductPage.Id" />
+                                <input type="hidden" name="extraProductPageId" id="extraProductPageId" value="@priceExtraPage.Id" />
+                                <input class="" type="submit" value="Add" />
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                </td>*@
+                <td data-label="SchoolCode">@schoolCode</td>
+                <td data-label="Price">@itemPrice.ToString("c")</td>
+                <td data-label="Sub-Total">@((basketItemQuantity * itemPrice).ToString("c"))</td>
+                @using (Html.BeginUmbracoForm<BasketSurfaceController>("RemoveFromBasket", null, new { @class = "form-inline text-right col-xs-3 col-md-2", role = "form" })){
+                  <td class="remove">
+                    <input type="hidden" name="productPageId" id="productPageId" value="@basketItem.ProductPage.Id" />
+                    <input class="" type="submit" value="Remove" />
+                  </td>
+                }
+              </tr>
+            }
+          }
+        }
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="6" class="text-right">
+              @{
+              string Price = @basketCart.ComputeTotalValue().ToString("c");
+              string pricefinal = Price.Replace("£", "");
+              decimal pricefinalV = Convert.ToDecimal(pricefinal);
+              decimal discountVoucher = Convert.ToDecimal(Request.Cookies["discountCodeAmount"].Value);
+              decimal withDiscountVoucher = pricefinalV * discountVoucher / 100;
+              Response.Cookies["DiscountVPrice"].Value = withDiscountVoucher.ToString();
+              decimal endPrice = pricefinalV - withDiscountVoucher;
+              }
+              @if (count == 2){
+                decimal discount = endPrice;
+                var calculateDiscount = Convert.ToInt32(discount * 5 / 100);
+                var finalPrice5 = endPrice - calculateDiscount;
+                Response.Cookies["Price"].Value = finalPrice5.ToString();
+                Response.Cookies["DiscountAmountMulti"].Value = "5";
+                <script>document.getElementById("discountVoucher").style.display = "none";</script>
+                <span>Multi Buy discount applied (5%): </span><strong style="font-size:22px; color:#ff6a00">Was £@endPrice | Now £@finalPrice5</strong>
+              }
+              else if (count == 3){
+                decimal discount = endPrice;
+                var calculateDiscount = Convert.ToInt32(discount * 10 / 100);
+                var finalPrice10 = endPrice - calculateDiscount;
+                Response.Cookies["Price"].Value = finalPrice10.ToString();
+                Response.Cookies["DiscountAmountMulti"].Value = "10";
+                <script>document.getElementById("discountVoucher").style.display = "none";</script>
+                <span>Multi Buy discount applied (10%): </span><strong style="font-size:22px; color:#ff6a00">Was £@endPrice | Now £@finalPrice10</strong>
+              }
+              else if (count >= 4){
+                decimal discount = endPrice;
+                var calculateDiscount = Convert.ToInt32(discount * 15 / 100);
+                var finalPrice15 = endPrice - calculateDiscount;
+                Response.Cookies["Price"].Value = finalPrice15.ToString();
+                Response.Cookies["DiscountAmountMulti"].Value = "15";
+                <script>document.getElementById("discountVoucher").style.display = "none";</script>
+                <span>Multi Buy discount applied (15%): </span><strong style="font-size:22px; color:#ff6a00">Was £@endPrice | Now £@finalPrice15</strong>
+              }
+              else if (count == 0){
+                Response.Redirect("/", false);
+              }
+              else{
+                Response.Cookies["Price"].Value = endPrice.ToString();
+                Response.Cookies["DiscountAmountMulti"].Value = "0";
+                <span>Current Basket Total: </span><strong style="font-size:22px; color:#ff6a00">£@endPrice</strong>
+              }
+              <div class="row" style="display:none" id="AppledDiscount"><strong>Discount amount applied @discountVoucher % = £ @withDiscountVoucher</strong></div>
+              @if (Request.Cookies["discountCodeAmount"].Value != "0"){
+                <script>
+                  document.getElementById("toApplyDiscount").style.display = "none";
+                  document.getElementById("AppledDiscount").style.display = "block";
+                </script>
+              }
+            </td>
+          </tr>
+          <tr>
+            <td colspan="6" class="text-right">
+              @if (hasCheckoutPage)
+              {
+                var checkoutPage = homePage.Descendants("Checkout").First();
+                <div class="col-sm-12" runat="server" id="theDiv">
+                  <a class="btn btn-primary" id="checkoutbutton" href="/courses/" title="Home">Continue Shopping</a> | 
+                  <a class="btn btn-primary" id="checkoutbutton" href="@checkoutPage.Url" title="@checkoutPage.Name">Checkout</a>
+                </div>
+              }
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="coupon-code-wrapper" id="discountVoucher">
+        <a class="btn btn-default btn-block" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Have a voucher code? click to enter here</a>
+        <div class="collapse" id="collapseExample">
+          <div class="well">
+            <div class="media">
+              <p style="display:none" id="discountInvalid" name="discountInvalid">Invalid voucher code*</p>
+              <p>Enter a coupon code if you have one.</p>
+              <div class="couponform">
+                <form>
+                  <input id="discountCode" type="text" class="form-control" placeholder="Enter coupon code here.">
+                  <button class="btn btn-primary" onclick="applyDiscount();">Apply Code</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+}

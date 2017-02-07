@@ -1,0 +1,308 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using SimplestStore.Controllers;
+@using SimplestStore.Models;
+@using System.Text.RegularExpressions
+@using System.Security.Cryptography
+@using System.Text
+@using Umbraco.Core.Models
+
+@{
+  var homePage = Model.Content.AncestorOrSelf(1);
+  Cart checkoutCart = (Cart)Session["Cart"];
+  if (Request.Cookies["schoolcoder"] != null)
+  {
+    var schoolcode = Request.Cookies["schoolcoder"].Value;
+    string Prices = Request.Cookies["Price"].Value;
+    string txndatetime = DateTime.Now.ToString(@"yyyy\:MM\:dd-HH\:mm\:ss");
+    var storename = System.Configuration.ConfigurationManager.AppSettings["FDstoreID"];
+    var FDurl = System.Configuration.ConfigurationManager.AppSettings["FDurl"];
+    var baseurl = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"];
+    var sharedsecret = System.Configuration.ConfigurationManager.AppSettings["FDSecret"];
+    var chargetotal = "";
+    var charsToRemove = new string[] { "£", "Â" };
+    String mobileParam = Request.QueryString["m"] ?? "0";
+    string currency = "826";
+    string strtimezone = "GMT";
+    DateTime.Today.ToString("ddMMyyyy");
+    var r = new Random();
+    var n = r.Next(1000, 100000000);
+    var OrderID = "web" + DateTime.Today.ToString("ddMMyyyy") + n.ToString();
+    var result = "";
+    foreach (var c in charsToRemove)
+    {
+      Prices = Prices.Replace(c, "");
+      chargetotal = Prices;
+    }
+
+    string stringToHash = storename + txndatetime + chargetotal + currency + sharedsecret;
+    var bytes = Encoding.ASCII.GetBytes(stringToHash);
+    var hexString = BitConverter.ToString(bytes).Replace("-", string.Empty).ToLower();
+
+    SHA1 sha = new SHA1CryptoServiceProvider();
+    var firstDataSha = sha.ComputeHash(bytes);
+    var firstresult = BitConverter.ToString(firstDataSha).ToLower().Replace("-", string.Empty);
+    var hexStringBytes = Encoding.ASCII.GetBytes(hexString);
+    var hexStringPassword = sha.ComputeHash(hexStringBytes);
+    result = BitConverter.ToString(hexStringPassword).ToLower().Replace("-", string.Empty);
+    <div class="row">
+      <div id="checkboxes" style="display: block">
+          <h2>Before you can continue we need to confirm a few things, please check the boxes to proceed</h2>
+          <div class="checkbox"><label><input id="check1" type="checkbox" onclick="showconfirm();">I understand and have researched the course information and know when the exam period is if there is one and how to book them.</label></div>
+          <div class="checkbox"><label><input id="check2" type="checkbox" onclick="showconfirm();">I understand that ICS Learn is not an exam centre and that I will be responsible for arranging and paying for my own exams.</label></div>
+          <div class="checkbox"><label><input id="check3" type="checkbox" onclick="showconfirm();">I agree to the ICS Learn <a href="https://www.icslearn.co.uk/terms-conditions/" target="_blank">Terms and Conditions</a></label></div>
+           <hr />
+      </div>
+
+      <div id="confirmorder" style="display: none">
+        <div id="validationError" class="alert alert-danger" style="display: none;"></div>
+        <div class="content" id="address">
+          <div class="col-md-4 leftRight">
+            <h2>Order item/s</h2>
+            <hr />
+            @if (homePage != null && homePage.Id > 0 && checkoutCart != null)
+            {
+              var hasBasketPage = homePage.Descendants("Basket").Any();
+              if (hasBasketPage)
+              {
+                var basketPage = homePage.Descendants("Basket").FirstOrDefault();
+                var cartMainLines = checkoutCart.Lines.Where(line => line.IsMainProduct).ToList();
+                var cartExtraLines = checkoutCart.Lines.Where(line => !line.IsMainProduct).ToList();
+                foreach (var cartRow in cartMainLines.InGroupsOf(10))
+                {
+                  Cart basketCart = (Cart)Session["Cart"];
+                  foreach (var basketItem in basketCart.Lines)
+                  {
+                    var schoolCode = "";
+                    if (basketItem.ProductPage.HasProperty("schoolCode") && basketItem.ProductPage.GetProperty("schoolCode").HasValue)
+                    {
+                      schoolCode = basketItem.ProductPage.GetPropertyValue("schoolCode").ToString();
+                    }
+                  }
+                  <div style="display: none;">
+                    <div id="commentsContent">
+                      @foreach (var basketItem in cartRow)
+                      {
+                        var schoolCode = basketItem.ProductPage.GetPropertyValue("schoolCode").ToString();
+                        @schoolCode
+                      }
+                    </div>
+                  </div>
+
+                  foreach (var basketItem in cartRow)
+                  {
+                    var currentMainProduct = basketItem.ProductPage;
+                    var basketItemName = basketItem.ProductPage.Name;
+                    var basketItemPrice = basketItem.Price;
+                    var basketItemQuantity = basketItem.Quantity;
+                    var basketItemTotal = (basketItemQuantity * basketItemPrice).ToString("c");
+                    <div class="thumbnail">
+                      <div class="caption">
+                        <h4><a href="@basketItem.ProductPage.Url" title="View @basketItemName page">@basketItemName</a></h4>
+                        <p class="priceInfo">
+                          Quantity: @basketItemQuantity -
+                          @{
+                    decimal discountVoucher = Convert.ToDecimal(Request.Cookies["discountCodeAmount"].Value);
+                    decimal withDiscountVoucher = basketItemPrice * discountVoucher / 100;
+                    decimal checkBasShow2 = basketItemPrice - withDiscountVoucher;
+                    decimal checkDMB = Convert.ToDecimal(Request.Cookies["DiscountAmountMulti"].Value);
+                    decimal checkBasShow = basketItemPrice - checkBasShow2 * checkDMB / 100;
+                    decimal calcTotal = checkBasShow * basketItemQuantity;
+                          }
+                          @if (checkDMB != 0)
+                          {<span>£@checkBasShow = £ @calcTotal | With @checkDMB% Discount</span>}
+                          else
+                          {<span>£@checkBasShow = £@calcTotal</span>}
+                          @foreach (var basketExtraItem in cartExtraLines)
+                          {
+                            if (basketExtraItem.ProductPage != null && basketExtraItem.ProductPage.Id > 0)
+                            {
+                              if (basketExtraItem.ExtraMainProductPage.Id == currentMainProduct.Id)
+                              {
+                                <h4>@basketExtraItem.ProductPage.Name</h4>
+
+                              <p>
+                                @if (!string.IsNullOrEmpty(basketExtraItem.Description))
+                                {
+                                  @basketExtraItem.Description} = @basketExtraItem.Price.ToString("c")
+                                </p>
+                              }
+                            }
+                          }
+                        </div>
+                      </div>
+                  }
+                  <hr />
+                  decimal chargeTotals = System.Convert.ToDecimal(chargetotal);
+                  if (Request.Cookies["DiscountAmountMulti"].Value == "5")
+                  {<div class="col-sm-12 col-md-12"><h2>Total Price: <strong style="font-size:22px; color:#ff6a00">£@chargeTotals With 5% Discount</strong></h2></div>}
+                  else if (Request.Cookies["DiscountAmountMulti"].Value == "10")
+                  {<div class="col-sm-12 col-md-12"><h2>Total Price: <strong style="font-size:22px; color:#ff6a00">£@chargeTotals With 10% Discount</strong></h2></div>}
+                  else if (Request.Cookies["DiscountAmountMulti"].Value == "15")
+                  {<div class="col-sm-12 col-md-12"><h2>Total Price: <strong style="font-size:22px; color:#ff6a00">£@chargeTotals With 15% Discount</strong></h2></div>}
+                  else if (Request.Cookies["DiscountAmountMulti"].Value == "0")
+                  {<div class="col-sm-12 col-md-12"><h2>Total Price: <strong style="font-size:22px; color:#ff6a00">£@chargeTotals</strong></h2></div>}
+                }
+              }
+            }
+              <table width="135" border="0" cellpadding="2" cellspacing="0" title="Click to Verify - This site chose Symantec SSL for secure e-commerce and confidential communications.">
+                  <tr>
+                      <td width="135" align="center" valign="top">
+                          <script type="text/javascript" src="https://seal.websecurity.norton.com/getseal?host_name=www.ICSLearn.co.uk&amp;size=S&amp;use_flash=NO&amp;use_transparent=YES&amp;lang=en"></script><br />
+                          <a href="http://www.symantec.com/ssl-certificates" target="_blank" style="color:#000000; text-decoration:none; font:bold 7px verdana,sans-serif; letter-spacing:.5px; text-align:center; margin:0px; padding:0px;">ABOUT SSL CERTIFICATES</a>
+                      </td>
+                  </tr>
+              </table>
+          </div>
+          <form class="go-right" action="@FDurl" onsubmit="return showmerchant();" method="post" runat="server">
+            <div class="col-md-4 leftRight">
+              <h2>Bill Payer Details</h2>
+              <hr />
+              <div style="display: none">
+                  @{var discountcodeFD = "Discount:" + Request.Cookies["discountCodeAmount"].Value + "%";}
+                <input id="oid" name="oid" value="@OrderID" /><br />
+                <input id="txntype" name="txntype" value="sale" /><br />
+                <input id="full_bypass" name="full_bypass" value="true" /><br />
+                <input id="timezone" name="timezone" value="@strtimezone" /><br />
+                <input id="txndatetime" name="txndatetime" value="@txndatetime" /><br />
+                <input id="hash" name="hash" value="@result" /><br />
+                <input id="storename" name="storename" value="@storename" /><br />
+                <input id="mode" name="mode" value="fullpay" /><br />
+                <input id="comments" name="comments" value="" /><br />
+                <input id="chargetotal" name="chargetotal" value="@chargetotal" /><br />
+                <input id="currency" name="currency" value="826" /><br />
+                <input id="responseFailURL" name="responseFailURL" value="@baseurl/orderconfirmation/" /><br />
+                <input id="responseSuccessURL" name="responseSuccessURL" value="@baseurl/orderconfirmation/" /><br />
+                <input id="bstate" name="bstate" value="@discountcodeFD"><br />
+                <input id="bname" name="bname" value=""><br />
+                <input id="sname" name="sname" value=""><br />
+                <input name="transactionNotificationURL" value="@baseurl/orderconfirmation/" />
+              </div>
+              <div>
+                <div class="country_options">
+                  <div class="select">
+                    <select id="Fax" name="Fax" class="form-control">
+                      <option value="">Please select your title</option>
+                      <option value="Mr">Mr</option>
+                      <option value="Mrs">Mrs</option>
+                      <option value="Miss">Miss</option>
+                      <option value="Ms">Ms</option>
+                      <option value="Dr">Dr</option>
+                    </select>
+                  </div>
+                  <div id="validationErrorSal" class="alert-danger" style="display: none;"></div>
+                </div>
+              </div>
+
+              <script src="https://experiandataquality.blob.core.windows.net/dqintegrations/9bc7b6e0-bcd8-e611-a043-e4115bdf0926.js" type="text/javascript"></script>
+
+              <input class="form-control" type="text" name="first_name" value="" id="first_name" placeholder="First Name" data-trigger="change" />
+                <div id="validationErrorFName" class="alert-danger" style="display: none;"></div>
+
+              <input class="form-control" type="text" name="last_name" value="" id="last_name" placeholder="Last Name" data-trigger="change" />
+                <div id="validationErrorLName" class="alert-danger" style="display: none;"></div>
+
+                <input class="form-control" type="tel" name="phone" value="" id="telephone" placeholder="Mobile" data-trigger="change" />
+                <div id="validationErrorPhone" class="alert-danger" style="display: none;"></div>
+
+                <input class="form-control" type="email" name="baddr2" value="" id="email" onchange="QASemail()" placeholder="Email" data-trigger="change" />
+                <div id="validationErrorEmail" class="alert-danger" style="display: none;"></div><div id="loading" class="alert-danger" style="display: none;"></div>
+
+              <input class="form-control" type="text" value="" id="company" name="bcompany" placeholder="Date of Birth (xx/xx/xxxx)" />
+                <div id="validationErrorDob" class="alert-danger" style="display: none;"></div>
+
+              <input class="form-control" type="text" value="" id="address1" name="baddr1" placeholder="Address *inc House Number" />
+                <div id="validationErrorAddress1" class="alert-danger" style="display: none;"></div>
+
+              <input class="form-control" type="text" value="" id="city" name="bcity" placeholder="City" />
+              <input class="form-control" type="text" value="" id="zip" name="bzip" placeholder="Post Code" /> 
+              <hr />
+            </div>
+            <div class="col-md-4 leftRight">
+              <h2>Payment</h2>
+              <hr />
+              <img src="~/images/visa_mastercard.png" class="img-responsiveCards">
+              <div class="country_options">
+                <div class="select">
+                  <select name="paymentMethod" id="paymentMethod" class="form-control" onchange="getCourseCode()">
+                    <option value="">Please select card provider</option>
+                    <option value="M">Mastercard</option>
+                    <option value="V">Visa</option>
+                  </select>
+                </div>
+                  <div id="validationErrorpaymentMethod" class="alert-danger" style="display: none;"></div>
+              </div>
+              <div class="CardNumberSection">
+                <input type="text" name="cardnumber" class="cc-number" value="" id="cardnumber" placeholder="xxxx-xxxx-xxxx-xxxx - card number" data-trigger="change" />
+              </div>
+              <div>
+                <div class="expiry">
+                  <div class="month_select">
+                    <select name="expmonth" id="expmonth" data-trigger="change">
+                      <option value="">Expire Month</option>
+                      <option value="01">01</option>
+                      <option value="02">02</option>
+                      <option value="03">03</option>
+                      <option value="04">04</option>
+                      <option value="05">05</option>
+                      <option value="06">06</option>
+                      <option value="07">07</option>
+                      <option value="08">08</option>
+                      <option value="09">09</option>
+                      <option value="10">10</option>
+                      <option value="11">11</option>
+                      <option value="12">12</option>
+                    </select>
+                  </div>
+                  <div class="year_select">
+                    <select name="expyear" id="expyear" data-trigger="change">
+                      <option value="">Expire Year</option>
+                      <option value="2017">2017</option>
+                      <option value="2018">2018</option>
+                      <option value="2019">2019</option>
+                      <option value="2020">2020</option>
+                      <option value="2021">2021</option>
+                      <option value="2022">2022</option>
+                      <option value="2023">2023</option>
+                      <option value="2024">2024</option>
+                      <option value="2025">2025</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="sec_num">
+                <div class="CardCCVSection">
+                  <input type="text" name="cvm" value="" id="cvm" class="cc-cvc" placeholder="123 - Last 3 Digits (CCV)" data-trigger="change" />
+                </div>
+              </div>
+              <div><input type="checkbox" id="checkAddress" name="checkAddress" onclick="checkAddressqq()" />Student’s details are same as bill payer</div>
+              <div><input type="checkbox" data-toggle="collapse" class="text-center" data-target="#studentDetails" />Student’s details different from bill payer</div>
+              <br />
+              <div id="studentDetails" class="collapse">
+                <p>Enter Student Details</p>
+                <div><input type="text" name="first_nameS" value="" id="first_nameS" placeholder="First Name" data-trigger="change" /></div>
+                <div><input type="text" name="last_nameS" value="" id="last_nameS" placeholder="Last Name" data-trigger="change" /></div>
+                <div><input type="tel" name="saddr2" value="" id="telephoneS" placeholder="Mobile" data-trigger="change" /></div>
+                <div><input type="email" name="email" value="" id="emailS" placeholder="Email" data-trigger="change" /></div>
+                <div><input type="text" name="sstate" value="" id="companyS" placeholder="Date of Birth (xx/xx/xxxx)" data-trigger="change" /></div>
+                <input type="hidden" name="scountry" value="GB" />
+              </div>
+              <div class="right" id="reviewed">
+                <div id="complete">
+                  <button type="submit" class="big_button" name="processPayment" id="processPayment">Complete Order</button>
+                  <span class="sub">By selecting this button you agree to the purchase and subsequent payment for this order.</span>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+  else{Response.Redirect("/basket/", false);}
+}
+<link href="~/css/Commercestyle.css" rel="stylesheet" />
+<script src="/scripts/jquery.payment.js"></script>
+<script src="/scripts/siteJS.js"></script>
+<script src="/scripts/html5shiv.min.js"></script>
+<script src="/scripts/jQuery.Spin.js"></script>
+<script src="/scripts/respond.min.js"></script>

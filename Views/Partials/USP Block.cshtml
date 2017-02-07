@@ -1,0 +1,45 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+  if (CurrentPage.GetPropertyValue("sectionMilestonesOnOrOff") == true){
+<!-- ========== USP BLOCK START ========== -->
+
+<section class="section darkskin fullscreen paralbackground parallax" style="background-image:url('images/parallax_01.jpg');" data-img-width="1627" data-img-height="868" data-diff="100">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="section-title text-center">
+                    <h4>@Umbraco.Field("milestoneTitle")</h4>
+                    <p>@Umbraco.Field("milestoneSubHeading")</p>
+                </div>
+            </div><!-- end col -->
+        </div><!-- end row -->
+        <div class="row service-center funfactors">
+            <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="feature-list">
+                    <i class="stat-count">@Umbraco.Field("milestone1Total")</i>
+                    <p><strong>@Umbraco.Field("milestone1Title")</strong></p>
+                    <p>@Umbraco.Field("milestone1Description")</p>
+                </div><!-- end service -->
+            </div><!-- end col -->
+            <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="feature-list">
+                    <i class="stat-count">@Umbraco.Field("milestone2Total")</i>
+                    <p><strong>@Umbraco.Field("milestone2Title")</strong></p>
+                    <p>@Umbraco.Field("milestone2Description")</p>
+                </div><!-- end service -->
+            </div><!-- end col -->
+            <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="feature-list">
+                    <i class="stat-count">@Umbraco.Field("milestone3Total")</i>
+                    <p><strong>@Umbraco.Field("milestone3Title")</strong></p>
+                    <p>@Umbraco.Field("milestone3Description")</p>
+                </div><!-- end service -->
+            </div><!-- end col -->
+        </div><!-- end row -->
+    </div><!-- end container -->
+</section><!-- end section -->
+
+<!-- ========== USP BLOCK END ========== -->
+}
+}

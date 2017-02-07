@@ -1,0 +1,45 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+
+@{var reviewItems = CurrentPage.ReviewRepositories.First().ReviewItems.Where("Visible");}
+
+
+  @if (reviewItems.HasValue())
+  {
+    <section class="white section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section-title text-center">
+              <h4>Happy Students</h4>
+              <p>Don’t just take it from us – here’s what our students say </p>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          @foreach (var item in reviewItems)
+          {
+            <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="testimonial">
+                    @if (item.HasValue("imageReview"))
+                    {
+                        var url = @item.imageReview;
+                        var urlName = url.ToString();
+                        string result = System.IO.Path.GetFileNameWithoutExtension(urlName);
+                        <img class="alignleft img-circle" src="@item.imageReview" alt="@result">
+                    }
+                    else
+                    {
+                        <img class="alignleft img-circle" src="/images/icons/apple-touch-icon-57x57.png" alt="">
+                    }
+                    @item.testimonialHeading
+                    @item.testimonialDetails
+                    <div class="testimonial-meta">
+                        <h4>@item.testimonialSource <small>Review Rating: @item.rating out of 5</small></h4>
+                    </div>
+                </div>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  }

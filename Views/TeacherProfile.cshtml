@@ -1,0 +1,20 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "Master.cshtml";
+}
+<section class="grey page-title">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <h1>@Umbraco.Field("pageName")</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="white section">
+    <div class="container">
+        @CurrentPage.GetGridHtml("BodyText")
+        <hr class="invis1">
+    </div>
+</section>

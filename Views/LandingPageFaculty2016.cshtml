@@ -1,0 +1,213 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+  Layout = null;
+  string url = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"] + Model.Content.Url;
+  string analyticsID = System.Configuration.ConfigurationManager.AppSettings["GoogleAnalyticsAccountId"];
+  var seo = CurrentPage._seoFields;
+  var landingpagetitle = @seo.title;
+}
+<head>
+  @{ Html.RenderPartial("~/Views/Partials/Landing CSS 2016.cshtml"); }
+</head>
+<body onload="load();">
+  <header>
+    <div class="top" style="background:#@Umbraco.Field("hexTitleColor") !important">
+      <div class="container">
+        <div class="row-fluid">
+          <p class="animated fadeInRight">
+            <i id="RTapID"></i>
+            <i id="RTapIDInt"></i>
+            <span><a href="mailto:@Umbraco.Field("facultyEmail")" style="color:#fff">@Umbraco.Field("facultyEmail")</a></span>
+          </p>
+        </div>
+      </div>
+    </div>
+    <nav>
+      <div class="container">
+        <div class="row-fluid">
+          <div class="span3">
+            @if (Model.Content.HasValue("logo"))
+            {
+              var logoList = Model.Content.GetPropertyValue<string>("logo").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse);
+              var logoCollection = Umbraco.TypedMedia(logoList).Where(x => x != null);
+
+              foreach (var logo in logoCollection)
+              {
+                <img src="@logo.Url" alt="ICS Learn Logo" class="logo animated delay1 fadeInDown" />
+              }
+            }
+
+          </div>
+          <div class="span9">
+            <h1 class="animated delay2 fadeInDown" style="color:#@Umbraco.Field("hexTitleColor") !important">@landingpagetitle</h1>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="slider">
+      <div class="container" style="background: url('@Umbraco.Field("backgroundImage2016", encoding: RenderFieldEncodingType.Html)') 0 no-repeat !important;">
+        <div class="row-fluid">
+          <div class="span6">
+            <div class="form" style="text-align: left !important; color: #fff !important;">
+              <h1 style="color:#fff !important;">@Umbraco.Field("formSideContentHeader")</h1>
+              <span style="color:#fff !important;">@Umbraco.Field("formSideContent")</span>
+            </div>
+          </div>
+          <div class="span6 formback">
+            <div class="form">
+              @if (Model.Content.HasValue("logoBanner"))
+              {
+                var logoBannerList = Model.Content.GetPropertyValue<string>("logoBanner").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse);
+                var logoBannerCollection = Umbraco.TypedMedia(logoBannerList).Where(x => x != null);
+                foreach (var logoBanner in logoBannerCollection)
+                {
+                  <div class="span12">
+                    <img src="@logoBanner.Url" class="logo animated delay1 fadeInDown" />
+                  </div>
+                }
+              }
+
+              <h2 class="animated delay3 bounceIn" style="color:#@Umbraco.Field("hexTitleColor") !important">@Umbraco.Field("formHeaderText")</h2>
+              <div style="display: none" id="response"></div>
+              <div style="display: none" id="responseGA"></div>
+              <div id="loading" style="display: none" class='alert'><a class='close' data-dismiss='alert'>X</a>Loading</div>
+              <form id="cgrForm" name="newsletter-form" role="form" method="post" action="https://www.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8" onsubmit="return validation(this);">
+                <input type="hidden" name="oid" value="00D24000000Hpnk" />
+                <input type="hidden" name="retURL" value="@url#lpsubmit" />
+                <input type="hidden" name="lead_source" id="lead_source" value="@Umbraco.Field("leadSource")" />
+                <input type="hidden" name="00N24000003TqgK" id="00N24000003TqgK" value="@Umbraco.Field("leadSupplier")" />
+                <input type="hidden" name="00N24000004KOKt" id="00N24000004KOKt" value="@Umbraco.Field("landingPageSource")" />
+                <input type="hidden" name="00N240000021U6U" id="00N240000021U6U" value="Course Guide Request" />
+                <input type="hidden" name="00N24000001pXKN" id="00N24000001pXKN" value="" /><!-- Course Code -->
+                <input type="hidden" name="00N24000003Tqg0" id="00N24000003Tqg0" value="" /><!-- Course Name -->
+                <input type="hidden" name="00N24000002xMZj" id="00N24000002xMZj" value="" />
+                <input type="hidden" id="FaculyValue" value="@Umbraco.Field("facultyName")">
+                <input type="hidden" name="Active_Lead__c" id="Active_Lead__c" value="TRUE" />
+                <input type="hidden" name="DistributionValue__c" id="DistributionValue__c" value="" />
+                <div class="row-fluid">
+                  <div class="span6">
+                      <input type="text" id="first_name" placeholder="First Name" name="first_name" onchange="ga('send', 'event', 'Forms', 'Fillin', 'First Name');" />
+                  </div>
+                  <div class="span6">
+                      <input type="text" id="last_name" placeholder="Last Name" name="last_name" onchange="ga('send', 'event', 'Forms', 'Fillin', 'Last Name');" />
+                  </div>
+                </div>
+                <div class="row-fluid">
+                  <div class="span6">
+                      <input type="email" id="email" placeholder=" * Email" name="email" onchange="QASemail()" />
+                  </div>
+                  <div class="span6">
+                      <input type="tel" id="phone" placeholder="Mobile" name="phone" onchange="ga('send', 'event', 'Forms', 'Fillin', 'Mobile');" />
+                  </div>
+                </div>
+                <div class="row-fluid">
+                  <div class="span12">
+                    <select class="input-xlarge" id="CourseCodeSelect">
+                      <option selected="selected" value="0">Choose a Course</option>
+                      @{
+                        var Passfaculty = CurrentPage.facultyName;
+                        foreach (var pageCourse in Model.Content.AncestorOrSelf(1).Children.Where(x => x.Name == "Courselist"))
+                        {
+                          foreach (var subpageCourse in pageCourse.AsDynamic().Children.Where("courseListFaculty = @0", Passfaculty))
+                          {
+                            var content = Umbraco.TypedContent(@subpageCourse.Id);
+                            var schoolcode = subpageCourse.courseListSchoolCode; ;
+                            <option value="@schoolcode">@subpageCourse.Name</option>
+                          }
+                        }
+                      }
+                    </select>
+                  </div>
+                </div>
+                <div class="row4">
+                  <input type="submit" data-loading-text="Loading..." class="btn button animated bounceIn" onclick="saveSelectedValues2()" value="@Umbraco.Field("submitButtonText")">
+                </div>
+              </form>
+              <div class="row4">
+                <br>
+                <div class="trustpilot-widget" data-locale="en-GB" data-template-id="5406e65db0d04a09e042d5fc" data-businessunit-id="4fdb1aab000064000516891d" data-style-height="28px" data-style-width="100%" data-theme="light"></div>
+                <br>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <section class="container info">
+    <div class="row-fluid">
+      <div class="span12">
+        <h2 class="animated delay4 fadeInDown" style="color:#@Umbraco.Field("hexTitleColor") !important"></h2>
+      </div>
+    </div>
+  </section>
+  <section class="container info">
+    <div class="row-fluid">
+      @CurrentPage.GetGridHtml("bodyText")
+    </div>
+    <hr />
+  </section>
+  <section class="container courses">
+    <h2 class="animated delay3 fadeInDown"><strong>Meet some of our successful students</strong></h2>
+
+    <div class="row-fluid ">
+
+      <div class="span4">
+        <div class="item" style="background:#@Umbraco.Field("hexTitleColor") !important">
+          <div class="ch-item ch-img-1 thumb">
+            <div class="ch-info">
+              <p><a class="simple-ajax-popup-align-top" href="/blog/posts/2014/december/ics-real-stories-meet-lisa/">Read more </a></p>
+            </div>
+          </div>
+          <h4>Meet Lisa</h4>
+          <p>With a time-consuming hobby, her own cake-baking business and a two year old son to look after, Lisa was looking for a flexible way to earn her forma...</p>
+          <a class="simple-ajax-popup-align-top btn" href="/blog/posts/2014/december/ics-real-stories-meet-lisa/">Read More</a>
+        </div>
+      </div>
+      <div class="span4 fadeInDown delay4">
+        <div class="item" style="background:#@Umbraco.Field("hexTitleColor") !important">
+          <div class="ch-item ch-img-4 thumb">
+            <div class="ch-info">
+              <p><a class="simple-ajax-popup-align-top" href="/blog/posts/2015/february/ics-real-stories-meet-natalia/">Read more </a></p>
+            </div>
+          </div>
+          <h4>Meet Natalia</h4>
+          <p>Natalia enrolled on our CIPD Level 5 Certificate distance learning course after starting her first HR role just a month earlier. She quickly realised....</p>
+          <a class="simple-ajax-popup-align-top btn" href="/blog/posts/2015/february/ics-real-stories-meet-natalia/">Read More</a>
+        </div>
+      </div>
+      <div class="span4 fadeInDown delay5">
+        <div class="item" style="background:#@Umbraco.Field("hexTitleColor") !important">
+          <div class="ch-item ch-img-3 thumb">
+            <div class="ch-info">
+              <p><a class="simple-ajax-popup-align-top" href="/blog/posts/2014/october/ics-real-stories-meet-charlotte/">Read more </a></p>
+            </div>
+          </div>
+          <h4>Meet Charlotte</h4>
+          <p>Charlotte works as a Human Resources Assistant. She enjoys being able to support her colleagues and work within her organisation to create.....</p>
+          <a class="simple-ajax-popup-align-top btn" href="/blog/posts/2014/october/ics-real-stories-meet-charlotte/">Read More</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+  <footer>
+    <div class="container">
+      <div class="row-fluid">
+        <div class="span6">
+          <span style="color:#fff">4.8 Google star </span><a href="https://www.google.co.uk/shopping/seller?q=icslearn.co.uk&amp;hl=en&amp;sa=X&amp;ei=TE3PVLmdMYi1UfWcgZAE&amp;ved=0CCcQwQY" style="color:#fff">Rating</a> <img src="/images/img/stars.png" width="105" height="20" alt="Google Starts" /><br>
+          <h6>&copy; @DateTime.Now.Year.ToString() ICS Learn</h6>
+        </div>
+        <div class="span6">
+          <ul class="social">
+            <li title="Linkedin" class="tooltip_hover"><a href="https://uk.linkedin.com/company/ics-international-correspondence-schools-" onclick="ga('send', 'event', 'linkedin', 'click', 'linkedinbutton');" class="linkedin socialicon"></a></li>
+            <li title="Youtube" class="tooltip_hover"><a href="https://www.youtube.com/user/ICSLearn" onclick="ga('send', 'event', 'youtube', 'click', 'youtubebutton');" class="youtube socialicon"></a></li>
+            <li title="Facebook" class="tooltip_hover"><a href="https://www.facebook.com/ICSLearn" onclick="ga('send', 'event', 'facebook', 'click', 'facebookbutton');" class="facebook socialicon"></a></li>
+            <li title="Twitter" class="tooltip_hover"><a href="https://twitter.com/icslearn" onclick="ga('send', 'event', 'twitter', 'click', 'twitterbutton');" class="twitter socialicon"></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+  @{ Html.RenderPartial("~/Views/Partials/Landing Javascript 2016.cshtml"); }
+</body>

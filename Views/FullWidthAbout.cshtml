@@ -1,0 +1,27 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+  Layout = "Master.cshtml";
+}
+
+<section class="grey page-title">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-right">
+        <h1>@Umbraco.Field("pageName")</h1>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="grey section">
+  <div class="container">
+    <div class="row">
+      <div id="content" class="col-md-12 col-sm-12 col-xs-12">
+        <div class="blog-wrapper">
+          @CurrentPage.GetGridHtml("BodyText")
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+@{Html.RenderPartial("~/Views/Partials/awarding bodies.cshtml", Model);}
+@{Html.RenderPartial("~/Views/Partials/Reviews.cshtml", Model);}

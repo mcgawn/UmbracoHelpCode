@@ -1,0 +1,67 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using umbraco.MacroEngines;
+@using Umbraco.Web.Models;
+@using SimplestStore.Models;
+
+@{
+  var facultynumber = @Umbraco.Field("facultyNumberPicker", recursive: true);
+  var homePage = Model.Content.AncestorOrSelf(1);
+  var hasBasketPage = homePage.Descendants("Basket").Any();
+  Cart basketCart = (Cart)Session["Cart"];
+}
+
+<div class="topbar">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 text-left">
+        <ul class="list-inline">
+          <li><a id="RTapPass" href=""><div class="fa fa-phone"></div><span id="RTapID"></span></a></li>
+          <li><a id="emailMask" href="" onclick="reverceEmailSend()"><div class="fa fa-envelope"></div> <span>Email</span></a></li>
+          @foreach (var page in homePage.Children.Where(x => x.Name == "Basket")){
+            var contentPage = Umbraco.TypedContent(page.Id);
+            <li class="@(page.Id == CurrentPage.Id ? "active" : null)">
+              <a href="@page.Url" title="@page.Name">
+                <div class="fa fa-shopping-cart"></div>
+                <span>@page.Name</span>
+                @if (basketCart != null)
+                {
+                  var basketItems = basketCart.Lines.Count();
+                  <text>(</text>@basketItems<text>)</text>}
+                else { }
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+      <div class="col-md-6 text-right">
+        <ul class="list-inline">
+          <li>
+            <a class="social" href="https://www.facebook.com/ICSLearn"><i class="fa fa-facebook"></i></a>
+            <a class="social" href="https://twitter.com/icslearn"><i class="fa fa-twitter"></i></a>
+            <a class="social" href="https://plus.google.com/+icslearn"><i class="fa fa-google-plus"></i></a>
+            <a class="social" href="#"><i class="fa fa-linkedin"></i></a>
+          </li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-lock"></i> Login & Register</a>
+            <div class="dropdown-menu">
+              <form method="post">
+                <div class="form-title">
+                  <h4>Login to VLE</h4>
+                  <hr>
+                </div>
+                <input class="form-control" type="text" name="username" placeholder="User Name">
+                <div class="formpassword">
+                  <input class="form-control" type="password" name="password" placeholder="******">
+                </div>
+                <div class="clearfix"></div>
+                <button type="submit" class="btn btn-block btn-primary">Login</button>
+                <hr>
+                <h4><a href="https://community.icslearn.co.uk/login/index.php">Create an Account</a></h4>
+              </form>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,53 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System.Web.Mvc.Html;
+@using Umbraco.Web;
+@using System.Text.RegularExpressions;
+@{
+  IPublishedContent objBlogRoot = Model.Content.AncestorOrSelf("SmartBlogBlog");
+  IEnumerable<IPublishedContent> colPosts = objBlogRoot.Descendants("SmartBlogPost").OrderBy("updateDate");
+  Dictionary<String, Int32> colCategories = new Dictionary<String, Int32>();
+  foreach (IPublishedContent objPost in colPosts)
+  {
+    String[] colCategoryNames;
+    if (!String.IsNullOrEmpty(objPost.GetPropertyValue<String>("smartBlogCategory")))
+    {
+      colCategoryNames = objPost.GetPropertyValue<String>("smartBlogCategory").Split(',');
+    }
+    else
+    {
+      colCategoryNames = new String[0];
+    }
+
+    foreach (String strCategory in colCategoryNames)
+    {
+      if (colCategories.ContainsKey(strCategory))
+      {
+        colCategories[strCategory]++;
+      }
+      else
+      {
+        colCategories.Add(strCategory, 1);
+      }
+    }
+  }
+
+  @*<span class="smartSubTitle smartTopBorder">Categories</span><br />*@
+
+  <ul class="option-set" data-option-key="filter">
+    <li><a href="#filter" class="selected" data-option-value="*"><i class="fa fa-filter"></i> All Blogs |</a></li>
+    @foreach (KeyValuePair
+        <string, int>
+            objCategory in colCategories)
+    {
+      var removeSpaceFilter = objCategory.Key.ToString();
+      removeSpaceFilter = Regex.Replace(removeSpaceFilter, @"\s", "");
+      <li><a href="#filter" data-option-value=".@removeSpaceFilter"> @objCategory.Key</a></li>
+      @*<a class="smartCategory" href="@Umbraco.NiceUrl(objBlogRoot.Id)?category=@objCategory.Key">@objCategory.Key</a>*@
+    }
+  </ul>
+  @*foreach (KeyValuePair<string, int> objCategory in colCategories)
+    {
+        //Deal with the tag
+        <a class="smartCategory" href="@Umbraco.NiceUrl(objBlogRoot.Id)?category=@objCategory.Key">@objCategory.Key</a><br />
+    }*@
+}

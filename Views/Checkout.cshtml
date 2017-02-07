@@ -1,0 +1,30 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using umbraco.MacroEngines;
+@{
+  Layout = "Master.cshtml";
+  var pageHeading = Model.Content.Name;
+  if (Model.Content.HasProperty("pageHeading") && Model.Content.HasValue("pageHeading"))
+  {
+    pageHeading = Model.Content.GetPropertyValue("pageHeading").ToString();
+  }
+  <section class="grey section">
+    <div class="container">
+      <div class="row">
+        <div id="content" class="col-md-12 col-sm-12 col-xs-12">
+          <div class="blog-wrapper">
+            <div class="row second-bread">
+              <div class="col-md-12 text-left">
+                <h1>Checkout</h1>
+              </div>
+            </div>
+          </div>
+          <div class="blog-wrapper">
+            <div class="blog-desc">
+              @Html.Partial("CheckoutPage")
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+}

@@ -1,0 +1,207 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+
+@if (Request.Cookies["schoolcoder"] != null)
+{
+  var myCookie = Request.Cookies["schoolcoder"].Value;
+  var list = CurrentPage.AncestorOrSelf(1).Descendants("Courses");
+  var filteredList = list.Where("courseListSchoolCode == @0", @myCookie);
+  foreach (var item in filteredList)
+  {
+    string url2 = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"];
+    var PDFLink = url2 + item.courseListPdf;
+    <script>
+      function load() {
+        document.getElementById("response").innerHTML = 'Thank you for your enquiry. One of our expert Course Advisors will be in contact shortly to discuss the options for your chosen course.</div><br><br><a href="@PDFLink" target="_blank" style="text-decoration:none"><img src="/images/img/Pdficon.png"> <span style="color:#999">@item.Name</span></a><div></div><br><div>You will also recieve a copy of your chosen course information to the email address you have provided.'
+      }
+    </script>
+  }
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fitvids/1.1.0/jquery.fitvids.min.js"></script>
+<script src="//cdn.bizible.com/_biz-a.js"></script>
+<script src="/scripts/bootstrap.min.js"></script>
+<script src="/scripts/CourseGuideJavaScript.js"></script>
+<script src="/scripts/placeholders.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" property="stylesheet" rel="stylesheet">
+<script type="text/javascript" src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"></script>
+<script src="/scripts/analyticslanding.js"></script>
+@*<script src="/scripts/scripts.js"></script>*@
+<script src="/scripts/jquery.easing.1.3.min.js"></script>
+<script src="/scripts/jquery.mousewheel.min.js"></script>
+<script src="/scripts/jcarousellite_1.0.1.pack.js"></script>
+<script src="/scripts/zepto.min.js"></script>
+
+@{
+    string RTap = @Umbraco.Field("facultyNumberPicker").ToString();
+    string IntorUK = @Umbraco.Field("internationalOrUK").ToString();
+    <script>
+        var IntYN = "@IntorUK"
+        if (IntYN == "INT") {
+            var RTapSwitch = "@RTap";
+            if (RTapSwitch == "0800 056 3983") {
+                document.getElementById
+                document.getElementById("RTapID").innerHTML = '<span id="changeToInt" class="rTapNumber199117"></span>';
+            }
+            else if (RTapSwitch == "0800 015 3326") {
+                document.getElementById("RTapID").innerHTML = '<span id="changeToInt" class="rTapNumber199135"></span>';
+            }
+            else if (RTapSwitch == "0800 092 0440") {
+                document.getElementById("RTapID").innerHTML = '<span id="changeToInt" class="rTapNumber199131"></span>';
+            }
+            else if (RTapSwitch == "0800 015 4350") {
+                document.getElementById("RTapID").innerHTML = '<span id="changeToInt" class="rTapNumber199129"></span>';
+            }
+            else if (RTapSwitch == "0800 027 6960") {
+                document.getElementById("RTapID").innerHTML = '<span id="changeToInt" class="rTapNumber199138">0800 027 6960</span>';
+            }
+            else if (RTapSwitch == "03339 208 098") {
+                document.getElementById("RTapID").innerHTML = "03339 208 098";
+            }
+            else if(RTapSwitch == "0330 134 2936"){
+                document.getElementById("RTapID").innerHTML = "0330 134 2936";
+            }
+            window.addEventListener("load", function () {
+                var rtapFull = document.getElementById("changeToInt").innerHTML;
+                var myString = rtapFull.substring(1);
+                alert(myString);
+                document.getElementById("RTapIDInt").innerHTML = "+44" + myString;
+                document.getElementById("RTapID").style.display = "none";
+            });;
+        }
+        else {
+            var RTapSwitch = "@RTap";
+            if (RTapSwitch == "0800 056 3983") {
+                document.getElementById("RTapID").innerHTML = '<span class="rTapNumber199117">0800 056 3983</span>';
+            }
+            else if (RTapSwitch == "0800 015 3326") {
+                document.getElementById("RTapID").innerHTML = '<span class="rTapNumber199135">0800 015 3326</span>';
+            }
+            else if (RTapSwitch == "0800 092 0440") {
+                document.getElementById("RTapID").innerHTML = '<span class="rTapNumber199131">0800 092 0440</span>';
+            }
+            else if (RTapSwitch == "0800 015 4350") {
+                document.getElementById("RTapID").innerHTML = '<span class="rTapNumber199129">0800 015 4350</span>';
+            }
+            else if (RTapSwitch == "0800 027 6960") {
+                document.getElementById("RTapID").innerHTML = '<span class="rTapNumber199138">0800 027 6960</span>';
+            }
+            else if (RTapSwitch == "03339 208 098") {
+                document.getElementById("RTapID").innerHTML = "03339 208 098";
+            }
+            else if (RTapSwitch == "0330 134 2936") {
+                document.getElementById("RTapID").innerHTML = "0330 134 2936";
+            }
+        }
+    </script>
+}
+
+<script>
+  /*<![CDATA[*/
+  var google_conversion_id = 956627819;
+  var google_custom_params = window.google_tag_params;
+  var google_remarketing_only = true;
+  /* ]]> */
+</script>
+<script src="//www.googleadservices.com/pagead/conversion.js"></script>
+<noscript>
+  <div style="display:inline;">
+    <img height="1" width="1" style="border-style:none;" alt="" src="//www.googleadservices.com/pagead/conversion/956627819/?value=0&amp;label=DJ48CIKytFoQ6_aTyAM&amp;guid=ON&amp;script=0" />
+  </div>
+</noscript>
+<noscript>
+  <div style="display:inline;">
+    <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/956627819/?value=0&amp;guid=ON&amp;script=0" />
+  </div>
+</noscript>
+
+<noscript><img height="1" width="1" style="display:none"src="https://www.facebook.com/tr?id=1090305677653429&ev=PageView&noscript=1"/></noscript>
+
+@*<script type="text/javascript">
+  setTimeout(function () {
+    var a = document.createElement("script");
+    var b = document.getElementsByTagName("script")[0];
+    a.src = document.location.protocol + "//script.crazyegg.com/pages/scripts/0034/8486.js?" + Math.floor(new Date().getTime() / 3600000);
+    a.async = true; a.type = "text/javascript"; b.parentNode.insertBefore(a, b)
+  }, 1);
+</script>*@
+
+<script>
+  var aoProtocol = location.protocol;
+  if (aoProtocol.indexOf('https') < 0) aoProtocol = 'https:';
+  var aoCAP = {
+    aid: '18327',
+    fid: '0002',
+    did: 'd-0001',
+    server: 'icslearn.actonsoftware.com',
+    formName: 'newsletter-form',
+    protocol: aoProtocol
+  };
+  document.write('<script type="text/javascript" src="' + aoCAP.protocol + '//' + aoCAP.server + '/acton/js/formcap.min.js"><' + '/script>');
+</script>
+
+<script>
+  function validation(form) {
+    var firstname = document.getElementById("first_name").value;
+    var surname = document.getElementById("last_name").value;
+    var email = document.getElementById("email").value;
+    var telephone = document.getElementById("phone").value;
+    var e = document.getElementById("CourseCodeSelect");
+    var course = e.options[e.selectedIndex].value;
+
+    if (firstname == null || firstname.length == 0 || firstname == "" || firstname == "First Name" ||
+     surname == null || surname.length == 0 || surname == "" || surname == "Last Name" ||
+     email == null || email.length == 0 || email == "" || email == "Email" ||
+     telephone == null || telephone.length == 0 || telephone == "" || telephone == "Mobile") {
+      document.getElementById("loading").style.display = "block";
+      document.getElementById('loading').innerHTML = "Please complete the fields";
+      return false;
+    }
+
+    var illegalChars = /[\(\)\<\>\,\;\:\\\"\[\]]/;
+
+    if (firstname.length < 2 || /\d+/g.test(firstname) || !(/^[a-zA-Z']*$/.test(firstname))) {
+      document.getElementById("first_name").focus;
+      document.getElementById("loading").style.display = "block";
+      document.getElementById('loading').innerHTML = "Please enter a valid first name";
+      return false;
+    }
+
+    if (surname.length < 2 || /\d+/g.test(surname) || !(/^[a-zA-Z']*$/.test(surname))) {
+      document.getElementById("last_name").focus;
+      document.getElementById("loading").style.display = "block";
+      document.getElementById('loading').innerHTML = "Please enter a valid last name";
+      return false;
+    }
+
+    var emailNoSpace = email.replace(/^\s+|\s+$/, '');
+    var emailFilter = /^[^@@]+@@[^@@.]+\.[^@@]*\w\w$/;
+    var atpos = email.indexOf("@@");
+    var dotpos = email.lastIndexOf(".");
+
+    if (!emailFilter.test(emailNoSpace) || illegalChars.test(emailNoSpace) || atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= email.length) {
+      document.getElementById("email").focus;
+      document.getElementById("loading").style.display = "block";
+      document.getElementById('loading').innerHTML = "Please enter a valid email address";
+      return false;
+    }
+
+    var telNoSpace = telephone.replace(/[\(\)\.\-\ ]/g, '');
+
+    if (telNoSpace.length < 10 || isNaN(parseInt(telNoSpace))) {
+      document.getElementById("phone").focus;
+      document.getElementById("loading").style.display = "block";
+      document.getElementById('loading').innerHTML = "Please enter a valid mobile number";
+      return false;
+    }
+
+    if (course == null || course == "0") {
+      document.getElementById("loading").style.display = "block";
+      document.getElementById('loading').innerHTML = "Please select a course of interest";
+      return false;
+    }
+    var el = document.getElementsByName("phone")[0];
+    var val = el.value.replace(/\s/g, "");
+    phone.value = val;
+    return true;
+  };
+</script>

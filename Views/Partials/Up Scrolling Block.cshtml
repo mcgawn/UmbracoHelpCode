@@ -1,0 +1,79 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+  if (CurrentPage.GetPropertyValue("sectionOfferOnOrOf") == true)
+  {
+    <section class="grey section">
+      <div class="row-fluid">
+        <div class="col-md-6 myimg"></div>
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6 col-md-offset-6">
+              <div class="section-container nopadding">
+                <div class="textrotate">
+                  <ul class="bxslider">
+                    <li>
+                      <div class="big-title">
+                        <h3>@Umbraco.Field("offerSliderHeader", recursive: true)</h3>
+                        <div class="border-title"></div>
+                      </div>
+                      <p>@Umbraco.Field("offerSliderDescription", recursive: true)</p>
+                        @{
+                              if (Model.Content.HasValue("offerLinkingPage"))
+                              {
+                                  var node = Umbraco.TypedContent(Model.Content.GetPropertyValue<int>("offerLinkingPage"));
+                                <a href="@node.Url" class="btn btn-default" title="@node.Name">Find Out More</a>
+                          }
+                        }
+                    </li>
+                    <li>
+                      <div class="big-title">
+                        <h3>@Umbraco.Field("offerSliderHeader2", recursive: true)</h3>
+                        <div class="border-title"></div>
+                      </div>
+                      <p>@Umbraco.Field("offerSliderDescription2", recursive: true)</p>
+                      @{
+                          if (Model.Content.HasValue("offerLinkingPage2"))
+                          {
+                              var node2 = Umbraco.TypedContent(Model.Content.GetPropertyValue<int>("offerLinkingPage2"));
+                            <a href="@node2.Url" class="btn btn-default" title="@node2.Name">Find Out More</a>
+                          }
+                    }
+                    </li>
+                    <li>
+                      <div class="big-title">
+                        <h3>@Umbraco.Field("offerSliderHeader3", recursive: true)</h3>
+                        <div class="border-title"></div>
+                      </div>
+                      <p>@Umbraco.Field("offerSliderDescription3", recursive: true)</p>
+                     @{
+                      if (Model.Content.HasValue("offerLinkingPage3"))
+                      {
+                          var node3 = Umbraco.TypedContent(Model.Content.GetPropertyValue<int>("offerLinkingPage3"));
+                        <a href="@node3.Url" class="btn btn-default" title="@node3.Name">Find Out More</a>
+                      }
+                    }
+                    </li>
+                    <li>
+                      <div class="big-title">
+                        <h3>@Umbraco.Field("offerSliderHeader4", recursive: true)</h3>
+                        <div class="border-title"></div>
+                      </div>
+                      <p>@Umbraco.Field("offerSliderDescription4", recursive: true)</p>
+                         @{
+                          if (Model.Content.HasValue("offerLinkingPage4"))
+                          {
+                              var node4 = Umbraco.TypedContent(Model.Content.GetPropertyValue<int>("offerLinkingPage4"));
+                            <a href="@node4.Url" class="btn btn-default" title="@node4.Name">Find Out More</a>
+                          }
+                        }
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+}

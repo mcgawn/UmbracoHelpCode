@@ -1,0 +1,214 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System.Web.Mvc.Html;
+@using System.Web.Mvc;
+@using umbraco.NodeFactory;
+@using Umbraco.Core.Models;
+@using Umbraco.Core.Dynamics;
+@{
+  Layout = "Master.cshtml";
+  IPublishedContent objBlogRoot = Model.Content.AncestorOrSelf("SmartBlogBlog");
+  IEnumerable<IPublishedContent> colPosts = objBlogRoot.Descendants("SmartBlogPost").OrderBy("updateDate");
+  Dictionary<String, Int32> colCategories = new Dictionary<String, Int32>();
+  foreach (IPublishedContent objPost in colPosts)
+  {
+    String[] colCategoryNames;
+    if (!String.IsNullOrEmpty(objPost.GetPropertyValue<String>("smartBlogCategory")))
+    {
+      colCategoryNames = objPost.GetPropertyValue<String>("smartBlogCategory").Split(',');
+    }
+    else { colCategoryNames = new String[0]; }
+    foreach (String strCategory in colCategoryNames)
+    {
+      var selectName = strCategory;
+      if (colCategories.ContainsKey(strCategory)) { colCategories[strCategory]++; } else { colCategories.Add(strCategory, 1); }
+    }
+
+  }
+  <section class="grey page-title">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-right">
+          <h1>Blog</h1>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  IEnumerable<IPublishedContent> colResults = null;
+  Boolean blnUseSummaryOnList = Boolean.Parse(SmartBlogLibraries.Global.GetConfig().GetElementsByTagName("useSummaryOnList")[0].InnerText);
+  if (!String.IsNullOrEmpty(Request.QueryString["q"]))
+  {
+    colResults = SmartBlogLibraries.Helpers.Search.SearchSite()
+        .Select(x => Umbraco.TypedContent(x.Id))
+        .Where(x =>
+            x != null
+            && x.Path.Split(',').Contains(objBlogRoot.Id.ToString())
+            && x.DocumentTypeAlias == "SmartBlogPost");
+  }
+  else
+  {
+    colResults = Model.Content.DescendantsOrSelf("SmartBlogPost");
+  }
+  if (!String.IsNullOrEmpty(Request.QueryString["tag"]))
+  {
+    colResults = colResults.Where(x =>
+        (!String.IsNullOrEmpty(x.GetPropertyValue<String>("smartBlogTags"))
+            && x.GetPropertyValue<String>("smartBlogTags").Split(',').Contains(Request.QueryString["tag"]))
+        || (Request.QueryString["tag"] == SmartBlogLibraries.Global.GetConfig().GetElementsByTagName("defaultAuthor")[0].InnerText
+            && String.IsNullOrEmpty(x.GetPropertyValue<String>("smartBlogTags"))));
+  }
+  if (!String.IsNullOrEmpty(Request.QueryString["author"]))
+  {
+    colResults = colResults.Where(x =>
+        (!String.IsNullOrEmpty(x.GetPropertyValue<String>("smartBlogAuthor"))
+            && x.GetPropertyValue<String>("smartBlogAuthor").Split(',').Contains(Request.QueryString["author"]))
+        || (Request.QueryString["author"] == SmartBlogLibraries.Global.GetConfig().GetElementsByTagName("defaultAuthor")[0].InnerText
+            && String.IsNullOrEmpty(x.GetPropertyValue<String>("smartBlogAuthor"))));
+  }
+  if (!String.IsNullOrEmpty(Request.QueryString["category"]))
+  {
+    colResults = colResults.Where(x => !String.IsNullOrEmpty(x.GetPropertyValue<String>("smartBlogCategory"))
+        && x.GetPropertyValue<String>("smartBlogCategory").Split(',').Contains(Request.QueryString["category"]));
+  }
+
+  if (colResults != null && colResults.Count() > 0)
+  {
+    if (colResults.Count() > 0)
+    {
+      Int32 intPage = 1;
+      if (!Int32.TryParse(Request.QueryString["p"], out intPage)) { intPage = 1; }
+      UInt16 intItemsPerPage = 8;
+      Int32 intSkip = (intPage - 1) * intItemsPerPage;
+      Int32 intResultCount = colResults.Count();
+      <section class="grey section">
+        <div class="container">
+          <div class="row">
+          <div id="filters" class="filters-dropdown">
+            @Html.Partial("SmartListCategories")
+          </div>
+		   @Html.Raw(SmartBlogLibraries.Helpers.Listing.RenderPaging(intPage, intResultCount, intItemsPerPage))
+         </div>
+         </div>
+          <div class="container">
+              <div class="row portfolio course-list" itemscope itemtype="http://schema.org/NewsArticle">
+                  @foreach (IPublishedContent objPost1 in colResults
+                    .OrderByDescending(x => x.GetPropertyValue<DateTime>("smartBlogDate"))
+                    .Skip(intSkip)
+                    .Take(intItemsPerPage))
+                  {
+                      String strAuthor = !String.IsNullOrEmpty(objPost1.GetPropertyValue<String>("smartBlogAuthor"))
+                          ? objPost1.GetPropertyValue<String>("smartBlogAuthor")
+                          : SmartBlogLibraries.Global.GetConfig().GetElementsByTagName("defaultAuthor")[0].InnerText;
+
+                      var image = objPost1.GetPropertyValue("smartBlogImage");
+                      string result = Convert.ToString(image);
+                      var bannerId = Umbraco.Media(result);
+                      var bannerUrl = bannerId.Url;
+
+                      try
+                      {
+                          <span class="SocialBricks">
+                              <div class="item @Html.Raw(objPost1.GetPropertyValue<String>("smartBlogCategory").Replace(" ", ""))">
+                                  <div class="shop-item-list entry">
+                                      <meta itemscope itemprop="mainEntityOfPage" itemtype="https://schema.org/WebPage" itemid="https://www.icslearn.co.uk" />
+                                      <div class="BlogListImage">
+                                          <a href="@Umbraco.NiceUrl(objPost1.Id)">
+                                              <span itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
+                                                  <img itemprop="url" src="@bannerUrl" alt="@objPost1.Name" class="img-responsive2" />
+                                                  <meta itemprop="width" content="300">
+                                                  <meta itemprop="height" content="300">
+                                              </span>
+                                              <div class="magnifier"></div>
+                                          </a>
+                                      </div>
+                                  </div>
+                                  <span itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+                                      <span itemprop="logo" itemscope itemtype="https://schema.org/ImageObject">
+                                          <meta itemprop="url" content="https://www.icslearn.co.uk/images/logo.png">
+                                          <meta itemprop="width" content="300">
+                                          <meta itemprop="height" content="100">
+                                      </span>
+                                      <meta itemprop="name" content="ICS Learn">
+                                  </span>
+                                  <div class="shop-item-title clearfix">
+                                      <h4 itemprop="headline"><a href="@Umbraco.NiceUrl(objPost1.Id)" title="@objPost1.Name">@objPost1.Name</a></h4>
+                                      <div class="shopmeta">
+                                          <span class="fa fa-user"></span> By
+                                          <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+                                              <a href="@Umbraco.NiceUrl(Model.Content.AncestorOrSelf("SmartBlogBlog").Id)?author=@strAuthor"><span itemprop="name">@strAuthor</span></a> at @(objPost1.GetPropertyValue<DateTime>("smartBlogDate").ToString(SmartBlogLibraries.Helpers.DateTime.DateFormatNormal))
+                                          </span>
+                                          <span class="pull-left">
+                                              @if (blnUseSummaryOnList)
+                                              {
+                                                  <br />
+                                                  <span itemprop="description">@Html.Raw(objPost1.GetPropertyValue<String>("smartBlogSummary"))</span>
+                                                  <a title="Read More" href="@Umbraco.NiceUrl(objPost1.Id)"><span class="fa fa-arrow-circle-o-right">  Read More</span></a>
+                                              }
+                                              else
+                                              {
+                                                  <span itemprop="articleBody">@Html.Raw(objPost1.GetPropertyValue<String>("smartBlogBody"))</span>
+                                              }
+                                          </span>
+                                      </div>
+                                  </div>
+                                  <div class="visible-buttons">
+                                      <a title="Read More" href="@Umbraco.NiceUrl(objPost1.Id)"><span class="fa fa-search"></span></a>
+                                  </div>
+                              </div>
+                          </span>
+                      }
+
+                      catch (Exception) { }
+                  }
+              </div>
+          </div>
+      </section>
+    }
+  }
+}
+
+<script defer src="/scripts/isotope.js"></script>
+<script type="text/javascript">
+  (function ($) {
+    "use strict";
+    $(window).load(function () {
+      $('.portfolio').isotope({
+        itemSelector: '.item',
+        layoutMode: 'fitRows'
+      });
+      $('#filters a.selected').trigger("click");
+    });
+    $('#filters a').click(function (e) {
+      e.preventDefault();
+
+      var selector = $(this).attr('data-option-value');
+      $('.portfolio').isotope({ filter: selector });
+
+      $(this).parents('ul').find('a').removeClass('selected');
+      $(this).addClass('selected');
+    });
+    jQuery(document).ready(function ($) {
+
+      $(window).resize();
+      $Filter.find('a').click(function () {
+        $Filter.find('ul li').not($(this)).removeClass('active');
+        $(this).parent('li').addClass('active');
+      });
+    });
+  })(jQuery);
+</script>
+
+<style>
+nav.pagination {display: block;float: right;width: auto;height: 25px;margin: 0;padding: 0;clear: both;overflow: hidden; }
+nav.pagination.top {margin: 10px 0 0 0; }
+nav.pagination > a, nav.pagination > span {display: block;float: left;margin: 0 1px;padding: 0 7px;font-size: 11px;line-height: 23px;border: 1px solid #ccc;font-weight: bold; }
+nav.pagination > span {color: #aaa;background-color: #f0f0f0; }
+nav.pagination > span.pagePrev, nav.pagination > span.pageNext {font-style: italic; }
+nav.pagination > a.pagePrev, nav.pagination > a.pageNext {font-style: italic; }
+nav.pagination > span.pageCurrent {background-color: #ff7800;color: #fff;border: 1px solid #dd6800; }
+nav.pagination > .pageFirst, nav.pagination > .pageLast {font-style: italic; }
+</style>
+
+@{Html.RenderPartial("~/Views/Partials/Reviews.cshtml", Model);}
+<script defer src="/scripts/Main.SmartBlog.js"></script>
+<script defer src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-52fb8e333557c879" async="async"></script>

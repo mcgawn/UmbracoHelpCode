@@ -1,0 +1,863 @@
+﻿@inherits UmbracoTemplatePage
+@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Core.Models
+@using ncBehaviouralTargeting.Library.Umbraco
+@using Skybrud.Umbraco.GridData
+@using Skybrud.Umbraco.GridData.Extensions.Json;
+@using Skybrud.Umbraco.GridData.Interfaces;
+@using Skybrud.Umbraco.GridData.Rendering;
+@{
+    Layout = null;
+    string url = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"] + Model.Content.Url;
+    string analyticsID = System.Configuration.ConfigurationManager.AppSettings["GoogleAnalyticsAccountId"];
+    string SFDCURL = System.Configuration.ConfigurationManager.AppSettings["SFDCURL"];
+    string SFDCID = System.Configuration.ConfigurationManager.AppSettings["SFDCID"];
+    var seo = CurrentPage._seoFields;
+    var landingpagetitle = @seo.title;
+    var StudentItems = CurrentPage.StudentRepositories.First().StudentItems.Where("Visible");
+    var tutorItems = CurrentPage.TutorRepositories.First().TutorItems;
+    var priceItems = CurrentPage.PriceRepositories.First().PriceItems;
+    var awardInfoItems = CurrentPage.AwardInfoRepositories.First().AwardInfoItems;
+    var blogItems = CurrentPage.BlogItemRepositories.First().BlogItemItems;
+    var gridData = Model.Content.GetSegmentedValue("bodyText");
+    GridDataModel grid = GridDataModel.Deserialize(gridData.ToString());
+    var extragridData = Model.Content.GetSegmentedValue("extraGridLanding");
+    GridDataModel extragrid = GridDataModel.Deserialize(extragridData.ToString());
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @{ Html.RenderPartial("~/Views/Partials/_uSeoPro.cshtml"); }
+    <link href="/css/landingstyle2017.css" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico">
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        ga('create', '@analyticsID', 'auto');
+        ga('require', 'displayfeatures');
+        ga('require', 'linkid', 'linkid.js');
+        setTimeout("ga('send','event','Profitable Engagement','time on page more than 3 minutes')", 180000);
+        ga('send', 'pageview');
+    </script>
+    <style>
+        #navbar-collapse-02 .current a{color:#@Umbraco.Field("hexTitleColor") !important};
+        .navbar-default .navbar-nav > li > a, .navbar-default .navbar-nav > li > a:hover{color:#@Umbraco.Field("hexTitleColor") !important};
+    </style>
+    @if (Request.Cookies["schoolcoder"] != null)
+    {
+        var myCookie = Request.Cookies["schoolcoder"].Value;
+        var list = CurrentPage.AncestorOrSelf(1).Descendants("Courses");
+        var filteredList = list.Where("courseListSchoolCode == @0", @myCookie);
+        foreach (var item in filteredList)
+        {
+            string url2 = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"];
+            var PDFLink = url2 + item.courseListPdf;
+            <script>
+                function load() {
+                    document.getElementById("newsletter_success_box").innerHTML = 'Thank you for your enquiry. One of our expert Course Advisors will be in contact shortly to discuss the options for your chosen course.</div><br><br><a href="@PDFLink" target="_blank" style="text-decoration:none"><img src="/images/img/Pdficon.png"> <span style="color:#999">@item.Name</span></a><div></div><br><div>You will also recieve a copy of your chosen course information to the email address you have provided.'
+                }
+            </script>
+        }
+    }
+</head>
+<body onload="load()">
+    <header class="header">
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button data-target="#navbar-collapse-02" data-toggle="collapse" class="navbar-toggle" type="button">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a href="@url" class="navbar-brand brand scrool"><img src="/images/logo.png" alt="ICS Learn Logo"></a>
+                </div>
+                <div id="navbar-collapse-02" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        @if (CurrentPage.GetPropertyValue("aboutPointsOnOff") == true)
+                        {
+                            <li><a href="#about">About</a></li>}
+                        @if (CurrentPage.GetPropertyValue("studentsOnOff") == true)
+                        {
+                            <li><a href="#students">Students</a></li>}
+                        @if (CurrentPage.GetPropertyValue("tutorsOnOff") == true)
+                        {
+                            <li><a href="#tutors">Tutors</a></li>}
+                        @if (CurrentPage.GetPropertyValue("blogOnOff") == true)
+                        {
+                            <li><a href="#blog">Real Stories</a></li>}
+                        @if (CurrentPage.GetPropertyValue("awardOfOff") == true)
+                        {
+                            <li><a href="#awards">Courses</a></li>}
+                        @if (CurrentPage.GetPropertyValue("pricingOnOff") == true)
+                        {
+                            <li><a href="#pricing">Pricing</a></li>
+                        }
+                        @if (CurrentPage.GetPropertyValue("footerFormOnOff") == true)
+                        {
+                            <li><a href="#contact">Contact Us</a></li>
+                        }
+                        <li class="LiveAgent" id="liveagent_button_online_@Umbraco.Field("chatStartID", recursive: true)" onclick="liveagent.startChat('@Umbraco.Field("chatStartID", recursive: true)')"><a style="background-color:#@Umbraco.Field("hexTitleColor") !important" class="purchase scrool">Live Chat</a></li>
+                    </ul>
+                </div>
+                <script type="text/javascript">
+                    if (!window._laq) { window._laq = []; }
+                    window._laq.push(function () {
+                        liveagent.showWhenOnline('@Umbraco.Field("chatStartID", recursive: true)', document.getElementById('liveagent_button_online_@Umbraco.Field("chatStartID", recursive: true)'));
+                        liveagent.showWhenOffline('@Umbraco.Field("chatStartID", recursive: true)', document.getElementById('liveagent_button_offline_@Umbraco.Field("chatStartID", recursive: true)'));
+                    });
+                </script>
+            </div>
+        </nav>
+    </header>
+    <div id="sortContainer">
+        <div class="sorterC" data-image-id="header">
+            @if (CurrentPage.GetPropertyValue("header3OnOff") == true)
+            {
+                var theImage3 = Umbraco.Media(CurrentPage.backgroundImageForm);
+                <section id="home_wrapper" class="home-wrapper" style="background:url('@theImage3.Url');width:100%;position:relative;overflow:hidden;z-index:100;padding:120px 0 85px;-webkit-clip-path:polygon(0 0, 100% 0, 100% 96%, 0 100%);-clip-path:polygon(0 0, 100% 0, 100% 96%, 0 100%);background-repeat no-repeat;background-position:top;background-size:cover !important;-webkit-background-size:cover;-moz-background-size:cover;-o-background-size:cover;height:100%;width:100%;background-position:center center;background-repeat:no-repeat;">
+                    <div class="gradient_overlay" style="background:#@Umbraco.Field("hexTitleColor") !important"></div>
+                    <div class="container home-wrappe-inside wow bounceInRight animated" data-wow-delay="1.5s">
+                        <div class="row" data-wow-delay="1.5s">
+                            <div class="col-md-6">
+                                <h1 class="home-title">@Umbraco.Field("formHeader")</h1>
+                                <p class="home-subtitle">@Umbraco.Field("formDescription")</p>
+                                <div class="wow">
+                                    <p class="newsletter_success_box" id="newsletter_success_box" style="display:none;"></p>
+                                    <div style="display: none" id="response"></div>
+                                    <div style="display: none" id="responseGA"></div>
+                                    <form class="register-form register" id="cgrForm" action="@SFDCURL" method="post" onsubmit="return validation(this);">
+                                        <input type="hidden" name="oid" value="00D9E000000Cmql" />
+                                        <input type="hidden" name="retURL" value="@url#Newssubmit" />
+                                        <input type="hidden" name="lead_source" id="lead_source" value="@Umbraco.Field("leadSource")" />
+                                        <input type="hidden" name="00N24000003TqgK" id="00N24000003TqgK" value="@Umbraco.Field("leadSupplier")" />
+                                        <input type="hidden" name="00N24000004KOKt" id="00N24000004KOKt" value="@Umbraco.Field("landingPageSource")" />
+                                        <input type="hidden" name="00N240000021U6U" id="00N240000021U6U" value="Course Guide Request" />
+                                        <input type="hidden" name="00N24000001pXKN" id="00N24000001pXKN" value="@Umbraco.Field("courseCodeForm")" /><!-- Course Code -->
+                                        <input type="hidden" name="00N24000003Tqg0" id="00N24000003Tqg0" value="" /><!-- Course Name -->
+                                        <input type="hidden" name="00N24000002xMZj" id="00N24000002xMZj" value="" />
+                                        <input type="hidden" id="FaculyValue" value="@Umbraco.Field("facultyName")">
+                                        <input type="hidden" name="Active_Lead__c" id="Active_Lead__c" value="TRUE" />
+                                        <input type="hidden" name="DistributionValue__c" id="DistributionValue__c" value="" />
+                                        <div class="col-md-6 no-padding-left">
+                                            <input class="register-input white-input" id="first_name" name="first_name" placeholder="First Name*" type="text" onchange="ga('send', 'event', 'Forms', 'Fillin', 'First Name');">
+                                            <input class="register-input white-input" id="last_name" name="last_name" placeholder="Last Name*" type="text" onchange="ga('send', 'event', 'Forms', 'Fillin', 'Last Name');">
+                                        </div>
+                                        <div class="col-md-6 no-padding-left">
+                                            <input class="register-input white-input" id="email" name="email" placeholder="Email Adress*" type="email" onchange="QASemailLanding()">
+                                            <input class="register-input white-input" id="phone" name="phone" placeholder="Phone Number*" type="text" onchange="ga('send', 'event', 'Forms', 'Fillin', 'Mobile');">
+                                        </div>
+                                        @if (CurrentPage.GetPropertyValue("facultySelectOnOff") == true)
+                                        {
+                                            <div class="col-md-12 no-padding-left">
+                                                <select class="register-input white-input" id="CourseCodeSelect" onchange="saveSelectedValues2();">
+                                                    <option selected="selected" value="0">Choose a Course</option>
+                                                    @{
+                                            var Passfaculty = CurrentPage.facultyName;
+                                            foreach (var pageCourse in Model.Content.AncestorOrSelf(1).Children.Where(x => x.Name == "Courselist"))
+                                            {
+                                                foreach (var subpageCourse in pageCourse.AsDynamic().Children.Where("courseListFaculty = @0", Passfaculty))
+                                                {
+                                                    var content = Umbraco.TypedContent(@subpageCourse.Id);
+                                                    var schoolcode = subpageCourse.courseListSchoolCode; ;
+                                                    <option value="@schoolcode">@subpageCourse.Name</option>
+                                                }
+                                            }
+                                                    }
+                                                </select>
+                                            </div>
+                                        }
+                                        else if (CurrentPage.GetPropertyValue("courseSelectOnOff") == true)
+                                        {
+
+                                        }
+                                        else if (CurrentPage.GetPropertyValue("customSelectOnOff") == true)
+                                        {
+                                            <div class="col-md-12 no-padding-left">
+                                                <select class="register-input white-input" id="CourseCodeSelect">
+                                                    <option selected="selected" value="0">Choose a Course</option>
+                                                    @Umbraco.Field("courseSelectCuston")
+                                                </select>
+                                            </div>
+                                        }
+                                        <input value="Request Info" class="register-submit-top" onclick="saveSelectedValues2();" style="color:#@Umbraco.Field("hexTitleColor") !important" type="submit">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            }
+            else if (CurrentPage.GetPropertyValue("header2OnOff") == true)
+            {
+                var theImage2 = Umbraco.Media(CurrentPage.backgroundImageNewsletter);
+                <section id="home_wrapper" class="home-wrapper" style="background:url('@theImage2.Url');background-position:center top;background-repeat:no-repeat;background-attachment:scroll;background-size:cover">
+                    <div class="gradient_overlay" style="background:#@Umbraco.Field("hexTitleColor") !important"></div>
+                    <div class="container home-wrappe-inside">
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <h1 class="home-title wow fadeIn" data-wow-delay="0.5s">@Umbraco.Field("headingNewsletter")</h1>
+                                <p class="home-subtitle wow fadeIn" data-wow-delay="1s">@Umbraco.Field("subheadingNewsletter")</p>
+                                <div class="newsletter_form_wrapper wow fadeIn" data-wow-delay="1.5s">
+                                    <div class="newsletter_form_box">
+                                        <p class="newsletter_success_box" id="newsletter_success_box" style="display:none;"></p>
+                                        <div style="display: none" id="response"></div>
+                                        <div style="display: none" id="responseGA"></div>
+                                        <form id="newsletter-form" class="newsletter_form" onsubmit="return validateForm2017()" action="@SFDCURL" method="post">
+                                            <input type="hidden" name="oid" value="@SFDCID" />
+                                            @*<input type="hidden" name="debug" value="1" />
+                                                <input type="hidden" name="debugEmail" value="david.mcgawn@icslearn.co.uk" />*@
+                                            <input type="hidden" name="retURL" value="@url#Newssubmit" />
+                                            <input type="hidden" name="lead_source" id="lead_source" value="@Umbraco.Field("leadSource")" />
+                                            <input type="hidden" name="00N240000021U6U" id="00N240000021U6U" value="@Umbraco.Field("leadType")" />
+                                            <input type="hidden" name="00N24000003TqgK" id="00N24000003TqgK" value="@Umbraco.Field("leadSupplier")" />
+                                            <input type="hidden" name="00N24000004KOKt" id="00N24000004KOKt" value="@Umbraco.Field("landingPageSource")" />
+                                            <input type="hidden" name="00N24000002xMZj" id="00N24000002xMZj" value="@Umbraco.Field("facultyName")" /><!--Website Faculty-->
+                                            <input type="hidden" name="Active_Lead__c" id="Active_Lead__c" value="TRUE" />
+                                            <input type="hidden" id="last_name" name="last_name" value="Newsletter">
+                                            <input type="email" class="email_newsletter" id="email" onkeyup="QASemailLanding()" required name="email" placeholder="Enter your email addy">
+                                            <input type="submit" onclick="QASemailLanding()" value="GET STARTED!" id="submit-button-newsletter" />
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            }
+            else if (CurrentPage.GetPropertyValue("header1OnOf") == true)
+            {
+                var theImage1 = Umbraco.Media(CurrentPage.backgroundImageVideo);
+                <section id="home_wrapper" class="home-wrapper" style="background:url('@theImage1.Url');background-position:center top;background-repeat:no-repeat;background-attachment:scroll;background-size:cover">
+                    <div class="gradient_overlay" style="background:#@Umbraco.Field("hexTitleColor") !important"></div>
+                    <div class="container home-wrappe-inside">
+                        <div class="row margin-bottom-30">
+                            <div class="col-md-6 padding-top-20">
+                                <h1 class="home-title wow fadeIn" data-wow-delay="0.5s">@Umbraco.Field("heading")</h1>
+                                <p class="home-subtitle wow fadeIn" data-wow-delay="1s">@Umbraco.Field("subHeading")</p>
+                                <a href="#register" class="btn btn-lg btn-blue scrool wow fadeIn" data-wow-delay="1.5s">@Umbraco.Field("cTAName")</a>
+                            </div>
+                            <div class="col-md-6 wow slideInRight" data-wow-delay="2s">
+                                <iframe src="https://www.youtube.com/embed/@Umbraco.Field("videoID")?modestbranding=1&amp;autohide=1&amp;showinfo=0&amp;controls=0" width="555" height="321" class="frame-border"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            }
+        </div>
+        <div class="sorterC" data-image-id="logo">
+            @if (CurrentPage.GetPropertyValue("logosStripOnOff") == true)
+            {
+                <div class="section-grey sponsors-padding">
+                    <div class="container">
+                        <div class="row text-center">
+                            <div class="col-sm-12 sponsors">
+                                <img src="/media/1620/aatapproved.png" class="sponsor" alt="image">
+                                <img src="/media/1394/cipd.png" class="sponsor" alt="image">
+                                <img src="/media/1699/ymca_awards-1.png" class="sponsor" alt="image">
+                                <img src="/media/1006/aqa.png" class="sponsor" alt="image">
+                                <img src="/media/1404/edexcel.png" class="sponsor" alt="image">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="sorterC" data-image-id="about">
+            @if (CurrentPage.GetPropertyValue("aboutPointsOnOff") == true)
+            {
+                <section id="about">
+                    <div class="section-white small-padding-bottom">
+                        <div class="container">
+                            <div class="row margin-bottom-30">
+                                <div class="col-md-12 text-center">
+                                    <!-- TrustBox widget -->
+                                    <div class="trustpilot-widget" data-locale="en-GB" data-template-id="5406e65db0d04a09e042d5fc" data-businessunit-id="4fdb1aab000064000516891d" data-style-height="28px" data-style-width="100%" data-theme="light">
+                                        <a href="https://uk.trustpilot.com/review/icslearn.co.uk" target="_blank">Trustpilot</a>
+                                    </div>
+                                    <!-- End TrustBox widget -->
+                                    <br />
+                                    <div class="separator_wrapper">
+                                        <i class="icon icon-star-two red"></i>
+                                    </div>
+                                    <h2 class="section-title">@Umbraco.Field("aboutHeading")</h2>
+                                    <div class="separator_wrapper">
+                                        <i class="icon icon-star-two red"></i>
+                                    </div>
+                                    <p class="section-subtitle">@Umbraco.Field("aboutDescription")</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4 features-item">
+                                    <div class="icon-wrapper">
+                                        <img src="@Url.GetCropUrl(Model.Content, "aboutIcon1", "IconCrop")" />
+                                    </div>
+                                    <h3>@Umbraco.Field("aboutSub1")</h3>
+                                    <p>@Umbraco.Field("aboutDesc1")</p>
+                                </div>
+                                <div class="col-sm-4 features-item">
+                                    <div class="icon-wrapper">
+                                        <img src="@Url.GetCropUrl(Model.Content, "aboutIcon2", "IconCrop")" />
+                                    </div>
+                                    <h3>@Umbraco.Field("aboutSub2")</h3>
+                                    <p>@Umbraco.Field("aboutDesc2")</p>
+                                </div>
+                                <div class="col-sm-4 features-item">
+                                    <div class="icon-wrapper">
+                                        <img src="@Url.GetCropUrl(Model.Content, "aboutIcon3", "IconCrop")" />
+                                    </div>
+                                    <h3>@Umbraco.Field("aboutSub3")</h3>
+                                    <p>@Umbraco.Field("aboutDesc3")</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            }
+            @if (CurrentPage.GetPropertyValue("bodyGripPersonalizedOnOf") == true)
+            {
+                <section class="section-grey">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                @grid.GetHtml(Html, "bootstrap3")
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            }
+        </div>
+        <div class="sorterC" data-image-id="facts">
+            @if (CurrentPage.GetPropertyValue("factSectionOnOff") == true)
+            {
+                <div class="fun-facts-wrapper">
+                    <div class="image-overlay"></div>
+                    <div class="container fun-facts-inside">
+                        <div class="row">
+                            <div class="col-md-2 col-sm-4 dottedFacts text-center wow fadeIn" style="border-left-style: dotted;" data-wow-delay="0.15s">
+                                <p class="fun-facts-title"><span class="facts-numbers">@Umbraco.Field("fact1Heading")</span><br>@Umbraco.Field("fact1Sub")</p>
+                            </div>
+                            <div class="col-md-2 col-sm-4 dottedFacts text-center wow fadeIn" data-wow-delay="0.15s">
+                                <p class="fun-facts-title"><span class="facts-numbers">@Umbraco.Field("fact2Heading")</span><br>@Umbraco.Field("fact2Sub")</p>
+                            </div>
+                            <div class="col-md-2 col-sm-4 dottedFacts text-center wow fadeIn" data-wow-delay="0.15s">
+                                <p class="fun-facts-title"><span class="facts-numbers">@Umbraco.Field("fact3Heading")</span><br>@Umbraco.Field("fact3Sub")</p>
+                            </div>
+                            <div class="col-md-2 col-sm-4 dottedFacts text-center wow fadeIn" data-wow-delay="0.15s">
+                                <p class="fun-facts-title"><span class="facts-numbers">@Umbraco.Field("fact4Heading")</span><br>@Umbraco.Field("fact4Sub")</p>
+                            </div>
+                            <div class="col-md-2 col-sm-4 dottedFacts text-center wow fadeIn" data-wow-delay="0.15s">
+                                <p class="fun-facts-title"><span class="facts-numbers">@Umbraco.Field("fact5Heading")</span><br>@Umbraco.Field("fact5Sub")</p>
+                            </div>
+                            <div class="col-md-2 col-sm-4 dottedFacts text-center wow fadeIn" data-wow-delay="0.15s">
+                                <p class="fun-facts-title"><span class="facts-numbers">@Umbraco.Field("fact6Heading")</span><br>@Umbraco.Field("fact6Sub")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="sorterC" data-image-id="students">
+            @if (CurrentPage.GetPropertyValue("studentsOnOff") == true)
+            {
+                <section class="section-white portfolio-padding" id="students">
+                    <div class="container fadeInRight">
+                        <div class="row margin-bottom-50">
+                            <div class="col-md-12 text-center">
+                                <h2 class="section-title">@Umbraco.Field("studentHeading")</h2>
+                                <div class="separator_wrapper">
+                                    <i class="icon icon-star-two blue"></i>
+                                </div>
+                                <p class="section-subtitle">@Umbraco.Field("studentDescription")</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            @foreach (var item in StudentItems)
+                            {
+                                <div class="col-sm-@Umbraco.Field("studentColumnNumber") fadeInRight wow fadeIn" data-wow-delay="0.15s">
+                                    <div class="popup-gallery first-gallery portfolio-pic">
+                                        <iframe src="https://www.youtube.com/embed/@item.videoStudentIDTY?modestbranding=1&amp;autohide=1&amp;showinfo=0&amp;controls=0&amp;cc_load_policy=1" width="100%" height="300"></iframe>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </section>
+            }
+        </div>
+        <div class="sorterC" data-image-id="tutors">
+            @if (CurrentPage.GetPropertyValue("tutorsOnOff") == true)
+            {
+                <section class="section-white small-padding-bottom" id="tutors">
+                    <div class="container">
+                        <div class="row margin-bottom-50">
+                            <div class="col-md-10 col-md-offset-1 text-center">
+                                <h2 class="section-title">@Umbraco.Field("tutorHeading")</h2>
+                                <div class="separator_wrapper"><i class="icon icon-star-two blue"></i></div>
+                                <p class="section-subtitle">@Umbraco.Field("tutorSub")</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div id="myCarousel" class="carousel carousel1 slide margin-bottom-40" data-interval="false">
+                                <div class="carousel-inner">
+                                    <div class="item active">
+                                        @foreach (var Titem in tutorItems)
+                                        {
+                                            <div class="col-sm-@Umbraco.Field("tutorColumnNumber") team-item">
+                                                <div class="team-popup">
+                                                    <img src="@Titem.GetCropUrl("image", "TutorImageCrop" )" class="width-100" alt="pic">
+                                                </div>
+                                                <div class="team-box">
+                                                    <h3>@Titem.tutorName</h3>
+                                                    <p class="team-info">@Titem.tutorSummary</p>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                <ol class="carousel-indicators">
+                                    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                                    <li data-target="#myCarousel" data-slide-to="1"></li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            }
+        </div>
+        <div class="sorterC" data-image-id="award">
+            @if (CurrentPage.GetPropertyValue("awardOfOff") == true)
+            {
+                <section id="awards">
+                    <div class="section-grey small-padding-bottom">
+                        <div class="container">
+                            <div class="row margin-bottom-30">
+                                <div class="col-md-9 text-left">
+                                    <h2 class="section-title">@Umbraco.Field("awardingBodyHeader")</h2>
+                                    <div class="separator_wrapper">
+                                        <i class="icon icon-star-two red"></i>
+                                    </div>
+                                    <p class="section-subtitle">@Umbraco.Field("awardingBodySub")</p>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <img src="@Url.GetCropUrl(Model.Content, "awardLogoPicker", "Award Crop")" />
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-30">
+
+                            </div>
+                            <div class="row">
+                                @foreach (var Aitem in awardInfoItems)
+                                {
+                                    <div class="col-sm-6 col-md-@Umbraco.Field("awardColumnNumber") services-item wow fadeIn" data-wow-delay="0.15s">
+                                        <div class="services-text">
+                                            <h4>@Aitem.awardHeading</h4>
+                                            <p>@Aitem.awardDescription</p>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            }
+        </div>
+        <div class="sorterC" data-image-id="cta">
+            @if (CurrentPage.GetPropertyValue("cTAOnOff") == true)
+            {
+                <section class="image-section">
+                    <div class="image-overlay"></div>
+                    <div class="container image-section-inside">
+                        <div class="row">
+                            <div class="col-md-10 col-md-offset-1 text-center margin-top-110 margin-bottom-140">
+                                <h2 class="large-title white">@Umbraco.Field("cTAHeading")</h2>
+                                <p class="section-subtitle white">@Umbraco.Field("cTADescription")</p>
+                                <a href="#@Umbraco.Field("cTALinkURLOrID")" class="btn btn-lg btn-blue margin-top-20 scrool" style="background-color:#@Umbraco.Field("hexTitleColor") !important">@Umbraco.Field("cTAButtonText")</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            }
+        </div>
+        <div class="sorterC" data-image-id="blogs">
+            @if (CurrentPage.GetPropertyValue("blogOnOff") == true)
+            {
+                <section class="section-white" id="blog">
+                    <div class="container">
+                        <div class="row margin-bottom-50">
+                            <div class="col-md-10 col-md-offset-1 text-center">
+                                <h2 class="section-title">@Umbraco.Field("blogHeading")</h2>
+                                <div class="separator_wrapper">
+                                    <i class="icon icon-star-two blue"></i>
+                                </div>
+                                <p class="section-subtitle">@Umbraco.Field("blogDescription")</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            @foreach (var Bitem in blogItems)
+                            {
+                                <div class="col-sm-@Umbraco.Field("blogColumnNumber")">
+                                    <div class="blog-item">
+                                        <div class="popup-wrapper">
+                                            <div class="popup-gallery">
+                                                <img src="@Bitem.GetCropUrl("imageBlog", "BlogLanding")" class="width-100" alt="pic"><span class="eye-wrapper2"><i class="icon icon-link eye-icon"></i></span>
+                                            </div>
+                                        </div>
+                                        <div class="blog-item-inner">
+                                            <h3 class="blog-title">@Bitem.blogTitle</h3>
+                                            <span class="blog-icons"><i class="fa fa-user"></i> @Bitem.blogByLine</span>
+                                            <span class="blog-icons last"><i class="fa fa-tags"></i> @Bitem.blogCatagory</span>
+                                            <p>@Bitem.blogDescriptionBody</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </section>
+            }
+        </div>
+        <div class="sorterC" data-image-id="review">
+            @if (CurrentPage.GetPropertyValue("testimonialOnOff") == true)
+            {
+                <div class="section-testimonials" style="background-color:#@Umbraco.Field("hexTitleColor") !important">
+                    <div class="container testimonials-wrapper">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div class="testimonials-info">
+                                    <img src="@Url.GetCropUrl(Model.Content, "imageTestimonial", "Testimonial")" class="author-pic" alt="">
+                                    <p class="author-name">@Umbraco.Field("testimonialName")<br><span>@Umbraco.Field("courseLevel")</span></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <p class="testimonials-text">@Umbraco.Field("testimonialBody")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        @if (CurrentPage.GetPropertyValue("extraGridOnOff") == true)
+        {
+            <div class="sorterC" data-image-id="grid">
+                <section class="section-white medium-padding">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12 margin-top-30 margin-bottom-30">
+                                @extragrid.GetHtml(Html, "bootstrap3")
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        }
+        <div class="sorterC" data-image-id="online">
+            @if (CurrentPage.GetPropertyValue("whyOnlineOnOff") == true)
+            {
+                <section id="whyOnline" class="section-blue no-padding-bottom" style="background-color:#@Umbraco.Field("hexTitleColor") !important">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12 margin-top-10 margin-bottom-120">
+                                <h3 class="medium-title white">@Umbraco.Field("whyOnlineHeader")</h3>
+                                <p class="white">@Umbraco.Field("whyOnlineSub")</p>
+                                <ul class="features-list-dark">
+                                    <li class="white">@Umbraco.Field("whyOnlineDesc")</li>
+                                </ul>
+                                <a href="#contact" class="btn btn-lg btn-white small">Find Out More</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            }
+        </div>
+        <div class="sorterC" data-image-id="pricing">
+            @if (CurrentPage.GetPropertyValue("pricingOnOff") == true)
+            {
+                <section class="section-white" id="pricing">
+                    <div class="container">
+                        <div class="row margin-bottom-50">
+                            <div class="col-md-12 text-center">
+                                <h2 class="section-title">@Umbraco.Field("pricingHeader")</h2>
+                                <div class="separator_wrapper">
+                                    <i class="icon icon-star-two red"></i>
+                                </div>
+                                <p class="section-subtitle">@Umbraco.Field("pricingDesc")</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            @foreach (var Pitem in priceItems)
+                            {
+                                <div class="col-sm-@Umbraco.Field("priceColumnNumber")">
+                                    <div class="pricing-box">
+                                        @if (@Pitem.totalCourseDiscount != "")
+                                        {
+                                            <div class="circleHeaderPricing">
+                                                <span class="circleHeaderlabel">Save £@Pitem.totalCourseDiscount</span>
+                                            </div>
+                                        }
+                                        <div class="pricing-top" style="background-color:#@Umbraco.Field("hexTitleColor") !important">
+                                            <h3>@Pitem.coursePriceName</h3>
+                                            <p class="price">
+                                                <span class="currency white">£</span>
+                                                <span class="number white">@Pitem.courseFromPrice</span>
+                                                <span class="month white">/month</span>
+                                            </p>
+                                        </div>
+                                        <div class="pricing-bottom">
+                                            <ul>
+                                                @if (@Pitem.priceInstalments != "")
+                                                {
+                                                    <li>Payment Term: @Pitem.priceInstalments</li>
+                                                }
+                                                @if (@Pitem.priceDeposit != "")
+                                                {
+                                                    <li>Deposit: £@Pitem.priceDeposit</li>
+                                                }
+                                                @if (@Pitem.coursePriceValue != "")
+                                                {
+                                                    <li>Total discounted Price: £@Pitem.coursePriceValue</li>
+                                                }
+                                                @if (@Pitem.priceWas != "")
+                                                {
+                                                    <li>Was Price: £@Pitem.priceWas</li>
+                                                }
+                                                @if (@Pitem.courseSupportPeriod != "")
+                                                {
+                                                    <li>Support Period: @Pitem.courseSupportPeriod</li>
+                                                }
+                                                @if (@Pitem.courseLearningHours != "")
+                                                {
+                                                    <li>Learning Hours: @Pitem.courseLearningHours</li>
+                                                }
+                                            </ul>
+                                            <a href="#" class="btn btn-md btn-block btn-pricing-blue">Download Info</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <p>@Umbraco.Field("priceUnderBlockComment")</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            }
+        </div>
+        <div class="sorterC" data-image-id="footer">
+            @if (CurrentPage.GetPropertyValue("footerFormOnOff") == true)
+            {
+                <section class="section-dark" id="contact">
+                    <div class="container">
+                        <div class="row margin-bottom-50">
+                            <div class="col-md-10 col-md-offset-1 text-center">
+                                <h2 class="section-title grey">@Umbraco.Field("footerFormHeader")</h2>
+                                <div class="separator_wrapper_white">
+                                    <i class="icon icon-star-two grey"></i>
+                                </div>
+                                <p class="section-subtitle grey">@Umbraco.Field("footerFormDesc")</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <p class="newsletter_success_box_Footer" id="newsletter_success_box_Footer" style="display:none;"></p>
+                            <div style="display: none" id="response"></div>
+                            <div style="display: none" id="responseGA"></div>
+                            <form class="register-form register" id="cgrForm" action="@SFDCURL" method="post" onsubmit="return validationFooter();">
+                                <input type="hidden" name="oid" value="00D24000000Hpnk" />
+                                <input type="hidden" name="retURL" value="@url#Newssubmit" />
+                                <input type="hidden" name="lead_source" id="lead_source" value="@Umbraco.Field("leadSource")" />
+                                <input type="hidden" name="00N24000003TqgK" id="00N24000003TqgK" value="@Umbraco.Field("leadSupplier")" />
+                                <input type="hidden" name="00N24000004KOKt" id="00N24000004KOKt" value="@Umbraco.Field("landingPageSource")" />
+                                <input type="hidden" name="00N240000021U6U" id="00N240000021U6U" value="Course Guide Request" />
+                                <input type="hidden" name="00N24000001pXKN" id="00N24000001pXKN" value="" /><!-- Course Code -->
+                                <input type="hidden" name="00N24000003Tqg0" id="00N24000003Tqg0" value="" /><!-- Course Name -->
+                                <input type="hidden" name="00N24000002xMZj" id="00N24000002xMZj" value="" />
+                                <input type="hidden" id="FaculyValue" value="@Umbraco.Field("facultyName")">
+                                <input type="hidden" name="Active_Lead__c" id="Active_Lead__c" value="TRUE" />
+                                <input type="hidden" name="DistributionValue__c" id="DistributionValue__c" value="" />
+                                <div class="col-md-6">
+                                    <input class="contact-input white-input" id="first_name_Footer" name="first_name" placeholder="First Name*" type="text" onchange="ga('send', 'event', 'Forms', 'Fillin', 'First Name');">
+                                    <input class="contact-input white-input" id="last_name_Footer" name="last_name" placeholder="Last Name*" type="text" onchange="ga('send', 'event', 'Forms', 'Fillin', 'Last Name');">
+                                </div>
+                                <div class="col-md-6">
+                                    <input class="contact-input white-input" id="email_Footer" name="email" placeholder="Email Adress*" type="email" onchange="QASemailLanding()">
+                                    <input class="contact-input white-input" id="phone_Footer" name="phone" placeholder="Phone Number*" type="text" onchange="ga('send', 'event', 'Forms', 'Fillin', 'Mobile');">
+                                </div>
+                                <div class="col-md-12">
+                                    <select class="register-input white-input" id="CourseCodeSelect_Footer" onchange="saveSelectedValues3();">
+                                        <option selected="selected" value="0">Choose a Course</option>
+                                        @{
+                                            var Passfaculty = CurrentPage.facultyName;
+                                            foreach (var pageCourse in Model.Content.AncestorOrSelf(1).Children.Where(x => x.Name == "Courselist"))
+                                            {
+                                                foreach (var subpageCourse in pageCourse.AsDynamic().Children.Where("courseListFaculty = @0", Passfaculty))
+                                                {
+                                                    var content = Umbraco.TypedContent(@subpageCourse.Id);
+                                                    var schoolcode = subpageCourse.courseListSchoolCode; ;
+                                                    <option value="@schoolcode">@subpageCourse.Name</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-12">
+                                    <input value="Request Info" id="submit-button" class="contact-submit" type="submit" onclick="saveSelectedValues3();" style="background-color:#@Umbraco.Field("hexTitleColor") !important">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            }
+            <div class="footer">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <div class="copyright">
+                                <p class="footer-logo"><img src="/media/3747/icslearn-logo-white.png" alt="ICS Learn Logo White" /></p>
+                                <p><a href="mailto:@Umbraco.Field("facultyEmail")">@Umbraco.Field("facultyEmail")</a></p>
+                                <p><span id="RTapID"></span></p>
+                                <p>Copyright © @DateTime.Now.Year.ToString(). ICS Learn</p>
+                            </div>
+                            <ul class="footer_social">
+                                <li><a href="https://twitter.com/ICSLearn"><i class="icon fa fa-twitter"></i></a></li>
+                                <li><a href="https://uk.pinterest.com/icslearn/"><i class="icon fa fa-pinterest"></i></a></li>
+                                <li><a href="https://www.facebook.com/ICSLearn"><i class="icon fa fa-facebook"></i></a></li>
+                                <li><a href="https://www.instagram.com/ics_learn/"><i class="icon fa fa-instagram"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            @@media only screen and (max-width: 768px) {
+                [class=fixed] {
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    background: #00A3E1;
+                    width: 100%;
+                    z-index: 10000;
+                    padding: 15px;
+                    border-top: 1px solid #fff;
+                    text-align: -webkit-center;
+                    text-align: center;
+                }
+
+                .fixed a {
+                    color: #fff !important;
+                    cursor: pointer;
+                    text-align: center;
+                    font-weight: 500;
+                }
+            }
+        </style>
+        <div class="fixed">
+            <a href="#"><i class="fa fa-download"></i> <span> Download Information </span></a> |
+            <a href="#"><i class="fa fa-phone" id="fixedPhone"></i> <span id="RTapIDFixed"></span></a>
+        </div>
+    </div>
+
+    <script>
+        /*<![CDATA[*/
+        var google_conversion_id = 956627819;
+        var google_custom_params = window.google_tag_params;
+        var google_remarketing_only = true;
+        /* ]]> */
+    </script>
+    <script src="//www.googleadservices.com/pagead/conversion.js"></script>
+    <noscript>
+        <div style="display:inline;">
+            <img height="1" width="1" style="border-style:none;" alt="" src="//www.googleadservices.com/pagead/conversion/956627819/?value=0&amp;label=DJ48CIKytFoQ6_aTyAM&amp;guid=ON&amp;script=0" />
+        </div>
+    </noscript>
+    <noscript>
+        <div style="display:inline;">
+            <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/956627819/?value=0&amp;guid=ON&amp;script=0" />
+        </div>
+    </noscript>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,100' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700' rel='stylesheet' type='text/css'>
+    <script src='https://c.la1-c2cs-lon.salesforceliveagent.com/content/g/js/36.0/deployment.js'></script>
+    <script>liveagent.init('https://d.la1-c1-lon.salesforceliveagent.com/chat', '57224000000PE8w', '00D24000000Hpnk');</script>
+    <script src="/scripts/jquery.1.11.1.min.js"></script>
+    <script defer src="/scripts/bootstrap.min.js"></script>
+    <script src="/scripts/CourseGuideJavaScript.js"></script>
+    <script defer src="/scripts/analyticslanding.js"></script>
+    <script src="/scripts/landingJavascript.js"></script>
+    <script defer src="//cdn.bizible.com/_biz-a.js"></script>
+    <script src="//widget.trustpilot.com/bootstrap/v5/tp.widget.sync.bootstrap.min.js" async></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" property="stylesheet" rel="stylesheet">
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1090305677653429&ev=PageView&noscript=1" /></noscript>
+    @{
+        string RTap = @Umbraco.Field("facultyNumberPicker").ToString();
+        string IntorUK = @Umbraco.Field("internationalOrUK").ToString();
+        <script>
+            var IntYN = "@IntorUK"
+            var RTapSwitch = "@RTap";
+            if (RTapSwitch == "0800 056 3983") {
+                document.getElementById("RTapID").innerHTML = '<span id="changeToInt" class="rTapNumber199117"></span>';
+                document.getElementById("RTapIDFixed").innerHTML = '<span id="changeToInt" class="rTapNumber199117"></span>';
+            }
+            else if (RTapSwitch == "0800 015 3326") {
+                document.getElementById("RTapID").innerHTML = '<span id="changeToInt" class="rTapNumber199135"></span>';
+                document.getElementById("RTapIDFixed").innerHTML = '<span id="changeToInt" class="rTapNumber199135"></span>';
+            }
+            else if (RTapSwitch == "0800 092 0440") {
+                document.getElementById("RTapID").innerHTML = '<span id="changeToInt" class="rTapNumber199131"></span>';
+                document.getElementById("RTapIDFixed").innerHTML = '<span id="changeToInt" class="rTapNumber199131"></span>';
+            }
+            else if (RTapSwitch == "0800 015 4350") {
+                document.getElementById("RTapID").innerHTML = '<span id="changeToInt" class="rTapNumber199129"></span>';
+                document.getElementById("RTapIDFixed").innerHTML = '<span id="changeToInt" class="rTapNumber199129"></span>';
+            }
+            else if (RTapSwitch == "0800 027 6960") {
+                document.getElementById("RTapID").innerHTML = '<span id="changeToInt" class="rTapNumber199138">0800 027 6960</span>';
+                document.getElementById("RTapIDFixed").innerHTML = '<span id="changeToInt" class="rTapNumber199138">0800 027 6960</span>';
+            }
+            else if (RTapSwitch == "03339 208 098") {
+                document.getElementById("RTapID").innerHTML = "03339 208 098";
+                document.getElementById("RTapIDFixed").innerHTML = "03339 208 098";
+            }
+            else if (RTapSwitch == "0330 134 2936") {
+                document.getElementById("RTapID").innerHTML = "0330 134 2936";
+                document.getElementById("RTapIDFixed").innerHTML = "0330 134 2936";
+            };
+
+            if (IntYN == "INT") {
+                window.addEventListener("load", function () {
+                    var rtapFull = document.getElementById("changeToInt").innerHTML;
+                    var myString = rtapFull.substring(1);
+                    document.getElementById("RTapID").style.display = "none";
+                    document.getElementById("fixedPhone").style.display = "none";
+                    document.getElementById("RTapIDFixed").style.display = "none";
+                });;
+            };
+        </script>
+    }
+    <script>
+        jQuery.noConflict();
+        jQuery(document).ready(function ($) {
+            var myArray = [@Umbraco.Field("columnSortOrder")];
+            var elArray = [];
+            $('.sorterC').each(function () {
+                elArray[$(this).data('image-id')] = $(this);
+            });
+            $.each(myArray, function (index, value) {
+                $('#sortContainer').append(elArray[value]);
+            });
+        });
+
+    </script>
+</body>
+</html>

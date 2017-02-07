@@ -1,0 +1,154 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Core.Models
+@{
+    Layout = "Master.cshtml";
+    var awardItems = @Umbraco.Field("awardLogo");
+}
+<section class="grey section">
+    <div class="container">
+        @{
+            string CheckForFacBF = Umbraco.Field("facultyName").ToString();
+            if (CheckForFacBF == "A Level" || CheckForFacBF == "GCSE and IGCSE")
+            {
+                @*<div class="row">
+                        <img style="padding-left:15px;padding-right:8px;padding-top:25px" class="img-responsive" alt="Black Friday 2016 - additional 15% off" src="/media/236578/black-friday-discount-banner.jpg" />
+                        <span style="padding-left:20px">*additional 15% off - <a href="/media/3663/terms-and-conditions-current-offers.pdf">T&Cs</a> Apply</span>
+                    </div>*@
+                @*<div class="row">
+                    <img style="padding-left:15px;padding-right:8px;padding-top:25px" class="img-responsive" alt="Cyber Monday 2016 - additional 15% off" src="/media/236579/cyber-monday-discount-banner.jpg" />
+                        <span style="padding-left:20px">*additional 15% off - <a href="/media/3663/terms-and-conditions-current-offers.pdf">T&Cs</a> Apply</span>
+                    </div>*@
+            }
+            else
+            {
+                @*<div class="row">
+                        <img style="padding-left:15px;padding-right:8px;" class="img-responsive" alt="Black Friday 2016 - additional 15% off" src="/media/236576/black-friday-homepage-2016.png" />
+                        <span style="padding-left:20px">*additional 15% off - <a href="/media/3663/terms-and-conditions-current-offers.pdf">T&Cs</a> Apply</span>
+                    </div>*@
+                @*<div class="row">
+                        <img style="padding-left:15px;padding-right:8px;" class="img-responsive" alt="Cyber Monday 2016 - additional 15% off" src="/media/236575/cyber-monday-homepage-2016.png" />
+                        <span style="padding-left:20px">*additional 15% off - <a href="/media/3663/terms-and-conditions-current-offers.pdf">T&Cs</a> Apply</span>
+                    </div>*@
+            }
+        }
+        <div class="row">
+            <div id="" class="col-md-8 col-sm-8 col-xs-12">
+                <div class="blog-wrapper">
+                    <div class="row second-bread">
+                        <div class="col-md-12 text-left">
+                            <h1 style="color:#@Umbraco.Field("hexTitleColor") !important">@Umbraco.Field("pageName")</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="blog-wrapper">
+                    <br />
+                    @CurrentPage.GetGridHtml("bodyTextTop")
+                </div>
+                <br />
+                <div class="blog-wrapper">
+                    @CurrentPage.GetGridHtml()
+                </div>
+            </div>
+
+            <div id="sidebar" class="col-md-4 col-sm-4 col-xs-12">
+
+                @if (CurrentPage.HasValue("awardLogo"))
+                {
+                    <div class="widget text-center">
+                        @if (CurrentPage.HasValue("awardLogo"))
+                        {
+                            var logo = Umbraco.Media(CurrentPage.awardLogo);
+                            <img src="@logo.Url" alt="@logo.UrlName" class="img-responsive5" />}
+                    </div>
+                }
+
+                @{Html.RenderPartial("~/Views/Partials/Contact Form From List.cshtml", Model);}
+
+                <div class="widget text-left">
+                    <div class="widget-title">
+                        <h4 style="color:#@Umbraco.Field("hexTitleColor") !important">Student Support</h4>
+                        <hr>
+                    </div>
+                    <div class="video-container"><iframe src="https://www.youtube.com/embed/SFsM8-0n1YM?modestbranding=1&amp;autohide=1&amp;showinfo=0&amp;enablejsapi=1&amp;rel=0" allowfullscreen="" id="youTubePlayer"></iframe></div>
+                </div>
+
+                <div class="widget" itemscope itemtype="http://schema.org/Course">
+                    <meta itemprop="description" content="@Umbraco.Field("pageName")" />
+                    <meta itemprop="provider" content="ICS Learn" />
+                    <div class="widget-title">
+                        @if (string.IsNullOrWhiteSpace(CurrentPage.qualificationNames) == false)
+                        {<h2 style="color:#@Umbraco.Field("hexTitleColor") !important">@Umbraco.Field("qualificationNames") Courses</h2>}
+                        else
+                        {<h2 style="color:#@Umbraco.Field("hexTitleColor") !important">@Umbraco.Field("facultyName") Courses</h2>}
+                        <hr>
+                    </div>
+                    @if (Model.Content.HasValue("courseListPicker"))
+                    {
+                        int i = 0;
+                        var bannerListValue = Model.Content.GetPropertyValue<string>("courseListPicker");
+                        var bannerList = bannerListValue.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse);
+                        var bannerCollection = Umbraco.TypedContent(bannerList).Where(x => x != null);
+                        foreach (var item in bannerCollection)
+                        {
+                            <div class=""><a href="@item.Url" itemprop="url" class="sprite" title="@item.Name"><h4 itemprop="name" style="color:#@Umbraco.Field("hexTitleColor") !important"><i class="fa fa-angle-right"></i> @item.Name</h4></a><hr></div>
+                        }
+
+                    }
+                </div>
+
+                @if (string.IsNullOrWhiteSpace(CurrentPage.qualificationPicker) == false)
+                {
+                    <div class="widget">
+                        <div class="widget-title">
+                            <h2 style="color:#@Umbraco.Field("hexTitleColor") !important">Qualifications</h2>
+                            <hr>
+                        </div>
+                        @{if (Model.Content.HasValue("qualificationPicker"))
+                        {
+                            var bannerListValue = Model.Content.GetPropertyValue<string>("qualificationPicker");
+                            var bannerList = bannerListValue.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse);
+                            var bannerCollection = Umbraco.TypedContent(bannerList).Where(x => x != null);
+                            foreach (var item in bannerCollection)
+                            {
+                                <div class="sprite"><h4><span class="fa fa-angle-right"></span> <a href="@item.Url">@item.Name</a></h4><hr /></div>
+                            }
+                        }
+                        }
+                    </div>
+                }
+
+                <div class="widget text-left">
+                    @{
+                        if (Model.Content.HasValue("videoTitle"))
+                        {
+                            <div class="widget-title">
+                                <h4 style="color:#@Umbraco.Field("hexTitleColor") !important">@Umbraco.Field("videoTitle")</h4>
+                                <hr>
+                            </div>
+                            @Umbraco.Field("videoRTE")
+                        }
+                        else
+                        {
+                            <div class="widget-title">
+                                <h4 style="color:#@Umbraco.Field("hexTitleColor") !important">Why study with us?</h4>
+                                <hr>
+                            </div>
+                            <video id="revvideo" class="video-js vjs-default-skin" preload="none" poster='/media/3661/youtubesc.png' data-setup="{}" controls>
+                                <source src='/media/3657/guide.mp4' type='video/mp4' media="all and (max-width:480px)" />
+                                <source src='/media/3660/guide.webm' type='video/webm' />
+                                <source src='/media/3659/guide.ogv' type='video/ogg' />
+                            </video>
+
+                        }
+                    }
+                </div>
+
+                @{Html.RenderPartial("~/Views/Partials/TimerBlock.cshtml", Model);}
+
+            </div>
+        </div>
+    </div>
+</section>
+@*@{Html.RenderPartial("~/Views/Partials/social.cshtml", Model);}*@
+@Html.Partial("Tutors")
+@Html.Partial("Reviews")

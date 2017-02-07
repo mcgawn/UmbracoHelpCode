@@ -1,0 +1,32 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System.Web.Mvc.Html;
+@using Umbraco.Web;
+<div class="widget" data-scroll-reveal>
+  @{
+    IPublishedContent objBlogRoot = Model.Content.AncestorOrSelf("SmartBlogBlog");
+    IEnumerable<IPublishedContent> colPosts = objBlogRoot.Descendants("SmartBlogPost");
+    List<String> colAuthors = new List<String>();
+    foreach (IPublishedContent objPost in colPosts)
+    {
+      String strAuthor;
+      if (!String.IsNullOrEmpty(objPost.GetPropertyValue<String>("smartBlogAuthor")))
+      {
+        strAuthor = objPost.GetPropertyValue<String>("smartBlogAuthor");
+      }
+      else
+      {
+        strAuthor = SmartBlogLibraries.Global.GetConfig().GetElementsByTagName("defaultAuthor")[0].InnerText;
+      }
+
+      if (!colAuthors.Contains(strAuthor))
+      {
+        colAuthors.Add(strAuthor);
+      }
+    }
+    <span class="smartSubTitle smartTopBorder">Authors</span><br />
+    foreach (String strAuthor in colAuthors)
+    {
+      <a href="@Umbraco.NiceUrl(objBlogRoot.Id)?author=@strAuthor">@strAuthor</a><br />
+    }
+  }
+</div>

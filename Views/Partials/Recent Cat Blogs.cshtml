@@ -1,0 +1,79 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System.Web.Mvc.Html;
+@using Umbraco.Web;
+@using umbraco.NodeFactory;
+@using Umbraco.Core.Models;
+@using Umbraco.Core.Dynamics;
+@{string websiteurl = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"];}
+
+<div class="title" style="background:#@Umbraco.Field("hexTitleColor") !important">
+  <div class="title-image"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12 text-center"><h1>Related Blogs</h1></div>
+    </div>
+  </div>
+</div>
+<br>
+
+@{
+  var topTop = Model.Content.AncestorOrSelf(1);
+  IPublishedContent objBlogRoot = topTop.AncestorOrSelf("SmartBlogBlog");
+  IEnumerable<IPublishedContent> colResults = null;
+  Boolean blnUseSummaryOnList = Boolean.Parse(SmartBlogLibraries.Global.GetConfig().GetElementsByTagName("useSummaryOnList")[0].InnerText);
+
+  <div class="container" itemscope itemtype="http://schema.org/Blog">
+    <div style="-moz-column-width: 20em; -webkit-column-width: 20em; -moz-column-gap: 4px; -webkit-column-gap:4px; ">
+      @foreach (IPublishedContent objPost in colResults
+       .OrderByDescending(x => x.GetPropertyValue<DateTime>("smartBlogDate")))
+      {
+        String strAuthor = !String.IsNullOrEmpty(objPost.GetPropertyValue<String>("smartBlogAuthor"))
+        ? objPost.GetPropertyValue<String>("smartBlogAuthor")
+        : SmartBlogLibraries.Global.GetConfig().GetElementsByTagName("defaultAuthor")[0].InnerText;
+        var image = objPost.GetPropertyValue("smartBlogImage");
+        string result = Convert.ToString(image);
+        var bannerId = Umbraco.Media(result);
+        var bannerUrl = bannerId.Url;
+        try
+        {
+          <div class="col-md-4 well" itemscope itemtype="http://schema.org/BlogPosting" style="display: inline-block; width:  100%; float:none;">
+            <span itemprop="image" itemscope itemtype="http://schema.org/ImageObject">
+              <a href="@Umbraco.NiceUrl(objPost.Id)"><img itemprop="Url" src="@bannerUrl" alt="@objPost.Name" class="img-responsive" /></a>
+              <meta itemprop="width" content="600">
+              <meta itemprop="height" content="60">
+            </span>
+            <span itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+              <span itemprop="logo" itemscope itemtype="https://schema.org/ImageObject">
+                <meta itemprop="url" content="https://www.icslearn.co.uk/images/logo.png">
+                <meta itemprop="width" content="160">
+                <meta itemprop="height" content="160">
+              </span>
+              <meta itemprop="name" content="Google">
+            </span>
+            <div class="description">
+              <h2 itemprop="name headline"><a itemprop="mainEntityOfPage" href="@Umbraco.NiceUrl(objPost.Id)" title="@objPost.Name">@objPost.Name</a></h2>
+              <span class="fa fa-user"></span> By
+              <span itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+                <span itemprop="name">@strAuthor</span>
+              </span> at
+              <span itemprop="datePublished">@(objPost.GetPropertyValue<DateTime>("smartBlogDate").ToString(SmartBlogLibraries.Helpers.DateTime.DateFormatNormal))</span>
+              <meta itemprop="dateModified" content="@(objPost.GetPropertyValue<DateTime>("smartBlogDate").ToString(SmartBlogLibraries.Helpers.DateTime.DateFormatNormal))">
+              <br>
+              @if (blnUseSummaryOnList)
+              {
+                <br>
+                <p><span itemprop="articleBody">@Html.Raw(objPost.GetPropertyValue<String>("smartBlogSummary"))</span></p>
+              }
+              else
+              {
+                <span itemprop="articleBody">@Html.Raw(objPost.GetPropertyValue<String>("smartBlogBody"))</span>
+              }
+              <a href="@Umbraco.NiceUrl(objPost.Id)">Read More <span class="fa fa-angle-right"></span></a>
+            </div>
+          </div>
+        }
+        catch (Exception) { }
+      }
+    </div>
+  </div>
+}

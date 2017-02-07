@@ -1,0 +1,818 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Core.Models
+@{
+    Layout = null;
+    string analyticsID = System.Configuration.ConfigurationManager.AppSettings["GoogleAnalyticsAccountId"];
+    if (Request.Cookies["schoolcoder"] != null)
+    {
+        var myCookie = Request.Cookies["schoolcoder"].Value;
+        var root = Umbraco.TypedContentAtRoot().First();
+        var list = CurrentPage.AncestorOrSelf(1).Descendants("Courses");
+        var filteredList = list.Where("courseListSchoolCode == @0", @myCookie);
+        foreach (var item in filteredList)
+        {
+            string url = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"];
+            var PDFLink = url + item.courseListPdf;
+            <script>
+                function load() {
+                    document.getElementById("response").innerHTML = 'Thanks very much for your enquiry. Our expert course advisors are always available to help you with any questions you may have</div><hr><a href="@PDFLink" target="_blank" style="text-decoration:none"> <h2><img src="/images/img/Pdficon.png"> @item.Name</h2></a><div></div><hr><div>In the meantime, please have a look at the course content and get in touch with any questions you may have.</div>'
+                    document.getElementById("showPDF").click();
+                    document.getElementById("hideHeaderForm").style.display = "none";
+                }
+            </script>
+        }
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    @{ Html.RenderPartial("~/Views/Partials/_uSeoPro.cshtml"); }
+    <!-- Stylesheets -->
+    <link href="/css/style-landing-YMCA.css" rel="stylesheet">
+    <!-- Responsive -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <!--[if lt IE 9]><script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <!--[if lt IE 9]><script src="js/respond.js"></script><![endif]-->
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        ga('create', '@analyticsID', 'auto');
+        ga('require', 'displayfeatures');
+        ga('send', 'pageview');
+    </script>
+</head>
+<body class="home-one-page-version" onload="load();">
+    <div class="page-wrapper">
+        <!-- Main Header -->
+        <header class="main-header">
+            <div class="auto-container clearfix">
+                <!-- Logo -->
+                <div class="logo"><a href="#"><img src="/images/logo-YMCA.png" alt="Logo" title="StayFit"></a></div>
+                <!-- Main Menu -->
+                <nav class="main-menu">
+                    <div class="navbar-header">
+                        <!-- Toggle Button -->
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                    </div>
+                    <div class="navbar-collapse collapse clearfix">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="scroll"><a href="#main-slider">Home</a></li>
+                            <li class="scroll"><a href="#about-us">About</a></li>
+                            <li class="scroll"><a href="#faq-page">Levels</a></li>
+                            <li class="scroll"><a href="#testimonials-page">Reviews</a></li>
+                            <li class="scroll"><a href="#pricing">Pricing</a></li>
+                            <li class="scroll"><a href="#" style="color:#ff6a00" data-toggle="modal" id="showPDF" data-target="#modal-inquiry" class="button button--reservation">Request Info</a></li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                </nav>
+                <!-- Main Menu End-->
+            </div>
+            <div class="open-hours">
+                <div class="toggle-open-hours"><span class="fa fa-clock-o"></span> <span>Opening Hours</span> <br>Monday - Friday 9:00 - 17:00</div>
+            </div>
+        </header>
+        <!--End Main Header -->
+        <!-- Main Slider -->
+        <section id="main-slider" class="main-slider">
+            <div class="tp-banner-container">
+                <div class="tp-banner">
+                    <ul>
+                        <li data-transition="fade" data-slotamount="1" data-masterspeed="1000" data-thumb="/images/main-slider/bg-one.jpg" data-saveperformance="off" data-title="100% Online Study">
+                            <!-- MAIN IMAGE -->
+                            <img src="/images/main-slider/bg-one.jpg" alt="" data-bgposition="center top" data-bgfit="cover" data-bgrepeat="no-repeat">
+                            <div class="tp-caption lfb tp-resizeme"
+                                 data-x="left" data-hoffset="500"
+                                 data-y="center" data-voffset="-100"
+                                 data-speed="1500"
+                                 data-start="500"
+                                 data-easing="easeOutExpo"
+                                 data-splitin="none"
+                                 data-splitout="none"
+                                 data-elementdelay="0.01"
+                                 data-endelementdelay="0.3"
+                                 data-endspeed="1200"
+                                 data-endeasing="Power4.easeIn"
+                                 style="z-index: 4; max-width: auto; max-height: auto; white-space: nowrap;"><div class="curved-layer light-blue"><h3>Study anywhere, anytime</h3></div></div>
+                            <div class="tp-caption lfb tp-resizeme"
+                                 data-x="left" data-hoffset="530"
+                                 data-y="center" data-voffset="-20"
+                                 data-speed="1500"
+                                 data-start="1000"
+                                 data-easing="easeOutExpo"
+                                 data-splitin="none"
+                                 data-splitout="none"
+                                 data-elementdelay="0.01"
+                                 data-endelementdelay="0.3"
+                                 data-endspeed="1200"
+                                 data-endeasing="Power4.easeIn"
+                                 style="z-index: 4; max-width: auto; max-height: auto; white-space: nowrap;"><div class="curved-layer dark-blue"><h2>Shape your learning around your life</h2></div></div>
+                            <div class="tp-caption lfb tp-resizeme"
+                                 data-x="left" data-hoffset="470"
+                                 data-y="center" data-voffset="60"
+                                 data-speed="1500"
+                                 data-start="1500"
+                                 data-easing="easeOutExpo"
+                                 data-splitin="none"
+                                 data-splitout="none"
+                                 data-elementdelay="0.01"
+                                 data-endelementdelay="0.3"
+                                 data-endspeed="1200"
+                                 data-endeasing="Power4.easeIn"
+                                 style="z-index: 4; max-width: auto; max-height: auto; white-space: nowrap;"><div class="curved-layer light-blue"><a href="#"><span class="fa fa-Dumbell"></span> Train at your local gym</a></div></div>
+                        </li>
+                        <li data-transition="slidedown" data-slotamount="1" data-masterspeed="1000" data-thumb="/images/main-slider/bg-three.jpg" data-saveperformance="off" data-title="100% Online Study">
+                            <!-- MAIN IMAGE -->
+                            <img src="/images/main-slider/bg-three.jpg" alt="" data-bgposition="center top" data-bgfit="cover" data-bgrepeat="no-repeat">
+                            <div class="tp-caption lfb stb tp-resizeme"
+                                 data-x="left" data-hoffset="242"
+                                 data-y="center" data-voffset="-50"
+                                 data-speed="2000"
+                                 data-start="500"
+                                 data-easing="easeOutExpo"
+                                 data-splitin="none"
+                                 data-splitout="none"
+                                 data-elementdelay="0.01"
+                                 data-endelementdelay="0.3"
+                                 data-endspeed="1200"
+                                 data-endeasing="Power4.easeIn"
+                                 style="z-index: 4; max-width: auto; max-height: auto; white-space: nowrap;"><div class="curved-layer light-pink"><h2>YMCA Awards Level 2</h2></div></div>
+                            <div class="tp-caption lfb stb tp-resizeme"
+                                 data-x="left" data-hoffset="144"
+                                 data-y="center" data-voffset="30"
+                                 data-speed="2500"
+                                 data-start="1000"
+                                 data-easing="easeOutExpo"
+                                 data-splitin="none"
+                                 data-splitout="none"
+                                 data-elementdelay="0.01"
+                                 data-endelementdelay="0.3"
+                                 data-endspeed="1200"
+                                 data-endeasing="Power4.easeIn"
+                                 style="z-index: 4; max-width: auto; max-height: auto; white-space: nowrap;"><div class="curved-layer dark-blue"><h3>Certificate in Fitness Instructing</h3></div></div>
+                            <div class="tp-caption lfr tp-resizeme"
+                                 data-x="right" data-hoffset="-228"
+                                 data-y="center" data-voffset="-20"
+                                 data-speed="2000"
+                                 data-start="1500"
+                                 data-easing="easeOutExpo"
+                                 data-splitin="none"
+                                 data-splitout="none"
+                                 data-elementdelay="0.01"
+                                 data-endelementdelay="0.3"
+                                 data-endspeed="1200"
+                                 data-endeasing="Power4.easeIn"
+                                 style="z-index: 4; max-width: auto; max-height: auto; white-space: nowrap;"><div class="curved-layer light-blue"><h2>YMCA Awards Level 3</h2></div></div>
+                            <div class="tp-caption lfr tp-resizeme"
+                                 data-x="right" data-hoffset="-194"
+                                 data-y="center" data-voffset="60"
+                                 data-speed="2500"
+                                 data-start="2000"
+                                 data-easing="easeOutExpo"
+                                 data-splitin="none"
+                                 data-splitout="none"
+                                 data-elementdelay="0.01"
+                                 data-endelementdelay="0.3"
+                                 data-endspeed="1200"
+                                 data-endeasing="Power4.easeIn"
+                                 style="z-index: 4; max-width: auto; max-height: auto; white-space: nowrap;"><div class="curved-layer dark-blue"><h3>Certificate in Personal Training</h3></div></div>
+                        </li>
+                        <li data-transition="fade" data-slotamount="1" data-masterspeed="1000" data-thumb="images/main-slider/bg-one.jpg" data-saveperformance="off" data-title="100% Online Study">
+                            <!-- MAIN IMAGE -->
+                            <img src="/images/main-slider/bg-two.jpg" alt="" data-bgposition="center top" data-bgfit="cover" data-bgrepeat="no-repeat">
+
+                            <div class="tp-caption lfb tp-resizeme"
+                                 data-x="center" data-hoffset="0"
+                                 data-y="center" data-voffset="-100"
+                                 data-speed="1500"
+                                 data-start="500"
+                                 data-easing="easeOutExpo"
+                                 data-splitin="none"
+                                 data-splitout="none"
+                                 data-elementdelay="0.01"
+                                 data-endelementdelay="0.3"
+                                 data-endspeed="1200"
+                                 data-endeasing="Power4.easeIn"
+                                 style="z-index: 4; max-width: auto; max-height: auto; white-space: nowrap;"><div class="curved-layer light-blue"><h3>GET FIT WHILE YOU STUDY</h3></div></div>
+
+                            <div class="tp-caption lfb tp-resizeme"
+                                 data-x="center" data-hoffset="0"
+                                 data-y="center" data-voffset="-20"
+                                 data-speed="1500"
+                                 data-start="1000"
+                                 data-easing="easeOutExpo"
+                                 data-splitin="none"
+                                 data-splitout="none"
+                                 data-elementdelay="0.01"
+                                 data-endelementdelay="0.3"
+                                 data-endspeed="1200"
+                                 data-endeasing="Power4.easeIn"
+                                 style="z-index: 4; max-width: auto; max-height: auto; white-space: nowrap;"><div class="curved-layer dark-blue"><h2>ARE YOU READY TO CHANGE YOUR LIFE?</h2></div></div>
+
+                            <div class="tp-caption lfb tp-resizeme"
+                                 data-x="center" data-hoffset="0"
+                                 data-y="center" data-voffset="60"
+                                 data-speed="1500"
+                                 data-start="1500"
+                                 data-easing="easeOutExpo"
+                                 data-splitin="none"
+                                 data-splitout="none"
+                                 data-elementdelay="0.01"
+                                 data-endelementdelay="0.3"
+                                 data-endspeed="1200"
+                                 data-endeasing="Power4.easeIn"
+                                 style="z-index: 4; max-width: auto; max-height: auto; white-space: nowrap;"><div class="curved-layer light-blue"><a href="#"><span class="fa"></span> INTEREST-FREE PAYMENT PLANS</a></div></div>
+                        </li>
+                    </ul>
+                    <div class="tp-bannertimer"></div>
+                </div>
+            </div>
+        </section>
+        <!-- Box Headers -->
+        <section class="features-services">
+            <div class="auto-container">
+                <div class="row clearfix">
+                    <article class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="post style-one wow fadeInLeft animated" data-wow-delay="0.5s" data-wow-duration="1.5s" data-wow-offset="0" style="visibility: visible; animation-duration: 1.5s; animation-delay: 0.5s; animation-name: fadeInLeft;">
+                            <div class="title-box">
+                                <h2 class="clearfix"><span class="pull-left"><span class="med-text">How We Do It</span></span></h2>
+                            </div>
+                            <div class="post-text">
+                                <iframe width="100%" src="https://www.youtube.com/embed/@Umbraco.Field("videoYMCA")?feature=oembed&amp;modestbranding=1&amp;autohide=1&amp;showinfo=0&amp;enablejsapi=1&amp;rel=0" frameborder="0" allowfullscreen="" id="youTubePlayer"></iframe>
+                                @*<a class="more" href="#"><span class="fa fa-angle-right"></span> ENQUIRE TODAY</a>*@
+                            </div>
+                        </div>
+                    </article>
+                    <article class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="post style-two wow fadeInUp animated" data-wow-delay="0.5s" data-wow-duration="1.5s" data-wow-offset="0" style="background-image:url(/images/resource/image-1.png); visibility: visible; animation-duration: 1.5s; animation-delay: 0.5s; animation-name: fadeInUp;">
+                            <div class="title-box">
+                                <h2 class="clearfix">
+                                    <span class="pull-left"><span class="med-text">Level 2 &amp; 3 </span><br><span class="small-text">Combined Course</span></span>
+                                    <span class="pull-right price">
+                                        <sub>From</sub>£@Umbraco.Field("combineFromPriceYMCA")<sup> pm</sup>
+                                    </span>
+                                </h2>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="col-md-4 col-sm-12 col-xs-12">
+                        <div class="post style-three wow fadeInRight animated" data-wow-delay="0.5s" data-wow-duration="1.5s" data-wow-offset="0" style="background-image:url(/images/resource/image-2.png); visibility: visible; animation-duration: 1.5s; animation-delay: 0.5s; animation-name: fadeInRight;">
+                            <div class="post-cont">
+                                <div class="post-text">
+                                    <div><span class="med-text">YMCA</span><br><span class="small-text">Awards</span></div>
+                                    With over 25 years of industry experience, YMCA Awards need no introduction.
+                                    <a class="more" href="#aboutYMCA"><span class="fa fa-angle-right"></span> About YMCA</a>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+        <!-- Why Us -->
+        <section class="why-choose-us clearfix">
+            <h2 class="title">PROFESSIONAL QUALIFICATIONS THAT FIT AROUND YOU</h2>
+            <div class="text">
+                @Umbraco.Field("introductionTextYMCA")
+            </div>
+        </section>
+        <!-- About Us -->
+        <section id="about-us" class="availability four-column">
+            <div class="auto-container">
+                <hr /><br />
+                <div class="row clearfix">
+                    <article class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="block wow fadeInLeft animated" data-wow-delay="0.5s" data-wow-duration="1.5s" data-wow-offset="0" style="visibility: visible; animation-duration: 1.5s; animation-delay: 0.5s; animation-name: fadeInLeft;">
+                            <div class="upper-rounds">
+                                <div class="img-circle small-circle"><span class="icon flaticon-dumbbells10"></span></div>
+                                <div class="img-circle big-circle">Experience</div>
+                                <div class="img-circle medium-circle">128</div>
+                            </div>
+                            <h3>@Umbraco.Field("uSP1Headline")</h3>
+                            <p>@Umbraco.Field("uSP1Body")</p>
+                        </div>
+                    </article>
+
+                    <article class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="block wow fadeInUp animated" data-wow-delay="0.5s" data-wow-duration="1.5s" data-wow-offset="0" style="visibility: visible; animation-duration: 1.5s; animation-delay: 0.5s; animation-name: fadeInUp;">
+                            <div class="upper-rounds">
+                                <div class="img-circle small-circle"><span class="icon flaticon-shoes18"></span></div>
+                                <div class="img-circle big-circle">Flexibility</div>
+                                @*<div class="img-circle medium-circle">$17<sup>99</sup></div>*@
+                                <div class="img-circle medium-circle"><span class="icon flaticon-heart92"></span></div>
+                            </div>
+                            <h3>@Umbraco.Field("uSP2Headline")</h3>
+                            <p>@Umbraco.Field("uSP2Body")</p>
+                        </div>
+                    </article>
+
+                    <article class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="block wow fadeInUp animated" data-wow-delay="0.5s" data-wow-duration="1.5s" data-wow-offset="0" style="visibility: visible; animation-duration: 1.5s; animation-delay: 0.5s; animation-name: fadeInUp;">
+                            <div class="upper-rounds">
+                                <div class="img-circle bigger-circle"><div class="inner img-circle">Interest-Free<br />Plans</div></div>
+                            </div>
+                            <h3>@Umbraco.Field("uSP3Headline")</h3>
+                            <p>@Umbraco.Field("uSP3Body")</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+        <!-- Twitter -->
+        <section class="tweets-scroller">
+            <!--Tweets-->
+            <div class="tweets-slider-container">
+                <div class="bx-wrapper" style="max-width: 100%; margin: 0px auto;">
+                    <div class="bx-viewport" style="width: 100%; overflow: hidden; position: relative; height: 284px;">
+                        <ul class="tweets-slider" style="width: auto; position: relative;">
+                            <li class="slide-item" style="float: none; list-style: none; position: absolute; width: 340px; z-index: 50; display: block;">
+                                <span class="icon fa fa-twitter"></span>
+                                <div class="text">@Umbraco.Field("tweetYMCABody")</div>
+                                <span class="tweet-author">@Umbraco.Field("tweetYMCAName")</span>
+                            </li>
+                            <li class="slide-item" style="float: none; list-style: none; position: absolute; width: 340px; z-index: 0; display: none;">
+                                <span class="icon fa fa-twitter"></span>
+                                <div class="text">@Umbraco.Field("tweetYMCA2Body")</div>
+                                <span class="tweet-author">@Umbraco.Field("tweetYMCA2Name")</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!--Image Scroller-->
+            <div class="image-scroller-container">
+                <div class="bx-wrapper" style="max-width: 600px;">
+                    <div class="bx-viewport" style="width: 100%; overflow: hidden; position: relative; height: 440px;">
+                        <ul class="image-scroller" style="width: 515%; position: relative; left: -22.638px;">
+                            <li class="slide-item" style="float: left; list-style: none; position: relative; width: 600px;"><span class="image" style="background-image:url(/images/resource/scroller-image-4.png);"></span></li>
+                            <li class="slide-item" style="float: left; list-style: none; position: relative; width: 600px;"><span class="image" style="background-image:url(/images/resource/scroller-image-5.png);"></span></li>
+                            <li class="slide-item" style="float: left; list-style: none; position: relative; width: 600px;"><span class="image" style="background-image:url(/images/resource/scroller-image-6.png);"></span></li>
+                            <li class="slide-item bx-clone" style="float: left; list-style: none; position: relative; width: 600px;"><span class="image" style="background-image:url(/images/resource/scroller-image-4.png);"></span></li>
+                            <li class="slide-item bx-clone" style="float: left; list-style: none; position: relative; width: 600px;"><span class="image" style="background-image:url(/images/resource/scroller-image-5.png);"></span></li>
+                            @*<li class="slide-item bx-clone" style="float: left; list-style: none; position: relative; width: 600px;"><span class="image" style="background-image:url(/images/resource/scroller-image-6.png);"></span></li>*@
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        <!-- Course info -->
+        <section id="faq-page" class="sectionpadding">
+            <div class="auto-container">
+                <div class="sec-title">
+                    <h3>OUR COURSES</h3>
+                    <h2>THE RIGHT LEVEL FOR YOU</h2>
+                </div>
+                <div class="clearfix">
+                    <div class="side-tab">
+                        <div class="col-lg-3">
+                            <ul>
+                                <li class="active wow fadeIn animated" data-wow-delay=".1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeIn;"><a data-tab-name="tab-1" href="#" class="hvr-bounce-to-right">Level 2</a></li>
+                                <li class="wow fadeIn animated" data-wow-delay=".3s" style="visibility: visible; animation-delay: 0.3s; animation-name: fadeIn;"><a data-tab-name="tab-2" href="#" class="hvr-bounce-to-right">Level 3</a></li>
+                                <li class="wow fadeIn animated" data-wow-delay=".5s" style="visibility: visible; animation-delay: 0.5s; animation-name: fadeIn;"><a data-tab-name="tab-3" href="#" class="hvr-bounce-to-right">Combined</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-9 wow fadeIn animated" data-wow-delay="1s" style="visibility: visible; animation-delay: 1s; animation-name: fadeIn;">
+                            <div id="tab-1" style="display: block;">
+                                <h4>Level 2 Fitness Instructor Course</h4>
+                                @Umbraco.Field("level2YMCA")
+                            </div>
+                            <div id="tab-2" style="display: none;">
+                                <h4>Level 3 Personal Trainer Course</h4>
+                                @Umbraco.Field("level3YMCA")
+                            </div>
+                            <div id="tab-3" style="display: none;">
+                                <h4>Level 2 & Level 3 Combined Course</h4>
+                               @Umbraco.Field("leve23YMCA")
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <hr />
+            </div>
+            <div class="features-services style-two sectionpadding">
+                <div class="auto-container clearfix wow zoomIn animated" data-wow-delay="0s" data-wow-duration="1.5s" data-wow-offset="0" style="visibility: visible; animation-duration: 1.5s; animation-delay: 0s; animation-name: zoomIn;">
+                    <article class="col-md-3 col-sm-6 col-xs-12 box">
+                        <div class="title-box">
+                            <h2 class="clearfix">
+                                <span class="big-text">01</span><span class="">
+                                    <span class="med-text">Study online</span><br><span class="small-text">at your own pace</span>
+                                </span>
+                            </h2>
+                        </div>
+                        <div class="post-text">You’ll access your learning materials online through our Student Community, so you can study from anywhere, at any time. We’ll welcome to you the ICS Learn team with a live webinar, and you’ll get access to interactive quizzes, videos, practice exams, and much more. Plus, you’ll be able to get help and advice from other fitness students in our forums.</div>
+                    </article>
+                    <article class="col-md-3 col-sm-6 col-xs-12 box">
+                        <div class="title-box">
+                            <h2 class="clearfix">
+                                <span class="big-text">02</span><span class="">
+                                    <span class="med-text">Get support </span><br><span class="small-text">from your expert tutor</span>
+                                </span>
+                            </h2>
+                        </div>
+                        <div class="post-text">Whenever you need help, advice or just some friendly motivation, get in touch with your dedicated fitness tutor via phone call or online messaging. All our tutors are specially selected for their expertise in distance learning, fitness, and YMCA Awards, so they’re perfectly positioned to help you through anything you’re struggling with.</div>
+                    </article>
+                    <article class="col-md-3 col-sm-6 col-xs-12 box">
+                        <div class="title-box">
+                            <h2 class="clearfix">
+                                <span class="big-text">03</span><span class="">
+                                    <span class="med-text">Film sessions </span><br><span class="small-text">at your local gym</span>
+                                </span>
+                            </h2>
+                        </div>
+                        <div class="post-text">Instead of wasting time travelling to distant centres at inconvenient times, you can work on your practical skills at your local gym. Just grab a gym buddy and your smartphone and record yourself delivering a session. You can then use our specially designed app to upload the video and send it to your tutor to be assessed.</div>
+                    </article>
+                    <article class="col-md-3 col-sm-6 col-xs-12 box">
+                        <div class="title-box">
+                            <h2 class="clearfix">
+                                <span class="big-text">04</span><span class="">
+                                    <span class="med-text">Sit exams </span><br><span class="small-text">securely from home</span>
+                                </span>
+                            </h2>
+                        </div>
+                        <div class="post-text">We use the most innovative e-proctoring software to ensure that your multiple choice exams are as secure and reliable as they would be in an exam centre. You’ll do a sweep of the room with your webcam to show there are no notes or people nearby, and the exam software will ensure you can’t Google the right answers!</div>
+                    </article>
+                </div>
+            </div>
+            <div class="auto-container">
+                <div class="sec-title">
+                    <h2>The result? You’ll get a highly respected Personal Training qualification without giving up your job, your social life, or your sanity.</h2>
+                </div>
+            </div>
+        </section>
+        <!-- Tutor Video -->
+        <section class="videoBack centered-text sectionpadding">
+            <div class="auto-container">
+                <div class="sec-title wow fadeInUp animated" data-wow-delay="0.5s" data-wow-duration="1s" data-wow-offset="0" style="visibility: visible; animation-duration: 1s; animation-delay: 0.5s; animation-name: fadeInUp;">
+                    <h3>OUR TEAM</h3>
+                    <h2>MEET OUR TUTORS</h2>
+                </div>
+                <br />
+                <div class="row clearfix">
+                    <div class="sec-text col-md-12">
+                        @CurrentPage.GetGridHtml("tutorYMCAGrid")
+                    </div>
+                </div>
+            </div>
+            <br>
+        </section>
+        <!-- Pricing -->
+        <section id="pricing" class="plans-pricing sectionpadding">
+            <div class="auto-container">
+                <div class="sec-title">
+                    <h3>HOW TO PAY</h3>
+                    <h2>INTEREST-FREE PAYMENT PLANS</h2>
+                </div>
+                <div class="row clearfix">
+
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="price-table wow zoomIn animated" data-wow-delay="0s" data-wow-duration="1.5s" data-wow-offset="0" style="visibility: visible; animation-duration: 1.5s; animation-delay: 0s; animation-name: zoomIn;">
+                            <div class="title">
+                                <h3>YMCA Level 2</h3>
+                                <div class="curve"></div>
+                            </div>
+                            <div class="table-inner">
+                                <div class="price">
+                                    <span class="big-text"><sup>£</sup>@Umbraco.Field("level2Price")</span>
+                                    <br /><br />
+                                    <span class="duration">Was: £@Umbraco.Field("level2WasPrice")</span>
+                                </div>
+                                <ul>
+                                    <li>Deposit: £@Umbraco.Field("level2Deposit")</li>
+                                    <li>Instalments: £@Umbraco.Field("level2Instalment")</li>
+                                    <li>Payment Term: @Umbraco.Field("level2PaymentTerm")</li>
+                                    <li>Support Period: @Umbraco.Field("level2Support")</li>
+                                    <li>YMCA Registration Fee: £@Umbraco.Field("level2RegFee")</li>
+                                    <li>Learning Hours: @Umbraco.Field("level2GLH")</li>
+                                </ul>
+                                <a href="#" data-toggle="modal" data-target="#modal-inquiry" class="order-now"><span class="fa fa-angle-right"></span> Enquire Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="price-table style-two wow zoomIn animated" data-wow-delay="0.5s" data-wow-duration="1.5s" data-wow-offset="0" style="visibility: visible; animation-duration: 1.5s; animation-delay: 0.5s; animation-name: zoomIn;">
+                            <div class="title">
+                                <h3>YMCA Level 3</h3>
+                                <div class="curve"></div>
+                            </div>
+                            <div class="table-inner">
+                                <div class="price">
+                                    <span class="big-text"><sup>£</sup>@Umbraco.Field("level3Price")</span>
+                                    <br /><br />
+                                    <span class="duration">Was: £@Umbraco.Field("level3WasPrice")</span>
+                                </div>
+                                <ul>
+                                    <li>Deposit: £@Umbraco.Field("level3Deposit")</li>
+                                    <li>Instalments: £@Umbraco.Field("level3Instalment")</li>
+                                    <li>Payment Term: @Umbraco.Field("level3PaymentTerm")</li>
+                                    <li>Support Period: @Umbraco.Field("level3Support")</li>
+                                    <li>YMCA Registration Fee: £@Umbraco.Field("level3RegFee")</li>
+                                    <li>Learning Hours: @Umbraco.Field("level3GLH")</li>
+                                </ul>
+                                <a href="#" data-toggle="modal" data-target="#modal-inquiry" class="order-now"><span class="fa fa-angle-right"></span> Enquire Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="price-table wow zoomIn animated" data-wow-delay="1s" data-wow-duration="1.5s" data-wow-offset="0" style="visibility: visible; animation-duration: 1.5s; animation-delay: 1s; animation-name: zoomIn;">
+                            <div class="title">
+                                <h3>YMCA Combined</h3>
+                                <div class="curve"></div>
+                            </div>
+                            <div class="table-inner">
+                                <div class="price">
+                                    <span class="big-text"><sup>£</sup>@Umbraco.Field("combinePrice")</span>
+                                    <br /><br />
+                                    <span class="duration">Was: £@Umbraco.Field("combinedWasPrice")</span>
+                                </div>
+
+                                <ul>
+                                    <li>Deposit: £@Umbraco.Field("combinedDeposit")</li>
+                                    <li>Instalments: £@Umbraco.Field("combinedInstalment")</li>
+                                    <li>Payment Term: @Umbraco.Field("combinedPaymentTerm")</li>
+                                    <li>Support Period: @Umbraco.Field("combinedSupport")</li>
+                                    <li>YMCA Registration Fee: £@Umbraco.Field("combinedRegFee")</li>
+                                    <li>Learning Hours: @Umbraco.Field("combinedGLH")</li>
+                                </ul>
+                                <a href="#" data-toggle="modal" data-target="#modal-inquiry" class="order-now"><span class="fa fa-angle-right"></span> Enquire Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Box Grid -->
+        <section class="features" style="background-image:url(/images/background/image-1.jpg);" id="aboutYMCA">
+            <div class="auto-container clearfix">
+
+                <article class="post wow fadeInLeft animated" data-wow-delay="0.5s" data-wow-duration="1.5s" data-wow-offset="0" style="visibility: visible; animation-duration: 1.5s; animation-delay: 0.5s; animation-name: fadeInLeft;">
+                    <figure class="image">
+                        <img src="/images/resource/features-image-1.jpg" alt="" title="">
+                        <a class="overlay" href="#"></a>
+                        <div class="arrow from-right"><span></span></div>
+                    </figure>
+                    <div class="text">
+                        <h3>YMCA Awards</h3>
+                        <p>Our courses have been designed in close partnership with YMCA Awards, combining our distance learning expertise with their fitness experience.</p>
+                    </div>
+                    <div class="clearfix"></div>
+                </article>
+
+                <article class="post wow fadeInRight animated" data-wow-delay="0.5s" data-wow-duration="1.5s" data-wow-offset="0" style="visibility: visible; animation-duration: 1.5s; animation-delay: 0.5s; animation-name: fadeInRight;">
+                    <figure class="image">
+                        <img src="/images/resource/features-image-2.jpg" alt="" title="">
+                        <a class="overlay" href="#"></a>
+                        <div class="arrow from-right"><span></span></div>
+                    </figure>
+                    <div class="text">
+                        <h3>25 Years of Experience</h3>
+                        <p>YMCA Awards are the UK’s leading fitness awarding body, so the qualification you earn with us won't just get you a job - it'll put you a cut above the rest.</p>
+                    </div>
+
+                    <div class="clearfix"></div>
+                </article>
+
+                <article class="post wow fadeInUp animated" data-wow-delay="0.5s" data-wow-duration="1.5s" data-wow-offset="0" style="visibility: visible; animation-duration: 1.5s; animation-delay: 0.5s; animation-name: fadeInUp;">
+                    <div class="text">
+                        <h3>96% Approval Rate</h3>
+                        <p>YMCA Awards students couldn’t be happier with the quality of education they get – when will you join them?</p>
+                    </div>
+                    <figure class="image">
+                        <img src="/images/resource/features-image-3.jpg" alt="" title="">
+                        <a class="overlay" href="#"></a>
+                        <div class="arrow from-left"><span></span></div>
+                    </figure>
+                    <div class="clearfix"></div>
+                </article>
+
+                <article class="post wow fadeInUp animated" data-wow-delay="0.5s" data-wow-duration="1.5s" data-wow-offset="0" style="visibility: visible; animation-duration: 1.5s; animation-delay: 0.5s; animation-name: fadeInUp;">
+                    <div class="text">
+                        <h3>20,000 Certificates a Year</h3>
+                        <p>Thousands of budding fitness stars from more than 10 countries worldwide supercharge their careers with a YMCA Awards qualification.</p>
+                    </div>
+                    <figure class="image">
+                        <img src="/images/resource/features-image-4.jpg" alt="" title="">
+                        <a class="overlay" href="#"></a>
+                        <div class="arrow from-left"><span></span></div>
+                    </figure>
+                    <div class="clearfix"></div>
+                </article>
+            </div>
+        </section>
+        <!-- Testimimonials -->
+        <section id="testimonials-page" class="sectionpadding">
+            <div class="auto-container">
+                <div class="clearfix">
+                    <div class="sec-title">
+                        <h3>TESTIMONIALS</h3>
+                        <h2>WHAT OUR STUDENTS SAY</h2>
+                    </div>
+                    <div class="owl-carousel">
+                        <div class="item">
+                            <p><i class="fa fa-quote-left"></i> @Umbraco.Field("reviewYMCA1")</p>
+                            <div class="testimonial-info"><span class="testimonial-author">Kathryn Willis </span></div>
+                            <div class="testimonial-img"><img src="/images/testimonials/Kathryn-Willis.png" alt=""></div>
+                        </div>
+                        <div class="item">
+                            <p><i class="fa fa-quote-left"></i> @Umbraco.Field("reviewYMCA2")</p>
+                            <div class="testimonial-info"><span class="testimonial-author">Catriona Mundill</span></div>
+                            <div class="testimonial-img"><img src="/images/testimonials/Catriona-Mundhill.jpg" alt=""></div>
+                        </div>
+                        <div class="item">
+                            <p><i class="fa fa-quote-left"></i> @Umbraco.Field("reviewYMCA3")</p>
+                            <div class="testimonial-info"><span class="testimonial-author">Will Russell</span></div>
+                            <div class="testimonial-img"><img src="/images/testimonials/Will-Russell.jpg" alt=""></div>
+                        </div>
+                        <div class="item">
+                            <p><i class="fa fa-quote-left"></i> @Umbraco.Field("reviewYMCA4")</p>
+                            <div class="testimonial-info"><span class="testimonial-author">Charlotte Livermore</span></div>
+                            <div class="testimonial-img"><img src="/images/testimonials/Charlotte-Livermore.jpg" alt=""></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <!-- trust pilot -->
+            <div class="auto-container">
+                <div class="trustpilot-widget" data-locale="en-GB" data-template-id="5406e65db0d04a09e042d5fc" data-businessunit-id="4fdb1aab000064000516891d" data-style-height="28px" data-style-width="100%" data-theme="light">
+                    <a href="https://uk.trustpilot.com/review/icslearn.co.uk" target="_blank">Trustpilot</a>
+                </div>
+            </div>
+        </section>
+        <!--Client Logos-->
+        <section class="client-logos">
+            <div class="title">
+                <h2>YMCA Careers<br><span class="small-text">Where you could work</span></h2>
+            </div>
+            <div class="logo-scroller">
+                <ul class="slider">
+                    <li class="slide-item"><a href="#"><img src="/images/clients/1.jpg" alt=""></a></li>
+                    <li class="slide-item"><a href="#"><img src="/images/clients/2.png" alt=""></a></li>
+                    <li class="slide-item"><a href="#"><img src="/images/clients/3.png" alt=""></a></li>
+                    <li class="slide-item"><a href="#"><img src="/images/clients/4.png" alt=""></a></li>
+                    <li class="slide-item"><a href="#"><img src="/images/clients/6.png" alt=""></a></li>
+                    <li class="slide-item"><a href="#"><img src="/images/clients/7.png" alt=""></a></li>
+                    <li class="slide-item"><a href="#"><img src="/images/clients/8.png" alt=""></a></li>
+                    @*<li class="slide-item"><a href="#"><img src="/images/clients/9.png" alt=""></a></li>*@
+                    <li class="slide-item"><a href="#"><img src="/images/clients/10.png" alt=""></a></li>
+                    <li class="slide-item"><a href="#"><img src="/images/clients/11.png" alt=""></a></li>
+                </ul>
+            </div>
+        </section>
+        <!--Main Footer-->
+        <footer class="main-footer">
+            <div class="auto-container">
+                <!--Upper-->
+                <div class="upper clearfix">
+                    <h2 class="pull-left">GET <span>IN TOUCH</span></h2>
+                    <div class="social-links pull-left">
+                        <a href="https://en-gb.facebook.com/ICSLearn/" class="icon fa fa-facebook-f wow fadeInRight" data-wow-delay="0s" data-wow-duration="1s" data-wow-offset="0"></a>
+                        <a href="https://twitter.com/ICSLearn" class="icon fa fa-twitter wow fadeInRight" data-wow-delay="0.2s" data-wow-duration="1s" data-wow-offset="0"></a>
+                        <a href="https://en.wikipedia.org/wiki/ICS_Learn_(International_Correspondence_Schools)" class="icon fa fa-dribbble wow fadeInRight" data-wow-delay="0.4s" data-wow-duration="1s" data-wow-offset="0"></a>
+                        <a href="https://plus.google.com/+icslearn" class="icon fa fa-google wow fadeInRight" data-wow-delay="0.6s" data-wow-duration="1s" data-wow-offset="0"></a>
+                        <a href="https://uk.pinterest.com/icslearn/" class="icon fa fa-pinterest wow fadeInRight" data-wow-delay="0.8s" data-wow-duration="1s" data-wow-offset="0"></a>
+                        <a href="https://www.instagram.com/ics_learn/" class="icon fa fa-instagram wow fadeInRight" data-wow-delay="1s" data-wow-duration="1s" data-wow-offset="0"></a>
+                    </div>
+                </div>
+                <!--Lower-->
+                <div class="lower">
+                    <div class="row clearfix">
+                        <!--Copyright-->
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            <div class="footer-widget copyright wow fadeInUp" data-wow-delay="0.5s" data-wow-duration="1s" data-wow-offset="0">
+                                <h2><img src="/images/logo-footer-YMCA.png" alt="" title=""></h2>
+                                <p>&copy; 2016 ICS Learn &amp; YMCA Awards</p>
+                                <a href="/policies/privacy/">Privacy Policy</a> | <a href="/terms-conditions/">Terms of Use</a> | <a href="/how-it-works/faqs/">FAQ</a>
+                            </div>
+                        </div>
+                        <!--Contact-->
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            <div class="footer-widget contact wow fadeInUp" data-wow-delay="2s" data-wow-duration="1s" data-wow-offset="0">
+                                <h2>Contact Us</h2>
+                                <ul>
+                                    <li class="clearfix">
+                                        <strong class="pull-left">Mail</strong>
+                                        <p class="pull-right">@Umbraco.Field("facultyEmail")</p>
+                                    </li>
+                                    <li class="clearfix">
+                                        <strong class="pull-left">Phone</strong>
+                                        <p class="pull-right"><i id="RTapID"></i></p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            <div class="footer-widget contact wow fadeInUp" data-wow-delay="2s" data-wow-duration="1s" data-wow-offset="0">
+                                <h2>Address</h2>
+                                <ul>
+                                    <li class="clearfix">
+                                        <strong class="pull-left">Address</strong>
+                                        <p class="pull-right">Breckenridge House, <br>274 Sauchiehall Street Glasgow G2 3EH</p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--Lower End-->
+            </div>
+            <!-- Back to top Button -->
+            <a href="#" class="back-to-top" style="display: inline;">
+                <i class="fa fa-angle-up"></i>
+            </a>
+        </footer>
+    </div>
+    <!-- Modal Form -->
+    <div id="modal-inquiry" class="modal fade" style="background-image:url(/images/background/image-1.jpg);-webkit-background-size: cover;-moz-background-size: cover;-o-background-size: cover;background-size: cover;">
+        <div class="modal-dialog">
+            <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="form-wrap form-res">
+                        <div class="row">
+                            <div class="col-md-12 mdFormRes">
+                                @{Html.RenderPartial("~/Views/Partials/Contact Form From YMCA Landing.cshtml", Model);}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End pagewrapper-->
+    <script src="/scripts/jquery.js"></script>
+    <script defer src="/scripts/analyticslanding.js"></script>
+    <script defer src="/scripts/bootstrap.min.js"></script>
+    <script defer src="/scripts/revolution.min.js"></script>
+    <script defer src="/scripts/bxslider.js"></script>
+    <script defer src="/scripts/jquery.appear.js"></script>
+    <script defer src="/scripts/wow.js"></script>
+    <script defer src="/scripts/knob.js"></script>
+    <script defer src="/scripts/validate.js"></script>
+    <script defer src="/scripts/scrollbar.js"></script>
+    <script defer src="/scripts/jquery.fancybox.pack.js"></script>
+    <script defer src="/scripts/jquery.mixitup.min.js"></script>
+    <script src="/scripts/owl.carousel.min.js"></script>
+    <script defer src="/scripts/script.js"></script>
+    <script src="/scripts/CourseGuideJavaScript.js"></script>
+    <script defer src="//cdn.bizible.com/_biz-a.js"></script>
+    <script type="text/javascript" src="//widget.trustpilot.com/bootstrap/v5/tp.widget.sync.bootstrap.min.js" async></script>
+    <script defer type="text/javascript">
+        if (!window._laq) { window._laq = []; }
+        window._laq.push(function () { liveagent.showWhenOnline('57324000000Kz0c', document.getElementById('liveagent_button_online_57324000000Kz0c')); });
+    </script>
+    <script src="https://c.la1-c2cs-lon.salesforceliveagent.com/content/g/js/36.0/deployment.js"></script>
+    <script defer>liveagent.init('https://d.la1-c1-lon.salesforceliveagent.com/chat', '57224000000PE8w', '00D24000000Hpnk');</script>
+    <script>
+        document.getElementById("RTapID").innerHTML = '<span class="rTapNumber199138">0800 027 6960</span>';
+    </script>
+    <script>
+        /*<![CDATA[*/
+        var google_conversion_id = 956627819;
+        var google_custom_params = window.google_tag_params;
+        var google_remarketing_only = true;
+        /* ]]> */
+    </script>
+    <script src="//www.googleadservices.com/pagead/conversion.js"></script>
+    <noscript>
+        <div style="display:inline;">
+            <img height="1" width="1" style="border-style:none;" alt="" src="//www.googleadservices.com/pagead/conversion/956627819/?value=0&amp;label=DJ48CIKytFoQ6_aTyAM&amp;guid=ON&amp;script=0" />
+        </div>
+    </noscript>
+    <noscript>
+        <div style="display:inline;">
+            <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/956627819/?value=0&amp;guid=ON&amp;script=0" />
+        </div>
+    </noscript>
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1090305677653429&ev=PageView&noscript=1"/></noscript>
+    <script>
+        var aoProtocol = location.protocol;
+        if (aoProtocol.indexOf('https') < 0) aoProtocol = 'https:';
+        var aoCAP = {
+            aid: '18327',
+            fid: '0002',
+            did: 'd-0001',
+            server: 'icslearn.actonsoftware.com',
+            formName: 'newsletter-form',
+            protocol: aoProtocol
+        };
+        document.write('<script type="text/javascript" src="' + aoCAP.protocol + '//' + aoCAP.server + '/acton/js/formcap.min.js"><' + '/script>');
+    </script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using ClientDependency.Core.Mvc
+@using ClientDependency.Core
+@{
+  var seo = CurrentPage._seoFields;
+  var current = umbraco.NodeFactory.Node.GetCurrent();
+  string metaDescription = @seo.description;
+  string title = @seo.title;
+  string analyticsID = System.Configuration.ConfigurationManager.AppSettings["GoogleAnalyticsAccountId"];
+  string type = "website";
+  string websiteurl = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"];
+  string schemaauthor = "ICS Learn";
+  string twiiterauthor = "@ICSLearn";
+  string ABurl = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"] + Model.Content.Url;
+  var image = Model.Content.GetPropertyValue("smartBlogImage");
+  string result = Convert.ToString(image);
+  var PostIDAMP = Umbraco.Media(result);
+  var PostImageAMP = PostIDAMP.Url;
+    Html.RequiresJs("~/scripts/bootstrap.min.js", 1);
+    Html.RequiresJs("~/scripts/wow.js", 2);
+    Html.RequiresJs("~/scripts/carousel.js", 3);
+    Html.RequiresJs("~/scripts/carousel.js", 4);
+    Html.RequiresJs("~/scripts/custom.js", 5);
+    Html.RequiresJs("~/scripts/jquery.themepunch.tools.min.js", 6);
+    Html.RequiresJs("~/scripts/jquery.themepunch.revolution.min.js", 7);
+    Html.RequiresJs("~/scripts/bxslider.js", 8);
+    Html.RequiresJs("~/scripts/CourseGuideJavaScript.js", 9);
+    Html.RequiresJs("~/scripts/analyticswebsite.js", 10);
+    Html.RequiresJs("~/scripts/settings.js", 11);
+    
+    Html.RequiresCss("~/css/style.css", 1);
+    Html.RequiresCss("~/css/settings.css", 2);
+    Html.RequiresCss("~/css/RTE.css", 3);
+}
+
+<meta charset="utf-8">
+<meta property="fb:admins" content="mcgawn" />
+<meta property="fb:app_id" content="966242223397117" />
+<meta property="og:title" content="@title" />
+<meta property="og:image" content="@websiteurl/images/logo.png" />
+<meta property="og:url" content="@ABurl" />
+<meta property="og:site_name" content="@schemaauthor" />
+<meta property="og:type" content="@type" />
+<meta property="og:description" content="@metaDescription" />
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="verify-v1" content="eADkRkx8rLm8i9OCuU+k1KAP2u3THd2xHNbBa5VhY/U=" />
+<meta name="msvalidate.01" content="7B7192E339BF52DB150F286215F9FA03" />
+<meta name='yandex-verification' content='5f6f7a61817abfb7' />
+<meta name="p:domain_verify" content="4fc10cd0556c81861a1ea3b35fae8d69" />
+<meta name="author" content="@schemaauthor" />
+
+@if (string.IsNullOrWhiteSpace(CurrentPage.cannonicalURL) == false)
+{<link rel="canonical" href="@Umbraco.Field("cannonicalURL")" />}
+else if (string.IsNullOrWhiteSpace(CurrentPage.cannonicalURLAMP) == false)
+{<link rel="amphtml" href="@Umbraco.Field("cannonicalURLAMP")" />}
+else
+{<link rel="canonical" href="@ABurl" />}
+
+<link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png" />
+<link rel="apple-touch-icon" sizes="57x57" href="/images/icons/apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon" sizes="72x72" href="/images/icons/apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon" sizes="76x76" href="/images/icons/apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" sizes="114x114" href="/images/icons/apple-touch-icon-114x114.png" />
+<link rel="apple-touch-icon" sizes="120x120" href="/images/icons/apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" sizes="144x144" href="/images/icons/apple-touch-icon-144x144.png" />
+<link rel="apple-touch-icon" sizes="152x152" href="/images/icons/apple-touch-icon-152x152.png" />
+
+<link rel='shortcut icon' type='image/x-icon' href='~/favicon.ico' />
+
+<meta name="application-name" content="@schemaauthor" />
+<meta name="msapplication-TileColor" content="#000000" />
+<meta name="msapplication-square70x70logo" content="/images/icons/tiny.png" />
+<meta name="msapplication-square150x150logo" content="/images/icons/square.png" />
+<meta name="msapplication-wide310x150logo" content="/images/icons/wide.png" />
+<meta name="msapplication-square310x310logo" content="/images/icons/large.png" />
+
+<meta name="geo.region" content="GB-GLG" />
+<meta name="geo.position" content="55.865391;-4.262451" />
+<meta name="ICBM" content="55.865391, -4.262451" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content="https://twitter.com/ICSLearn" />
+<meta name="twitter:creator" content="@twiiterauthor" />
+@if (result != ""){<meta name="twitter:image" content="@websiteurl@PostImageAMP" />}
+else{<meta name="twitter:image" content="@websiteurl/images/logo.png" />}
+<meta name="twitter:site" content="@schemaauthor" />
+<meta name="twitter:title" content="@title" />
+<meta name="twitter:description" content="@metaDescription" />
+
+<link rel="publisher" href="https://plus.google.com/+icslearn" />
+<link rel="author" href="https://plus.google.com/103079286943927037414" />
+<link rel="author" href="https://plus.google.com/+BrittaLowack/" />
+<link rel="author" href="https://plus.google.com/+DavidMcgawnakagoon/" />
+<link rel="author" href="https://plus.google.com/107882056839536167541/" />
+
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Ubuntu:regular,bold&subset=Latin">
+<script src="/scripts/jquery-2.2.4.min.js"></script>
+@Html.RenderCssHere()
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', '@analyticsID', 'auto');
+  ga('require', 'displayfeatures');
+  ga('require', 'linkid', 'linkid.js');
+  setTimeout("ga('send','event','Profitable Engagement','time on page more than 3 minutes')", 180000);
+  ga('send', 'pageview');
+  ga('require', 'ecommerce');
+  ga('require', 'ec');
+</script>

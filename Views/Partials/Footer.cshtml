@@ -1,0 +1,141 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Newtonsoft.Json.Linq
+@{var facultynumber = @Umbraco.Field("facultyNumberPicker", recursive: true);}
+<div itemscope itemtype="https://schema.org/EducationalOrganization">
+  <footer class="dark footer section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-2 col-sm-6 col-xs-12">
+          <div class="widget">
+            <div class="widget-title">
+              <h4>Quick Links</h4>
+              <hr>
+            </div>
+            <ul class="contact-details">
+              <li><h5><a href="/xmlsitemap/" title="SiteMap"><span class="fa fa-angle-right"></span> Site Map</a></h5></li>
+              <li><h5><a href="/courses/" title="Courses"><span class="fa fa-angle-right"></span> Courses</a></h5></li>
+              <li><h5><a href="/exam-finder/" title="Exam Centre Finder"><span class="fa fa-angle-right"></span> Exam Centre Finder</a></h5></li>
+              <li><h5><a href="/useful-links/" title="Useful Links"><span class="fa fa-angle-right"></span> Useful Links</a></h5></li>
+              <li><h5><a href="/jobs/" title="Jobs with ICS Learn"><span class="fa fa-angle-right"></span> Jobs with ICS Learn</a></h5></li>
+              <li><h5><a href="/cookies/" title="Cookies"><span class="fa fa-angle-right"></span> Cookies</a></h5></li>
+              <li><h5><a href="/policies/" title="Policies"><span class="fa fa-angle-right"></span> Policies</a></h5></li>
+              <li><h5><a href="/terms-conditions/" title="Terms &amp; Conditions"><span class="fa fa-angle-right"></span> Terms &amp; Conditions</a></h5></li>
+              <li><h5><a href="/blog/" title="Blog"><span class="fa fa-angle-right"></span> Blog</a></h5></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6 col-xs-12">
+          <div class="widget">
+            <div class="widget-title">
+              <h4>Popular Courses</h4><hr>
+            </div>
+              @if (Model.Content.HasValue("relatedLinksPOP", true) && Model.Content.GetPropertyValue<string>("relatedLinksPOP", true).Length > 2)
+              {
+                <ul class="contact-details">
+                  @foreach (var item in Model.Content.GetPropertyValue<JArray>("relatedLinksPOP", true))
+                  {
+                    var linkUrl = (item.Value<bool>("isInternal")) ? Umbraco.NiceUrl(item.Value<int>("internal")) : item.Value<string>("link");
+                    var linkTarget = item.Value<bool>("newWindow") ? "_blank" : null;
+                    <li><h5><a href="@linkUrl" target="@linkTarget">@(item.Value<string>("caption"))</a></h5></li>
+                  }
+                </ul>
+              }
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="widget">
+            <div class="widget-title">
+              <h4>Related Courses</h4><hr>
+            </div>
+              @if (Model.Content.HasValue("relatedLinksRel", true) && Model.Content.GetPropertyValue<string>("relatedLinksRel", true).Length > 2)
+              {
+                <ul class="contact-details">
+                  @foreach (var item in Model.Content.GetPropertyValue<JArray>("relatedLinksRel", true))
+                  {
+                    var linkUrl = (item.Value<bool>("isInternal")) ? Umbraco.NiceUrl(item.Value<int>("internal")) : item.Value<string>("link");
+                    var linkTarget = item.Value<bool>("newWindow") ? "_blank" : null;
+                    <li><h5><a href="@linkUrl" target="@linkTarget">@(item.Value<string>("caption"))</a></h5></li>
+                  }
+                </ul>
+              }
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="widget">
+            <div class="widget-title">
+              <h4>Contact Details</h4><hr>
+            </div>
+            <ul class="contact-details">
+              <li itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                <span class="fa fa-home"></span> <span>Breckenridge House</span>
+                <span itemprop="streetAddress">274 Sauchiehall Street</span>
+                <span itemprop="addressLocality">Glasgow</span>
+                <span itemprop="postalCode">G2 3EH</span>
+                <span itemprop="addressCountry">Scotland</span>
+              </li>
+              <li><span class="fa fa-link"></span> <a href="#">www.icslearn.co.uk</a></li>
+              <li><span class="fa fa-envelope"></span> <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#99;&#111;&#117;&#114;&#115;&#101;&#97;&#100;&#118;&#105;&#115;&#111;&#114;&#115;&#64;&#105;&#99;&#115;&#108;&#101;&#97;&#114;&#110;&#46;&#99;&#111;&#46;&#117;&#107;&#63;subject&#61;Course&nbsp;Enquiry&amp;body&#61;Which&nbsp;course&nbsp;are&nbsp;you&nbsp;interested&nbsp;in&#63;" title="Course Advisors"><span itemprop="email">&#99;&#111;&#117;&#114;&#115;&#101;&#97;&#100;&#118;&#105;&#115;&#111;&#114;&#115;&#64;&#105;&#99;&#115;&#108;&#101;&#97;&#114;&#110;&#46;&#99;&#111;&#46;&#117;&#107;</span></a></li>
+              <li><span class="fa fa-envelope"></span> <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#116;&#117;&#100;&#101;&#110;&#116;&#115;&#101;&#114;&#118;&#105;&#99;&#101;&#115;&#64;&#105;&#99;&#115;&#108;&#101;&#97;&#114;&#110;&#46;&#99;&#111;&#46;&#117;&#107;" title="Student Services"><span itemprop="email">&#115;&#116;&#117;&#100;&#101;&#110;&#116;&#115;&#101;&#114;&#118;&#105;&#99;&#101;&#115;&#64;&#105;&#99;&#115;&#108;&#101;&#97;&#114;&#110;&#46;&#99;&#111;&#46;&#117;&#107;</span></a></li>
+              <li><span class="fa fa-phone"></span> <span itemprop="telephone"><span id="RtapColor" class="rTapNumber199117">0800 056 3983</span></span></li>
+              <li><span class="fa fa-fax"></span> <span itemprop="faxNumber">0141 221 8151</span></li>
+              <li itemscope itemtype="https://schema.org/LocalBusiness"><span class=" fa fa-clock-o"></span> Call Centre: @Umbraco.Field("daysCA", recursive: true)</li>
+              <li><span class="fa fa-clock-o"></span> Student Services: @Umbraco.Field("daysSS", recursive: true)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+  </footer>
+  <div class="copyright">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-2 text-left">
+          <p>&copy; @DateTime.Now.Year.ToString() ICS Learn</p>
+        </div>
+        <div class="col-sm-10 text-right">
+          <ul class="list-inline">
+            <li>Company No: SC434382</li>
+            <li><span itemprop="vatID">VAT: 150 8762 06</span></li>
+            <li><a itemprop="url" href="https://www.icslearn.co.uk" title="Website"><span class="fa fa-globe fa-lg"></span></a></li>
+            <li><a itemprop="sameAs" href="https://www.facebook.com/ICSLearn" title="Facebook"><span class="fa fa-facebook fa-lg"></span></a></li>
+            <li><a itemprop="sameAs" href="https://twitter.com/icslearn" title="Twitter"><span class="fa fa-twitter fa-lg"></span></a></li>
+            <li><a itemprop="sameAs" href="https://www.linkedin.com/company/ics-international-correspondence-schools-" title="Linkedin"><span class="fa fa-linkedin fa-lg"></span></a></li>
+            <li><a itemprop="sameAs" href="https://plus.google.com/+icslearn" rel="publisher" title="Google +"><span class="fa fa-google-plus fa-lg"></span></a></li>
+            <li><a itemprop="sameAs" href="https://www.youtube.com/user/ICSLearn" title="Youtube"><span class="fa fa-youtube fa-lg"></span></a></li>
+            <li><a itemprop="sameAs" href="https://uk.pinterest.com/icslearn/" title="Pinterest"><span class="fa fa-pinterest fa-lg"></span></a></li>
+            <li><a itemprop="sameAs" href="https://www.instagram.com/ics_learn/" title="Instagram"><span class="fa fa-instagram fa-lg"></span></a></li>
+            <li><a itemprop="sameAs" href="https://en.wikipedia.org/wiki/ICS_Learn_(International_Correspondence_Schools)" title="Wikipedia"><span class="fa fa-wikipedia-w fa-lg"></span></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="application/ld+json">
+  {
+  "@@context" : "http://schema.org",
+  "@@type" : "Organization",
+  "url" : "https://www.icslearn.co.uk",
+  "name" : "ICS Learn",
+  "logo" : "https://www.icslearn.co.uk/images/logo.png",
+  "contactPoint" : [{
+  "@@type" : "ContactPoint",
+  "telephone" : "+4408000563983",
+  "faxNumber" : "01412218151",
+  "email" : "courseadvisors@icslearn.co.uk",
+  "contactType" : "customer service"
+  }],
+  "sameAs" : [
+  "https://www.facebook.com/ICSLearn",
+  "https://www.twitter.com/ICSLearn",
+  "https://www.linkedin.com/company/ics-international-correspondence-schools-",
+  "https://www.instagram.com/ics_learn",
+  "https://www.youtube.com/user/ICSLearn",
+  "https://uk.pinterest.com/icslearn/",
+  "https://en.wikipedia.org/wiki/ICS_Learn_(International_Correspondence_Schools)",
+  "https://plus.google.com/ICSLearn"
+  ]
+  }
+</script>

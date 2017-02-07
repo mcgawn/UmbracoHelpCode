@@ -1,0 +1,148 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Core.Models;
+@using Umbraco.Core.Services;
+@using Umbraco.Web;
+@using System.Linq;
+@using ClientDependency.Core.Mvc
+@using ClientDependency.Core
+@{
+  string RTap = @Umbraco.Field("facultyNumberPicker").ToString();
+  <script>
+    var RTapSwitch = "@RTap";
+    if (RTapSwitch == "0800 056 3983") {
+      document.getElementById("RTapID").innerHTML = '<span class="rTapNumber199117">0800 056 3983</span>';
+      document.getElementById("RTapPass").className = "rTapNumber199117";
+      document.getElementById("RTapID2").innerHTML = '<span class="rTapNumber199117">0800 056 3983</span>';
+      document.getElementById("RTapPass2").className = "rTapNumber199117";
+    }
+    else if (RTapSwitch == "0800 015 3326") {
+      document.getElementById("RTapID").innerHTML = '<span class="rTapNumber199135">0800 015 3326</span>';
+      document.getElementById("RTapPass").className = "rTapNumber199135";
+      document.getElementById("RTapID2").innerHTML = '<span class="rTapNumber199135">0800 015 3326</span>';
+      document.getElementById("RTapPass2").className = "rTapNumber199135";
+    }
+    else if (RTapSwitch == "0800 092 0440") {
+      document.getElementById("RTapID").innerHTML = '<span class="rTapNumber199131">0800 092 0440</span>';
+      document.getElementById("RTapPass").className = "rTapNumber199131";
+      document.getElementById("RTapID2").innerHTML = '<span class="rTapNumber199131">0800 092 0440</span>';
+      document.getElementById("RTapPass2").className = "rTapNumber199131";
+    }
+    else if (RTapSwitch == "0800 015 4350") {
+      document.getElementById("RTapID").innerHTML = '<span class="rTapNumber199129">0800 015 4350</span>';
+      document.getElementById("RTapPass").className = "rTapNumber199129";
+      document.getElementById("RTapID2").innerHTML = '<span class="rTapNumber199129">0800 015 4350</span>';
+      document.getElementById("RTapPass2").className = "rTapNumber199129";
+    }
+    else if (RTapSwitch == "0800 027 6960") {
+      document.getElementById("RTapID").innerHTML = '<span class="rTapNumber199138">0800 027 6960</span>';
+      document.getElementById("RTapPass").className = "rTapNumber199138";
+      document.getElementById("RTapID2").innerHTML = '<span class="rTapNumber199138">0800 027 6960</span>';
+      document.getElementById("RTapPass2").className = "rTapNumber199138";
+    }
+  </script>
+}
+
+<script>
+    var emailMasker = "@Umbraco.Field("facultyEmail").ToString()";
+    var emailReverce = emailMasker.split("").reverse().join("");
+    document.getElementById("emailMask").href = "mailto:" + emailReverce;
+    document.getElementById("emailMask2").href = "mailto:" + emailReverce;
+    function reverceEmailSend() {
+        var emailDeMask = emailReverce;
+        var emailReverceSend = emailDeMask.split("").reverse().join("");
+        document.getElementById("emailMask").href = "mailto:" + emailReverceSend;
+        document.getElementById("emailMask2").href = "mailto:" + emailReverceSend;
+        return false;
+    }
+</script>
+
+
+<script>
+    var aoProtocol = location.protocol;
+    if (aoProtocol.indexOf('https') < 0) aoProtocol = 'https:';
+    var aoCAP = {
+        aid: '18327',
+        fid: '0002',
+        did: 'd-0001',
+        server: 'icslearn.actonsoftware.com',
+        formName: 'newsletter-form',
+        protocol: aoProtocol
+    };
+    document.write('<script async type="text/javascript" src="' + aoCAP.protocol + '//' + aoCAP.server + '/acton/js/formcap.min.js"><' + '/script>');
+</script>
+
+@{
+  if (Request.Cookies["schoolcoder"] != null)
+  {
+    var myCookie = Request.Cookies["schoolcoder"].Value;
+    var list = CurrentPage.AncestorOrSelf(1).Descendants("Courses");
+    var filteredList = list.Where("courseListSchoolCode == @0", @myCookie);
+    foreach (var item in filteredList)
+    {
+      string url = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"];
+      var PDFLink = url + item.courseListPdf;
+      <script>
+        function load() {
+            document.getElementById("response").innerHTML = 'Thanks very much for your enquiry. One of our expert course advisors will be in contact shortly to discuss the course with you.</div><hr><a href="@PDFLink" target="_blank" style="text-decoration:none"> <h2><img src="/images/img/Pdficon.png"> @item.Name</h2></a><div></div><hr><div>In the meantime, please have a look at the course PDF and get in touch with any questions you may have.</div>';
+        }
+      </script>
+    }
+  }
+}
+
+<script>
+  /* <![CDATA[ */
+  var google_conversion_id = 956627819;
+  var google_custom_params = window.google_tag_params;
+  var google_remarketing_only = true;
+  /* ]]> */
+</script>
+
+<script src="//www.googleadservices.com/pagead/conversion.js"></script>
+<noscript>
+  <div style="display:inline;">
+    <img height="1" width="1" style="border-style:none; display:none" alt="Google Conversion Pixel" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/956627819/?value=0&amp;guid=ON&amp;script=0" />
+  </div>
+</noscript>
+
+<link rel="stylesheet" property='' type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+<script src='https://c.la1-c2cs-lon.salesforceliveagent.com/content/g/js/36.0/deployment.js'></script>
+<script>liveagent.init('https://d.la1-c1-lon.salesforceliveagent.com/chat', '57224000000PE8w', '00D24000000Hpnk');</script>
+@Html.RenderJsHere()
+<script defer src="//widget.trustpilot.com/bootstrap/v5/tp.widget.sync.bootstrap.min.js"></script>
+<script defer src="//cdn.bizible.com/_biz-a.js"></script>
+@*<script src="/social/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/social/bower_components/codebird-js/codebird.js"></script>
+    <script src="/social/bower_components/doT/doT.min.js"></script>
+    <script src="/social/bower_components/moment/min/moment.min.js"></script>
+    <script src="/social/js/jquery.socialfeed.js"></script>*@
+<noscript><img height="1" width="1" style="display:none"src="https://www.facebook.com/tr?id=1090305677653429&ev=PageView&noscript=1"/></noscript>
+
+@*<script>
+  var updateFeed = function () {
+        var initialQuery = $('#query').val();
+        initialQuery = initialQuery.replace(" ", "");
+        var queryTags = initialQuery.split(",");
+        $('.social-feed-container').socialfeed({
+            facebook: { accounts: queryTags, limit: 5, access_token: '1712241492356062|4a2f3aeadfd5be4f2dd12e4b19e573e8' },
+            google: { accounts: queryTags, limit: 5, access_token: 'AIzaSyBk10f_XFoR_eYbx_hRemoSI9eZYhepZPY' },
+            twitter: { accounts: queryTags, limit: 5, consumer_key: '8D0t4dOREyhKs22OljWFlqFfP', consumer_secret: 'ZdHL0ZcSlUe2RhagPOCzigfyxeNg0YhAJSlPLzbFKRx7yTiKa7', },
+            instagram: { accounts: queryTags, limit: 5, client_id: '818d0443dee248a4be5c03217af90e08', access_token: '04c33a8fb4bd4f50b54c6b8b0cf1dd95' },
+            pinterest: { accounts: ['@@icslearn/model-s', '@@me'], limit: 5, access_token: 'AVnJKXbcUxI5xs6_nUHZlCxmEX9rFCd9ezgcfjpCxc6xAABEKQAAAAA' },
+            length: 200, show_media: true,
+            moderation: function (content) {
+                allow = true;
+                if (content.text) {
+                    var keywords = ['fuck', 'shit', 'asshole', 'cunt', 'fag', 'fuk', 'fck', 'fcuk', 'assfuck', 'assfucker', 'fucker', 'motherfucker', 'asscock', 'asshead', 'asslicker', 'asslick', 'assnigger', 'nigger', 'asssucker', 'bastard', 'bitch', 'bitchtits', 'bitches', 'bitch', 'brotherfucker', 'bullshit', 'bumblefuck', 'buttfucka', 'fucka', 'buttfucker', 'buttfucka', 'fagbag', 'fagfucker', 'faggit', 'faggot', 'faggotcock', 'fagtard', 'fatass', 'fuckoff', 'fuckstick', 'fucktard', 'fuckwad', 'fuckwit', 'dick', 'dickfuck', 'dickhead', 'dickjuice', 'dickmilk', 'doochbag', 'douchebag', 'douche', 'dickweed', 'dyke', 'dumbass', 'dumass', 'fuckboy', 'fuckbag', 'gayass', 'gayfuck', 'gaylord', 'gaytard', 'nigga', 'niggers', 'niglet', 'paki', 'piss', 'prick', 'pussy', 'poontang', 'poonany', 'porchmonkey', 'porch monkey', 'poon', 'queer', 'queerbait', 'queerhole', 'queef', 'renob', 'rimjob', 'ruski', 'sandnigger', 'sand nigger', 'schlong', 'shitass', 'shitbag', 'shitbagger', 'shitbreath', 'chinc', 'carpetmuncher', 'chink', 'choad', 'clitface', 'clusterfuck', 'cockass', 'cockbite', 'cockface', 'skank', 'skeet', 'skullfuck', 'slut', 'slutbag', 'splooge', 'twatlips', 'twat', 'twats', 'twatwaffle', 'vaj', 'vajayjay', 'va-j-j', 'wank', 'wankjob', 'wetback', 'whore', 'whorebag', 'whoreface', @Umbraco.Field("blockedSocial")];
+                    for (var i = 0; i < keywords.length && allow; i++) {
+                        if (content.text.indexOf(keywords[i]) != -1) { allow = false; }
+                    }
+                }
+                return allow;
+            },
+            //update_period: 500000000,
+            callback: function () { console.log('all posts are collected'); }
+        });
+    };
+    updateFeed();
+</script>*@

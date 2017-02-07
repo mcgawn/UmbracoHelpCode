@@ -1,0 +1,54 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web
+@using Umbraco.Core.Models;
+@using Umbraco.Core.Services;
+@using System.Linq;
+@{
+  string url = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"] + Model.Content.Url;
+  string SFDCURL = System.Configuration.ConfigurationManager.AppSettings["SFDCURL"];
+  string SFDCID = System.Configuration.ConfigurationManager.AppSettings["SFDCID"];
+  string faculty = CurrentPage.facultyName;
+}
+<script src="/scripts/Validation.js"></script>
+<div class="widget">
+  <div class="widget-title"><h2 style="color:#@Umbraco.Field("hexTitleColor") !important">Request More Information</h2><hr></div>
+  <div id="loading" class="alert alert-danger" style="display: none"></div>
+  <div style="display: none" id="response"></div>
+  <span style="display: none" id="responseGA"></span>
+  <form class="form-inline" name="newsletter-form" id="cgrForm" method="post" action="@SFDCURL" onsubmit="return validateForm();">
+    <input type="hidden" name="oid" value="@SFDCID" />
+  @*<input type="hidden" name="debug" value="1" />
+    <input type="hidden" name="debugEmail" value="david.mcgawn@icslearn.co.uk" />*@
+    <input type="hidden" name="retURL" value="@url#submittrue" />
+    <input type="hidden" name="lead_source" id="lead_source" value="Website" />
+    <input type="hidden" name="00N240000021U6U" id="00N240000021U6U" value="Course Guide Request" />
+    <input type="hidden" name="00N24000001pXKN" id="00N24000001pXKN" value="" />
+    <input type="hidden" name="00N24000003Tqg0" id="00N24000003Tqg0" value="" />
+    <input type="hidden" name="00N24000002xMZj" id="00N24000002xMZj" value="" />
+    <input type="hidden" id="FaculyValue" value="@Umbraco.Field("facultyName")">
+    <input type="hidden" name="Active_Lead__c" id="Active_Lead__c" value="TRUE" />
+    <input type="hidden" name="DistributionValue__c" id="DistributionValue__c" value="" />
+      <input type="text" class="form-control" id="first_name" name="first_name" onchange="ga('send', 'event', 'Forms', 'Fillin', 'First Name');" placeholder="First Name">
+      <input type="text" class="form-control" id="last_name" name="last_name" onchange="ga('send', 'event', 'Forms', 'Fillin', 'Last Name');" placeholder="Last Name">
+    <input type="email" class="form-control" id="email" onchange="QASemail()" name="email" placeholder="Email">
+    <input type="tel" class="form-control" onchange="ga('send', 'event', 'Forms', 'Fillin', 'Mobile');" name="phone" id="phone" placeholder="Mobile">
+    <select class="form-control" id="CourseCodeSelect" onchange="saveSelectedValues2();">
+      <option selected="selected" value="0">Choose a Course</option>
+      @{
+        var Passfaculty = CurrentPage.facultyName;
+        foreach (var pageCourse in Model.Content.AncestorOrSelf(1).Children.Where(x => x.Name == "Courselist"))
+        {
+          foreach (var subpageCourse in pageCourse.AsDynamic().Children.Where("courseListFaculty = @0", Passfaculty))
+          {
+            var content = Umbraco.TypedContent(@subpageCourse.Id);
+            var schoolcode = subpageCourse.courseListSchoolCode; ;
+            <option value="@schoolcode">@subpageCourse.Name</option>
+          }
+        }
+      }
+    </select>
+    <hr>
+    <p class="text-center" style="text-decoration:underline"><a href="/policies/privacy/">Privacy Policy</a></p>
+    <button type="submit" onclick="saveSelectedValues();" class="formWidth btn btn-primary">Request Information</button><br>
+  </form>
+</div>

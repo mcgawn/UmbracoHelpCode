@@ -1,0 +1,24 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using ClientDependency.Core.Mvc
+@using ClientDependency.Core
+@using uIncrement.Core.Services
+@{
+CounterService.Increment(Model.Content.Id);
+}
+@{Layout = null;}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    @Umbraco.RenderMacro("redirectExperiment", new {experimentKeyField="abGoogleKey"})
+    @{Html.RenderPartial("~/Views/Partials/_uSeoPro.cshtml"); }
+    @{Html.RenderPartial("~/Views/Partials/CSS.cshtml", Model);}
+</head>
+<body onload="load();" id="boxed" class="grey">
+    @{Html.RenderPartial("~/Views/Partials/Header CTA.cshtml", Model);}
+    @{Html.RenderPartial("~/Views/Partials/Navigation.cshtml", Model);}
+    @RenderBody()
+    @{Html.RenderPartial("~/Views/Partials/Breadcrumb.cshtml", Model);}
+    @{Html.RenderPartial("~/Views/Partials/Footer.cshtml", Model);}
+    @{Html.RenderPartial("~/Views/Partials/javascript.cshtml", Model);}
+</body>
+</html>

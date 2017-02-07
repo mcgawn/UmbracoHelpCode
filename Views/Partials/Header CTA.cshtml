@@ -1,0 +1,83 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using umbraco.MacroEngines;
+@using Umbraco.Web.Models;
+@using SimplestStore.Models;
+@{
+    var facultynumber = @Umbraco.Field("facultyNumberPicker", recursive: true);
+    var homePage = Model.Content.AncestorOrSelf(1);
+    var hasBasketPage = homePage.Descendants("Basket").Any();
+    Cart basketCart = (Cart)Session["Cart"];
+}
+<div class="tabs row">
+    <div class="container">
+        <div class="col-md-12 text-right">
+            <ul id="tabs">
+                <li><a style="color:#337ab7 !important" href="/business" onClick="ga('send', 'event', 'Sites', 'Switch', 'Business');" title="Business">Business</a></li>
+                <li><a title="Personal" href="/" onclick="ga('send', 'event', 'Sites', 'Switch', 'Peronal');">Personal</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="topbar">
+    <div class="container aClassLink">
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12 text-left">
+                @Umbraco.RenderMacro("ezSearch")
+            </div>
+            <div class="col-md-5 col-sm-6 col-xs-12 text-left">
+                <ul class="list-inline">
+
+                    <li>| &nbsp;<div class="fa fa-phone"></div> <a id="RTapPass" href=""><span id="RTapID"></span></a> &nbsp;|</li>
+                    <li><a id="emailMask" href="" onclick="reverceEmailSend()"><div class="fa fa-envelope"></div> <span>Email </span></a> &nbsp;|</li>
+                    @foreach (var page in homePage.Children.Where(x => x.Name == "Basket"))
+                    {
+                        var contentPage = Umbraco.TypedContent(page.Id);
+                        <li class="@(page.Id == CurrentPage.Id ? "active" : null)">
+                            <a href="@page.Url" title="@page.Name">
+                                <div class="fa fa-shopping-cart"></div>
+                                <span>@page.Name</span>
+                                @if (basketCart != null)
+                                {
+                                    var basketItems = basketCart.Lines.Count();
+                                    <text>(</text>@basketItems<text>)</text>}
+                                else { }
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+
+            <div class="col-md-4 col-sm-6 col-xs-12 text-right">
+                <ul class="list-inline">
+                    <li>
+                        <a class="social" href="https://www.facebook.com/ICSLearn"><span class="fa fa-facebook"></span></a> |&nbsp;
+                        <a class="social" href="https://twitter.com/icslearn"><span class="fa fa-twitter"></span></a> |&nbsp;
+                        <a class="social" href="https://plus.google.com/+icslearn"><span class="fa fa-google-plus"></span></a> |&nbsp;
+                        <a class="social" href="https://www.youtube.com/user/ICSLearn"><span class="fa fa-youtube"></span></a> |&nbsp;
+                        <a class="social" href="https://www.linkedin.com/company/ics-international-correspondence-schools-"><span class="fa fa-linkedin"></span></a> |&nbsp;
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" href="#" data-toggle="dropdown"><span class="fa fa-lock"></span> Login</a>
+                        <div class="dropdown-menu">
+                            <form method="post" action="https://community.icslearn.co.uk/login/index.php">
+                                <div class="form-title">
+                                    <h4>Login Student Community</h4><hr>
+                                </div>
+                                <input class="form-control" type="text" name="username" required placeholder="User Name">
+                                <div class="formpassword">
+                                    <input class="form-control" type="password" name="password" required placeholder="******">
+                                </div>
+                                <div class="clearfix"></div>
+                                <button type="submit" onclick="ga('send', 'event', { eventCategory: 'VLE', eventAction: 'click', eventLabel: 'VLE Login'});" class="btn btn-block btn-primary">Login</button>
+                                <hr>
+                                <p><a style="color:#808080 !important" href="https://community.icslearn.co.uk/login/forgot_password.php">Forgot Password</a></p>
+                            </form>
+                        </div>
+                    </li>
+
+                </ul>
+
+            </div>
+            </div>
+    </div>
+</div>

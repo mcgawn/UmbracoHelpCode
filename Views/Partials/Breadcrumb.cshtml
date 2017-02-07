@@ -1,0 +1,23 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+<br />
+<div class="grey">
+  <div class="row text-center">
+    <span itemscope itemtype="http://schema.org/Organization">
+      <span itemprop="name">ICS Learn</span> Rated
+      <span itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
+        <span itemprop="ratingValue">@Umbraco.Field("reviewRating", recursive: true)</span> / <span itemprop="bestRating">5</span> based on <span itemprop="ratingCount">@Umbraco.Field("reviewCount", recursive: true)</span> reviews. |
+          <a class="ratings" href="https://www.google.co.uk/search?q=ics+learn&oq=ics+learn&ie=UTF-8#lrd=0x48884426f9937f49:0x5627d5b2fd421581,3,">Review Us</a>
+      </span>
+    </span>
+  </div>
+</div>
+<div itemscope itemtype="http://schema.org/BreadcrumbList">
+  <ul class="breadcrumb">
+    @foreach (var ancestor in Model.Content.Ancestors().Where("level > 1").Where(t => t.IsVisible()).OrderBy("Level")){
+      <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+        <a itemprop="item" title="@ancestor.Name" href="@ancestor.Url"><span itemprop="name">@ancestor.Name</span></a>
+      </li>
+    }
+    <li class="active"><span itemprop="name">@Model.Content.Name</span></li>
+  </ul>
+</div>

@@ -1,0 +1,44 @@
+﻿@inherits UmbracoTemplatePage
+@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Core.Models
+@using ncBehaviouralTargeting.Library.Umbraco
+@using Skybrud.Umbraco.GridData
+@using Skybrud.Umbraco.GridData.Extensions.Json;
+@using Skybrud.Umbraco.GridData.Interfaces;
+@using Skybrud.Umbraco.GridData.Rendering;
+
+@{
+    Layout = "Master.cshtml";
+    var seo = CurrentPage._seoFields;
+    string websiteurl = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"];
+    var gridData = Model.Content.GetSegmentedValue("bodyText");
+    GridDataModel grid = GridDataModel.Deserialize(gridData.ToString());
+}
+@{Html.RenderPartial("~/Views/Partials/Slider.cshtml", Model);}
+@{Html.RenderPartial("~/Views/Partials/WHY Block.cshtml", Model);}
+@{Html.RenderPartial("~/Views/Partials/Contact Form Home.cshtml", Model);}
+@{Html.RenderPartial("~/Views/Partials/Faculty Blocks.cshtml", Model);}
+
+<div class="white section" id="BodyCopy">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="container">@grid.GetHtml(Html, "bootstrap3")</div>
+        </div>
+    </div>
+</div>
+@*<div class="white section" id="BodyCopy">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container">@CurrentPage.GetGridHtml("bodyText")</div>
+            </div>
+        </div>
+    </div>*@
+
+@{Html.RenderPartial("~/Views/Partials/Up Scrolling Block.cshtml", Model);}
+@{Html.RenderPartial("~/Views/Partials/Why online learning.cshtml", Model);}
+@{Html.RenderPartial("~/Views/Partials/USP Block.cshtml", Model);}
+@{Html.RenderPartial("~/Views/Partials/Reviews.cshtml", Model);}
+@{Html.RenderPartial("~/Views/Partials/Recent Blogs.cshtml", Model);}
+@*{Html.RenderPartial("~/Views/Partials/meet the team.cshtml", Model);}*@
+@*{Html.RenderPartial("~/Views/Partials/social.cshtml", Model);}*@
+@{Html.RenderPartial("~/Views/Partials/awarding bodies.cshtml", Model);}

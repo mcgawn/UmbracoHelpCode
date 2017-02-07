@@ -1,0 +1,67 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+  if (CurrentPage.GetPropertyValue("sectionWhyOnlineOnOrOff") == true)
+  {
+    <section class="white section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section-title text-center">
+              <h4>@Umbraco.Field("onlineTitle")</h4>
+              <p>@Umbraco.Field("onlineSubheading")</p>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 col-sm-6">
+            <div class="why-us text-right wow fadeInLeft" data-wow-duration="1s" data-wow-delay="0.3s">
+              <i class="fa @Umbraco.Field("faIcon1") alignright"></i>
+              <h4>@Umbraco.Field("headingWhyOnline1")</h4>
+              <p>@Umbraco.Field("descriptionWhyOnline1")</p>
+            </div>
+            <div class="why-us text-right wow fadeInLeft" data-wow-duration="1s" data-wow-delay="0.7s">
+              <i class="fa @Umbraco.Field("faIcon2") alignright"></i>
+              <h4>@Umbraco.Field("headingWhyOnline2")</h4>
+              <p>@Umbraco.Field("descriptionWhyOnline2")</p>
+            </div>
+            <div class="why-us text-right wow fadeInLeft" data-wow-duration="1s" data-wow-delay="1.1s">
+              <i class="fa @Umbraco.Field("faIcon3") alignright"></i>
+              <h4>@Umbraco.Field("headingWhyOnline3")</h4>
+              <p>@Umbraco.Field("descriptionWhyOnline3")</p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6">
+            <div class="image-center wow fadeIn" data-wow-duration="1s" data-wow-delay="0.1s">
+              <img src="~/upload/device_02.png" class="img-responsive" />
+              @*<span>
+                    <video width="320" height="540" class="videoOnline" controls>
+                        <source src="/upload/SC-Full.mp4" type="video/mp4">
+                        <source src="movie.ogg" type="video/ogg">
+                        Your browser does not support the video tag.
+                    </video>
+                </span>*@
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6">
+            <div class="why-us text-left wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.5s">
+              <i class="fa @Umbraco.Field("faIcon4") alignleft"></i>
+              <h4>@Umbraco.Field("headingWhyOnline4")</h4>
+              <p>@Umbraco.Field("descriptionWhyOnline4")</p>
+            </div>
+            <div class="why-us text-left wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.9s">
+              <i class="fa @Umbraco.Field("faIcon5") alignleft"></i>
+              <h4>@Umbraco.Field("headingWhyOnline5")</h4>
+              <p>@Umbraco.Field("descriptionWhyOnline5")</p>
+            </div>
+            <div class="why-us text-left wow fadeInRight" data-wow-duration="1s" data-wow-delay="1.3s">
+              <i class="fa @Umbraco.Field("faIcon6") alignleft"></i>
+              <h4>@Umbraco.Field("headingWhyOnline6")</h4>
+              <p>@Umbraco.Field("descriptionWhyOnline6")</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+}

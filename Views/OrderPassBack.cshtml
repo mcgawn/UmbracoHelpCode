@@ -1,0 +1,304 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System.Data.Sql;
+@using System.Xml.Linq;
+@using SimplestStore.Models;
+@using SimplestStore.Controllers;
+@using System.Text.RegularExpressions
+@using System.Security.Cryptography
+@using System.Text
+@using Umbraco.Core.Models
+@{
+  var homePage = Model.Content.AncestorOrSelf(1);
+  Layout = "Master.cshtml";
+  string analyticsID = System.Configuration.ConfigurationManager.AppSettings["GoogleAnalyticsAccountId"];
+  string oid, Phone, SPhone, Fname, Lname, Salutation, Fail, Price, Email, Postcode, Country, State, Address, City, PurchaseDate, Course, Name, HNumber = "";
+  string approval_code = Request.Form["approval_code"];
+  string refnumber = Request.Form["refnumber"];
+  string status = Request.Form["status"];
+  //string Count = Request.Form.Count.ToString();
+  string CourseCommerceName = "";
+  string CourseCommercePrice = "";
+  if (status == "APPROVED")
+  {
+    oid = Request.Form["oid"];
+    CourseCommerceName = Request.Cookies["CourseName"].Value;
+    CourseCommercePrice = Request.Form["chargetotal"];
+    Email = Request.Form["email"];
+    Postcode = Request.Form["bzip"];
+    Country = Request.Form["cccountry"];
+    State = Request.Form["bstate"];
+    HNumber = Request.Form["baddr1"];
+    Address = Request.Form["baddr2"];
+    City = Request.Form["bcity"];
+    PurchaseDate = Request.Form["txndate_processed"];
+    Course = Request.Form["comments"];
+    Name = Request.Form["bname"];
+    Fname = Request.Cookies["FirstName"].Value;
+    Lname = Request.Cookies["LastName"].Value;
+    Salutation = Request.Cookies["Salutation"].Value;
+    Phone = Request.Form["phone"];
+    SPhone = Request.Form["saddr2"];
+    Price = "£" + Request.Form["chargetotal"];
+    //var db = Database.Open("umbracoDbDSN");
+    //var insertCommand = "INSERT INTO OnlineEnrols (FullName, Email, Status, CreatedDate, Price, Phone, OrderID) VALUES(@0, @1, @2, @3, @4, @5, @6)";
+    //db.Execute(insertCommand, Name, Email, status, PurchaseDate, Price, Phone, oid);
+    string ccbrand = Request.Form["ccbrand"];
+    string dob = Request.Form["sstate"];
+
+    Cart basketCart = (Cart)Session["Cart"];
+    Cart checkoutCart = (Cart)Session["Cart"];
+
+    if (basketCart != null)
+    {
+      foreach (var basketItem in basketCart.Lines)
+      {
+        if (basketItem.IsMainProduct)
+        {
+          var currentMainProduct = basketItem.ProductPage;
+          var schoolCode = "";
+          if (basketItem.ProductPage.HasProperty("schoolCode") && basketItem.ProductPage.GetProperty("schoolCode").HasValue)
+          {
+            schoolCode = basketItem.ProductPage.GetPropertyValue("schoolCode").ToString();
+          }
+          var basketItemName = basketItem.ProductPage.Name;
+          var basketItemPrice = basketItem.Price;
+          var basketItemQuantity = basketItem.Quantity;
+          var basketItemTotal = (basketItemQuantity * basketItemPrice).ToString("c");
+          var itemPrice = Convert.ToDecimal(basketItemPrice);
+        
+          decimal discountVoucher = Convert.ToDecimal(Request.Cookies["discountCodeAmount"].Value);
+          decimal withDiscountVoucher = basketItemPrice * discountVoucher / 100;
+          decimal checkBasShow2 = basketItemPrice - withDiscountVoucher;
+          decimal checkDMB = Convert.ToDecimal(Request.Cookies["DiscountAmountMulti"].Value);
+          decimal checkBasShow = basketItemPrice - checkBasShow2 * checkDMB / 100;
+          decimal calcTotal = checkBasShow * basketItemQuantity;
+
+          XDocument doc = new XDocument(
+          new XElement("Order",
+          new XElement("TSR", "999"),
+          new XElement("Title", @Salutation),
+          new XElement("FirstName", @Fname),
+          new XElement("LastName", @Lname),
+          new XElement("Country", @Country),
+          new XElement("Address1", @HNumber),
+          new XElement("Address2", ""),
+          new XElement("Address3", @City),
+          new XElement("Postcode", @Postcode),
+          new XElement("ContactNumber", @SPhone),
+          new XElement("ADKEY", "KSEAC2I2"),
+          new XElement("Newsletter", "1"),
+          new XElement("OrderStatusId", "3"),
+          new XElement("OrderStatusName", "processed"),
+          new XElement("OrderCreated", @DateTime.Now.ToString("d")),
+          new XElement("CompanyCode", "0001"),
+          new XElement("DivisionCode", "600"),
+          new XElement("OrderId", @oid),
+          new XElement("PCNr", "****"),
+          new XElement("ExpiryDate", "**"),
+          new XElement("CardBrand", @ccbrand),
+          new XElement("PaymentSource", "Payshow"),
+          new XElement("TransID", @oid),
+              new XElement("OrderDetails",
+                  new XElement("SchoolDetails",
+                  new XElement("Quantity", @basketItemQuantity),
+                  new XElement("Deposit", "0"),
+                  new XElement("Instalments", "0"),
+                  new XElement("InstalmentAmount", "0"),
+                  new XElement("BasePrice", @checkBasShow),
+                  new XElement("NetPrice", @checkBasShow),
+                  new XElement("ShippingCost", "0"),
+                  new XElement("SchoolCode", @schoolCode),
+                  new XElement("GrossPrice", @checkBasShow),
+                  new XElement("DiscountType", ""),
+              new XElement("EnrolSource", "08"))),
+          new XElement("TotalCourseCost", @CourseCommercePrice),
+          new XElement("OrderDiscountAmount", @checkBasShow2),
+          new XElement("TotalShippingCost", "0.00"),
+          new XElement("GrossTotal", @CourseCommercePrice),
+          new XElement("DateOfBirth", @dob),
+          new XElement("Email", @Email)));
+          DateTime currentDateTime = DateTime.Now;
+          String dateStr = currentDateTime.ToString("dd-MM-yyyy HH-mm-ss-fff");
+          doc.Save(@"C:\inetpub\wwwroot\ICSLearnV7\XML_Scripts\XML_Files\onlines " + dateStr + ".xml");
+          var downloadfolder = @"C:\inetpub\wwwroot\ICSLearnV7\XML_Scripts\XML_Files\"; // your download folder where there are multiple files
+          string[] files = Directory.GetFiles(downloadfolder);
+          var masterfile = new XDocument();
+          XElement newDocument = new XElement("PurchaseOrders");
+          masterfile.Add(newDocument);
+          //foreach (var file in files)
+          //{
+          //  Console.WriteLine("--------------------------------------------------");
+          //  Console.WriteLine(file);
+          //  Console.WriteLine("--------------------------------------------------");
+          //  XDocument xdoc = XDocument.Load(file);
+          //  masterfile.Root.Add(xdoc.Descendants("Order")); //your root note
+          //}
+          //masterfile.Save(@"C:\inetpub\wwwroot\ICSLearnV7\ICSLearn\XMLOnlineEnrols\Purchasedata.xml");
+        }
+      }
+    }
+
+    <section class="grey page-title">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 text-right">
+            <h1>Thank you for your order | Payment Confirmation</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script type="text/javascript">
+      /* <![CDATA[ */
+      var google_conversion_id = 956627819;
+      var google_conversion_language = "en";
+      var google_conversion_format = "3";
+      var google_conversion_color = "000000";
+      var google_conversion_label = "R3AkCOXAlAQQ6_aTyAM";
+      var google_conversion_value = "GBP1.00";
+      var google_conversion_currency = "GBP";
+      var google_remarketing_only = false;
+      /* ]]> */
+    </script>
+
+  <script type="text/javascript">
+  ga('ecommerce:addTransaction', {
+    'id': '@oid',
+    'affiliation': 'ICS Learn',
+    'revenue': '@CourseCommercePrice',
+    'currency': 'GBP'
+  });
+  </script>
+
+  if (homePage != null && homePage.Id > 0 && checkoutCart != null)
+  {
+    var hasBasketPage = homePage.Descendants("Basket").Any();
+    if (hasBasketPage)
+    {
+      var basketPage = homePage.Descendants("Basket").FirstOrDefault();
+      var cartMainLines = checkoutCart.Lines.Where(line => line.IsMainProduct).ToList();
+      var cartExtraLines = checkoutCart.Lines.Where(line => !line.IsMainProduct).ToList();
+      foreach (var cartRow in cartMainLines.InGroupsOf(4))
+      {
+        //Cart basketCart = (Cart)Session["Cart"];
+        foreach (var basketItem in basketCart.Lines)
+        {
+          var schoolCode = "";
+          if (basketItem.ProductPage.HasProperty("schoolCode") && basketItem.ProductPage.GetProperty("schoolCode").HasValue)
+          {
+              schoolCode = basketItem.ProductPage.GetPropertyValue("schoolCode").ToString();
+          
+              var currentMainProduct = basketItem.ProductPage;
+              var basketItemName = basketItem.ProductPage.Name;
+              var basketItemPrice = basketItem.Price;
+              var basketItemQuantity = basketItem.Quantity;
+              var basketItemTotal = (basketItemQuantity * basketItemPrice).ToString("c");
+              decimal discountVoucher = Convert.ToDecimal(Request.Cookies["discountCodeAmount"].Value);
+              decimal withDiscountVoucher = basketItemPrice * discountVoucher / 100;
+              decimal checkBasShow2 = basketItemPrice - withDiscountVoucher;
+              decimal checkDMB = Convert.ToDecimal(Request.Cookies["DiscountAmountMulti"].Value);
+              decimal checkBasShow = basketItemPrice - checkBasShow2 * checkDMB / 100;
+              decimal calcTotal = checkBasShow * basketItemQuantity;
+                  <script type="text/javascript">
+                    ga('ecommerce:addItem', {
+                      'id': '@oid',
+                      'name': '@basketItemName',
+                      'sku': '@schoolCode',
+                      'category': 'Courses Sold',
+                      'price': '@checkBasShow',
+                      'quantity': '@basketItemQuantity',
+                      'currency': 'GBP'
+                    });
+                  </script>
+          }
+        }
+      }
+    }
+  }
+  <script>ga('ecommerce:send');</script>
+    <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
+    <noscript><div style="display: inline;"><img height="1" width="1" style="border-style: none;" alt="" src="//www.googleadservices.com/pagead/conversion/956627819/?value=1.00&amp;currency_code=GBP&amp;label=R3AkCOXAlAQQ6_aTyAM&amp;guid=ON&amp;script=0" /></div></noscript>
+    <script>
+      function printData() {
+        var divToPrint = document.getElementById("printtable");
+        var htmlToPrint = '' +
+             '<style type="text/css">' + 'table th, tr, td {' + 'border:1px solid #999;' + 'align-text:left;' + 'padding:3em;' + 'margin:1em;' + '}' + '</style>';
+        htmlToPrint += divToPrint.outerHTML;
+        newWin = window.open("");
+        newWin.document.write(htmlToPrint);
+        newWin.print();
+        newWin.close();
+      }
+    </script>
+    <section class="white section">
+      <div class="container">
+        <form id="form2" runat="server">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-12">
+                <div id="printButton" onclick="printData()">Print Confirmation <h2>Click here</h2></div>
+                <br>
+                <table class="table table-condensed" id="printtable">
+                  <thead><tr><th>Order ID</th><th>Price</th><th>Email</th></tr></thead>
+                  <tbody><tr><td>@oid</td><td>@Price</td><td>@Email</td></tr></tbody>
+                  <thead><tr><th>Name</th><th>Purchase Data</th><th>Phone Number</th></tr></thead>
+                  <tbody><tr><td>@Name</td><td>@PurchaseDate</td><td>@Phone</td></tr></tbody>
+                  <thead><tr><th>Course</th><th>Address</th><th></th></tr></thead>
+                  <tbody><tr><td>@Course</td><td>@HNumber<br /></td><td>@City<br />@Postcode</td></tr></tbody>
+                </table>
+              </div>
+              <div class="col-sm-12">
+                <h2>What happens next</h2>
+                <table class="table table-condensed">
+                  <tbody>
+                    <tr><td>You will now be sent an email receipt for your payment from our secure server.</td></tr>
+                    <tr><td>Within one working day you will get an email confirming your enrolment.</td></tr>
+                    <tr><td>Within two working days you will get an email with your username and password to your online Student Community. This is where you access your course materials.</td></tr>
+                    <tr><td>Once logged in to the Student Community go to the Getting Started Course at the bottom of the page. Here you will find out how to navigate the site, how to contact your tutor for academic enquiries and the other support available from the ICS Learn Student Service Team.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+  }
+  else
+  {
+    <section class="grey page-title">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 text-right">
+            <h1>Payment Unsuccessfu</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+    oid = Request.Form["oid"];
+    Fail = Request.Form["fail_reason"];
+    Price = "£" + Request.Form["chargetotal"];
+    PurchaseDate = Request.Form["txndate_processed"];
+    //var db = Database.Open("umbracoDbDSN");
+    //var insertCommand = "INSERT INTO OnlineEnrols (Status, CreatedDate, Price, OrderID) VALUES(@0, @1, @2, @3)";
+    //db.Execute(insertCommand, status, PurchaseDate, Price, oid);
+    <section class="white section">
+      <div class="container">
+        <form id="form1" runat="server">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-12">
+                <br />
+                <table class="table table-condensed">
+                  <thead><tr><th>Order ID</th><th>Price</th><th>Fail Reason</th></tr></thead>
+                  <tbody><tr><td>@oid</td><td>@Price</td><td>@Fail</td></tr></tbody>
+                </table>
+                <p>Unfortunately there has been a problem processing your payment. Please contact one of our Course Advisors on 0800 056 3983 to enrol over the phone.</p>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+  }
+}

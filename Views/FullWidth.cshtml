@@ -1,0 +1,53 @@
+﻿@using FAQ
+@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+  Layout = "Master.cshtml";
+}
+<section class="grey page-title">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-right">
+        <h1>@Umbraco.Field("pageName")</h1>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="grey section">
+  <div class="container">
+    <div class="row">
+      <div id="content" class="col-md-12 col-sm-12 col-xs-12">
+        <div class="blog-wrapper">
+          @CurrentPage.GetGridHtml("BodyText")
+          @if (Model.Content.HasProperty("FAQlisting") && Model.Content.HasValue("FAQlisting"))
+          {
+            <ul>
+              @foreach (var q in Model.Content.GetPropertyValue<FAQListing>("FAQlisting").Items)
+              {
+                <li>
+                  <h2>@q.Question</h2>
+                  @q.Answer
+                  @*<p>
+                    Categories:
+                    @foreach (var category in q.Categories)
+                    {
+                      if (category != q.Categories.FirstOrDefault())
+                      {
+                        @(string.Format(", {0}", category))
+                      }
+                      else
+                      {
+                        @category
+                      }
+                    }
+                  </p>*@
+                  <hr />
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+@{Html.RenderPartial("~/Views/Partials/Reviews.cshtml", Model);}

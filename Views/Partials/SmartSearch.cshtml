@@ -1,0 +1,11 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System.Web.Mvc.Html;
+@using Umbraco.Web;
+<div class="" data-scroll-reveal>
+  @{
+    <form id="" class="ezsearch cf">
+      <input type="text" id="smartSearchInput" value="@Request.QueryString["q"]" placeholder="Search" />
+      <input class="button" type="submit" id="smartSearchButton" value="Go" />
+    </form>
+  }
+</div>

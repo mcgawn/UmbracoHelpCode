@@ -1,0 +1,59 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System;
+@using System.Xml.Linq;
+@using SimplestStore.Models;
+
+@{
+  Cart basketCart = (Cart)Session["Cart"];
+  foreach (var basketItem in basketCart.Lines)
+  {
+    XDocument doc = new XDocument(
+    new XElement("Order",
+    new XElement("TSR", "999"),
+    new XElement("Title", "Mr"),
+    new XElement("FirstName", "David"),
+    new XElement("LastName", "McGawn"),
+    new XElement("Country", "UK"),
+    new XElement("Address1", "7 Dunlop Terrace"),
+    new XElement("Address2", "Ayr"),
+    new XElement("Address3", "South Ayrshire"),
+    new XElement("Postcode", "KA80SW"),
+    new XElement("ContactNumber", "07507855698"),
+    new XElement("ADKEY", "KSEAC2I2"),
+    new XElement("Newsletter", "1"),
+    new XElement("OrderStatusId", "3"),
+    new XElement("OrderStatusName", "processed"),
+    new XElement("OrderCreated", @DateTime.Now.ToString("d")),
+    new XElement("CompanyCode", "0001"),
+    new XElement("DivisionCode", "600"),
+    new XElement("OrderId", "W161333"),
+    new XElement("PCNr", "****"),
+    new XElement("ExpiryDate", "**"),
+    new XElement("CardBrand", "MasterCard"),
+    new XElement("PaymentSource", "Payshow"),
+    new XElement("TransID", "1146d0b09d444a7aaec10786c1058503"),
+        new XElement("OrderDetails",
+            new XElement("SchoolDetails",
+            new XElement("Quantity", "1"),
+            new XElement("Deposit", "0"),
+            new XElement("Instalments", "0"),
+            new XElement("InstalmentAmount", "0"),
+            new XElement("BasePrice", "340.00"),
+            new XElement("NetPrice", "300.00"),
+            new XElement("Quantity", "1"),
+            new XElement("ShippingCost", "0"),
+            new XElement("SchoolCode", "G73"),
+            new XElement("GrossPrice", "350.00"),
+            new XElement("DiscountType", "10%"),
+        new XElement("EnrolSource", "08"))),
+    new XElement("TotalCourseCost", "310.00"),
+    new XElement("OrderDiscountAmount", "0.00"),
+    new XElement("TotalShippingCost", "0.00"),
+    new XElement("GrossTotal", "340.00"),
+    new XElement("DateOfBirth", "27/07/1987"),
+    new XElement("Email", "David.McGawn@icslearn.co.uk")));
+    DateTime currentDateTime = DateTime.Now;
+    String dateStr = currentDateTime.ToString("dd-MM-yyyy HH-mm");
+    doc.Save(@"C:\inetpub\wwwroot\ICSLearnV7\ICSLearn\XMLOnlineEnrols\onlines " + dateStr + ".xml");
+  }
+}

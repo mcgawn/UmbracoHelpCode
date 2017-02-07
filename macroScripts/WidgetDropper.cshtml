@@ -1,0 +1,59 @@
+﻿@inherits umbraco.MacroEngines.DynamicNodeContext
+@using System.Web.Mvc.Html
+@{
+
+
+  dynamic node = null;
+  string errorMessage = "";
+  if (String.IsNullOrEmpty(Parameter.Node))
+  {
+    errorMessage = "No node selected!";
+  }
+  else
+  {
+    node = Library.NodeById(Parameter.Node);     //# will hopefully be a DynamicNode but may also be null/DynamicNull?
+    if (node != null && node.NodeTypeAlias != "widget")
+    {
+      node = null;
+      errorMessage = "The selected node is not a valid 'Widget' node";
+    }
+  }
+
+
+  if (umbraco.library.RequestServerVariables("URL").Contains("macroResultWrapper"))
+  {
+    //#
+    //# Render just for TinyMCE
+    //#
+    if (node == null)
+    {
+      <div class="error" style="background-color:#FBE3E4;border:2px solid #FBC2C4;border-color:transparent;padding:0 0.8em;">
+        <h3>Error rendering Widget:</h3>
+        <ul><li>@errorMessage</li></ul>
+      </div>
+    }
+    else
+    {
+      <div class="success" style="background-color:#FFF6BF;border:2px solid #FFD324;border-color:transparent;padding:0 0.8em;">
+        <h3>'@node.Name' Widget will be shown here...</h3>
+      </div>
+    }
+  }
+  else
+  {
+    //#
+    //# Actual rendering here
+    //#
+    <div class="cms-widget">
+      @if (node.html.GetType() == typeof(umbraco.MacroEngines.DynamicXml))
+      {
+        @node.html.ToHtml()
+      }
+      else
+      {
+        @Html.Raw(node.html)
+      }
+    </div>
+  }
+
+}

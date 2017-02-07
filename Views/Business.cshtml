@@ -1,0 +1,744 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System.Web.Mvc.Html;
+@using System.Web.Mvc;
+@using umbraco.NodeFactory;
+@using Umbraco.Core.Models;
+@using Umbraco.Core.Dynamics;
+@{
+    Layout = "";
+    var seo = CurrentPage.sEODetails;
+    string metaDescription = @seo.description;
+    string title = @seo.title;
+    string analyticsID = System.Configuration.ConfigurationManager.AppSettings["GoogleAnalyticsAccountId"];
+    string url = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"] + Model.Content.Url;
+    string SFDCURL = System.Configuration.ConfigurationManager.AppSettings["SFDCURL"];
+    string SFDCID = System.Configuration.ConfigurationManager.AppSettings["SFDCID"];
+}
+
+@{
+    if (Request.Cookies["schoolcoder"] != null)
+    {
+        var myCookie = Request.Cookies["schoolcoder"].Value;
+
+        var list = CurrentPage.AncestorOrSelf(1).Descendants("Courses");
+        var filteredList = list.Where("courseListSchoolCode == @0", @myCookie);
+        foreach (var item in filteredList)
+        {
+            string urlBase = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"];
+            var PDFLink = urlBase + item.courseListPdf;
+            <script>
+                function load() {
+                    document.getElementById("response").innerHTML = '<div class="herText">Thanks very much for your enquiry. One of our expert course advisors will be in contact shortly to discuss with you.</div><div class="herText"><a href="@PDFLink" target="_blank" style="text-decoration:none"> <h2><img src="/images/img/Pdficon.png"> @item.Name</h2></a><div></div></div><div><div class="herText">In the meantime, please have a look at the information and get in touch with any questions you may have.</div></div><br>'
+                }
+            </script>
+        }
+    }
+}
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="@metaDescription">
+    <meta name="author" content="ICS Learn">
+    <title>@title</title>
+    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/images/icons/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/images/icons/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/images/icons/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/images/icons/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/images/icons/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/images/icons/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/images/icons/apple-touch-icon-152x152.png" />
+    <link rel='shortcut icon' type='image/x-icon' href='~/favicon.ico' />
+    <meta name="application-name" content="ICS Learn" />
+    <meta name="msapplication-TileColor" content="#000000" />
+    <meta name="msapplication-square70x70logo" content="/images/icons/tiny.png" />
+    <meta name="msapplication-square150x150logo" content="/images/icons/square.png" />
+    <meta name="msapplication-wide310x150logo" content="/images/icons/wide.png" />
+    <meta name="msapplication-square310x310logo" content="/images/icons/large.png" />
+    <link rel="stylesheet" type="text/css" href="/css/settings.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <script src="/scripts/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+        ga('create', '@analyticsID', 'auto');
+        ga('require', 'displayfeatures');
+        ga('require', 'linkid', 'linkid.js');
+        setTimeout("ga('send','event','Profitable Engagement','time on page more than 3 minutes')", 180000);
+        ga('send', 'pageview');
+
+    </script>
+</head>
+<body onload="load();">
+    <div id="rowActiveorNot" class="row-offcanvas row-offcanvas-left">
+        <div id="sidebar-fix" class="sidebar-offcanvas">
+
+            <div class="side-logo clearfix">
+                <a href="/"><img src="/images/logob2b.png" alt="ICS Learn Corporate Logo"></a>
+            </div>
+
+            <ul class="sidebar-nav clearfix" itemscope itemtype="http://www.schema.org/SiteNavigationElement">
+                <li class="active"><a href="#home">Home</a></li>
+                <li itemprop="name"><a itemprop="url" href="#about">About Us</a></li>
+                <li itemprop="name"><a itemprop="url" href="#hrtrain">HR &amp; L&amp;D Training</a></li>
+                <li itemprop="name"><a itemprop="url" href="#acctrain">Accountancy Training</a></li>
+                <li itemprop="name"><a itemprop="url" href="#bmtrain">Business Training</a></li>
+                <li itemprop="name"><a itemprop="url" href="#reviews">Client Testimonials</a></li>
+                <li itemprop="name"><a itemprop="url" href="#tutors">Tutors</a></li>
+                <li itemprop="name"><a itemprop="url" href="#contact">Contact</a></li>
+                <li>
+ <style>
+.buttonb2b {border-color: #CE0037!important;background-color: #CE0037!important;color: #fff!important;border: none;width:100%;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;margin: 4px 2px;cursor: pointer;}
+.buttonb2bpdf {border-color: #00A3E1!important;background-color: #00A3E1!important;color: #fff!important;border: none;width:100%;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;margin: 4px 2px;cursor: pointer;}
+</style>
+                    <a id="liveagent_button_online_573240000008S6W" class="buttonb2b" href="javascript://Chat" style="display: none" onclick="liveagent.startChat('573240000008S6W')">Live Chat</a>
+                    <div id="liveagent_button_offline_573240000008S6W" style="display: none;"></div>
+                    <script type="text/javascript">
+                        if (!window._laq) { window._laq = []; }
+                        window._laq.push(function () {
+                            liveagent.showWhenOnline('573240000008S6W', document.getElementById('liveagent_button_online_573240000008S6W'));
+                            liveagent.showWhenOffline('573240000008S6W', document.getElementById('liveagent_button_offline_573240000008S6W'));
+                        });</script>
+                </li>
+                <li><a href="/media/236615/business-brochure.pdf" class="buttonb2bpdf">Download Brochure</a></li>
+            </ul>
+            <script src='https://c.la1-c2cs-lon.salesforceliveagent.com/content/g/js/36.0/deployment.js'></script>
+            <script>liveagent.init('https://d.la1-c1-lon.salesforceliveagent.com/chat', '57224000000PE8w', '00D24000000Hpnk');</script>
+            <div class="side-copyright">
+                <script type="IN/CompanyProfile" data-id="362223" data-format="hover" data-related="false" data-text="ICS Learn">
+                </script>
+            </div>
+        </div>
+
+        <div id="wrapper">
+            <div class="visible-md visible-xs visible-sm mobile-menu">
+                <button type="button" class="btn btn-default btn-sm" data-toggle="offcanvas"><i class="fa fa-bars"></i></button>
+            </div>
+            <div id="main">
+                <div class="tabs row" id="home">
+                    <div class="col-md-12 text-right">
+                        <ul id="tabs">
+                            <li><a title="Business" href="/business" onclick="ga('send', 'event', 'Sites', 'Switch', 'Business');"><b>Business</b></a></li>
+                            <li><a style="color:#337ab7 !important" title="Personal" onclick="ga('send', 'event', 'Sites', 'Switch', 'Personal');" href="/"><b>Personal</b></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tabs row" id="home">
+                    <div class="col-md-12 text-right" style="background-color:#002855; padding:10px 20px">
+                        @*<script type="IN/CompanyProfile" data-id="362223" data-format="hover" data-related="false" data-text="ICS Learn"></script>*@
+                        <i class="fa fa-envelope whiteTabTop"></i> <a class="whiteTabTop" href="mailto:&#98;&#117;&#115;&#105;&#110;&#101;&#115;&#115;&#64;&#105;&#99;&#115;&#108;&#101;&#97;&#114;&#110;&#46;&#99;&#111;&#46;&#117;&#107;" title="Course Advisors">Email</a>
+                        |  <i class="fa fa-phone"></i><a class="whiteTabTop" href="tel:03339209906"> 0333 920 9906</a>
+                    </div>
+                </div>
+
+                <section class="hero">
+                    <section class="container">
+                        <div style="display: none" id="response"></div>
+                        <div class="herText">
+                            <h1>Online professional training for every business</h1>
+                            <div style="display: none" id="response"></div>
+                        </div><br />
+                        <div class="herText"><h3>Flexible, scalable solutions with global reach</h3></div><br />
+                        <a href="#hrtrain" class="btn btn-default">L&D CIPD Training</a> <a href="#hrtrain" class="btn btn-primary">HR CIPD Training</a> <a href="#acctrain" style="background-color:#43695B !important; border:#43695B" class="btn btn-default">Accountancy Training</a>
+                    </section>
+                </section>
+
+                <section class="white section" id="about">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="content-widget">
+                                    <div class="widget-title">
+                                        <h4>Train your staff</h4>
+                                        <hr>
+                                    </div>
+                                    <ul class="nav nav-tabs">
+                                        <li class="active"><a data-toggle="tab" href="#menu">What We Do</a></li>
+                                        <li><a data-toggle="tab" href="#menu1">Accredited</a></li>
+                                        <li><a data-toggle="tab" href="#menu2">Global</a></li>
+                                        <li><a data-toggle="tab" href="#menu3">Scalable</a></li>
+                                        <li><a data-toggle="tab" href="#menu4">Flexible</a></li>
+                                        <li><a data-toggle="tab" href="#menu5">Supported</a></li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div id="menu" class="tab-pane fade in active">
+                                            <p>@Umbraco.Field("mainPoint1")</p>
+                                        </div>
+                                        <div id="menu1" class="tab-pane fade">
+                                            <p>@Umbraco.Field("mainPoint2")</p>
+                                        </div>
+                                        <div id="menu2" class="tab-pane fade">
+                                            <p>@Umbraco.Field("mainPoint3")</p>
+                                        </div>
+                                        <div id="menu3" class="tab-pane fade">
+                                            <p>@Umbraco.Field("mainPoint4") </p>
+                                        </div>
+                                        <div id="menu4" class="tab-pane fade">
+                                            <p>@Umbraco.Field("mainPoint5")</p>
+                                        </div>
+                                        <div id="menu5" class="tab-pane fade">
+                                            <p>@Umbraco.Field("mainPoint6")</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="grey section" id="hrtrain">
+                    <div class="row-fluid">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p class="lead"><b>HR & L&D Training</b></p>
+                                    <p class="lead"><i>Chartered Institute of Personnel and Development (CIPD)</i></p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <img src="@Url.GetCropUrl(Model.Content, "hrTrainImage","Training")" alt="HR Training Section" class="img-responsive">
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="section-container nopadding">
+                                        <div class="textrotate">
+                                            <div class="" style="max-width: 100%; margin: 0px auto;">
+                                                <div class="" style="width: 100%; overflow: hidden; position: relative;">
+                                                    <div class="big-title">
+                                                        <h3><span>We’re proud to be the first UK CIPD Centre to offer Foundation,Intermediate and Advanced HR courses 100% online.</span></h3>
+                                                        <div class="border-title"></div>
+                                                    </div>
+                                                    @Umbraco.Field("hrTrainContent")
+                                                    <a href="#contact" class="btn btn-default" title="">Contact Us</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="white section"></div>
+
+                <section class="grey section" id="acctrain">
+                    <div class="row-fluid">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p class="lead"><b>Accountancy training</b></p>
+                                    <p class="lead"><i>Association of Accounting Technicians (AAT)</i></p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="section-container nopadding">
+                                        <div class="textrotate">
+                                            <div class="" style="max-width: 100%; margin: 0px auto;">
+                                                <div class="" style="width: 100%; overflow: hidden; position: relative;">
+                                                    <div class="big-title">
+                                                        <h3><span>We're proud to say that our AAT pass rate is 95%</span></h3>
+                                                        <div class="border-title"></div>
+                                                    </div>
+                                                    @Umbraco.Field("aATTrainContent")
+                                                    <a href="#contact" class="btn btn-default" title="">Contact Us</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <img src="@Url.GetCropUrl(Model.Content, "aATTrainImage", "Training")" alt="AAT Training Section" class="img-responsive">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="white section"></div>
+
+                <section class="grey section" id="bmtrain">
+                    <div class="row-fluid">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p class="lead"><b>Business Management Training</b></p>
+                                    <p class="lead"><i>CIM, CIPS &amp; ILM</i></p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <img src="@Url.GetCropUrl(Model.Content, "bmTrainImage","Training")" alt="Business Management Training Section" class="img-responsive">
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="section-container nopadding">
+                                        <div class="textrotate">
+                                            <div class="" style="max-width: 100%; margin: 0px auto;">
+                                                <div class="" style="width: 100%; overflow: hidden; position: relative;">
+                                                    <div class="big-title">
+                                                        <h3><span>All of our online courses are accredited by CIM, CIPS &amp; ILM</span></h3>
+                                                        <div class="border-title"></div>
+                                                    </div>
+                                                    @Umbraco.Field("bmTrainContent")
+                                                    <a href="#contact" class="btn btn-default" title="">Contact Us</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="white section" id="reviews">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="section-title text-center">
+                                    <h4>Our Clients</h4>
+                                    <p>We’ve helped companies of every size develop their workforce</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2 col-sm-3 col-xs-6 client-container">
+                                <img src="/media/236520/arnoldclark.jpg" alt="Arnold Clark" class="img-responsive img-thumbnail">
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-6 client-container">
+                                <img src="/media/236521/axa.jpg" alt="AXA" class="img-responsive img-thumbnail">
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-6 client-container">
+                                <img src="/media/236522/jet2.jpg" alt="Jet 2 holidays" class="img-responsive img-thumbnail">
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-6 client-container">
+                                <img src="/media/236523/marriot.jpg" alt="Marriot Hotels" class="img-responsive img-thumbnail">
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-6 client-container">
+                                <img src="/media/236524/mcdonalds.jpg" alt="McDonalds" class="img-responsive img-thumbnail">
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-6 client-container">
+                                <img src="/media/236525/nhs24.jpg" alt="NHS 24" class="img-responsive img-thumbnail">
+                            </div>
+                            <hr />
+                            <div class="col-md-2 col-sm-3 col-xs-6 client-container">
+                                <img src="/media/236526/rbs.jpg" alt="Royal Bank of Scotland" class="img-responsive img-thumbnail">
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-6 client-container">
+                                <img src="/media/236527/scottishpower.jpg" alt="Scottish Power" class="img-responsive img-thumbnail">
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-6 client-container">
+                                <img src="/media/236528/virgin.jpg" alt="Virgin Wines" class="img-responsive img-thumbnail">
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-6 client-container">
+                                <img src="/media/236529/vodafone.jpg" alt="Vodafone Mobile" class="img-responsive img-thumbnail">
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-6 client-container">
+                                <img src="/media/236530/vw.jpg" alt="VW" class="img-responsive img-thumbnail">
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-6 client-container">
+                                <img src="/media/236531/mars-logo.jpg" alt="Mars" class="img-responsive img-thumbnail">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="grey section">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="section-title text-center">
+                                    <h4>What Your Staff Say</h4>
+                                    <p>Delegates love our flexible, supportive training style</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                <div class="testimonial">
+                                    <img class="alignleft img-circle" src="/media/1416/eleni-kokkinos-cipd.jpg?mode=crop&width=265&height=265" alt="Eleni Kokkinos">
+                                    <p>My dedicated advisor Benjamin was an absolute star. The CIPD tutors replied very quickly to comments and emails, and feedback on assignments was also very prompt. Now I’m qualified, I feel more valued as an individual and also more confident in my contributions at work. . </p>
+                                    <div class="testimonial-meta">
+                                        <h4>Eleni Kokkinos</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                <div class="testimonial">
+                                    <img class="alignleft img-circle" src="/media/1441/lisa-pitt.jpg?mode=crop&width=165&height=165" alt="Lisa Pitt">
+                                    <p>I found that working with ICS Learn was really very easy. I could manage my own studies, but also had the reassurance of having the tutors on hand to help me. It has definitely influenced me at work: I feel more confident, and the course has made me understand what I do day-to-day better.</p>
+                                    <div class="testimonial-meta">
+                                        <h4>Lisa Pitt</h4>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                <div class="testimonial">
+                                    <img class="alignleft img-circle" src="/media/1076/emily-horswell-ics-business-management.jpg?mode=crop&width=265&height=265" alt="Emily Horswell">
+                                    <p>I learnt a lot whilst studying, much of which I could relate to my own workplace, which really brought the coursework to life and helped me to absorb the information. And I enjoyed interacting with my tutor regularly, who was very insightful and patient.</p>
+                                    <div class="testimonial-meta">
+                                        <h4>Emily Horswell</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                <div class="testimonial">
+                                    <img class="alignleft img-circle" src="/media/236519/andy-prinn-cipd-level-5-diploma-in-hrm.jpg?mode=crop&width=265&height=265" alt="Andy Prinn">
+                                    <p>During my work many of the core modules have cropped up, especially employment law and the development of professionalism and this has enabled me to write my assignments from a position of strength and practical experience and also to be a proficient HR manager.</p>
+                                    <div class="testimonial-meta">
+                                        <h4>Andrew Prinn</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="button-wrapper text-center">
+                            <div class="trustpilot-widget" data-locale="en-GB" data-template-id="5418052cfbfb950d88702476" data-businessunit-id="4fdb1aab000064000516891d" data-style-height="40px" data-style-width="100%" data-theme="light" data-stars="4,5">
+                                <a href="https://uk.trustpilot.com/review/icslearn.co.uk" target="_blank">Trustpilot</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="white section" id="tutors">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="section-title text-center">
+                                    <h4>Our Tutors</h4>
+                                    <p>We work with only the most experienced and qualified tutors</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="content-widget">
+                                    <div class="team-members row">
+                                        <div class="col-md-2 col-sm-6 col-xs-12">
+                                            <div class="team">
+                                                <img src="/media/1561/kathy.jpg?mode=crop&width=265&height=465" alt="Kathy Daniels CIOPD Tutor" class="img-responsive wow fadeInUp">
+                                                <div class="team-hover-content">
+                                                    <h5>Kathy Daniels</h5>
+                                                    <span>CIPD Tutor</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-6 col-xs-12">
+                                            <div class="team">
+                                                <img src="/media/1564/keith.jpg?mode=crop&width=265&height=465" alt="Keith Watson CIPD Tutor" class="img-responsive wow fadeInUp">
+                                                <div class="team-hover-content">
+                                                    <h5>Keith Watson</h5>
+                                                    <span>CIPD Tutor</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-6 col-xs-12">
+                                            <div class="team">
+                                                <img src="/media/236493/julie.jpg?mode=crop&width=265&height=465" alt="Julie Heslington CIPD Tutor" class="img-responsive wow fadeInUp">
+                                                <div class="team-hover-content">
+                                                    <h5>Julie Heslington</h5>
+                                                    <span>CIPD Tutor</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-6 col-xs-12">
+                                            <div class="team">
+                                                <img src="/media/236494/rachel.jpg?mode=crop&width=265&height=465" alt="Racael Cooper CIPD Tutor" class="img-responsive wow fadeInUp">
+                                                <div class="team-hover-content">
+                                                    <h5>Rachel Cooper</h5>
+                                                    <span>CIPD Tutor</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-6 col-xs-12">
+                                            <div class="team">
+                                                <img src="/media/236513/andrea.jpg?mode=crop&width=265&height=465" alt="Andrea Moore AAT Tutor" class="img-responsive wow fadeInUp">
+                                                <div class="team-hover-content">
+                                                    <h5>Andrea Moore</h5>
+                                                    <span>AAT Tutor</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-6 col-xs-12">
+                                            <div class="team">
+                                                <img src="/media/236514/tutor_1.jpg?mode=crop&width=265&height=465" alt="Jenny Braithwaite AAT Tutor" class="img-responsive wow fadeInUp">
+                                                <div class="team-hover-content">
+                                                    <h5>Jenny Braithwaite</h5>
+                                                    <span>AAT Tutor</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="grey section"></div>
+
+                <section class="white section" id="videos">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="section-title text-center">
+                                    <h4>Videos</h4>
+                                    <p></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-md-3 col-sm-4 col-xs-12 column">
+                                <div class="video-container">
+                                    <iframe src="https://www.youtube.com/embed/ElJs3id1k9U?feature=oembed&amp;modestbranding=1&amp;autohide=1&amp;showinfo=0" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-4 col-xs-12 column">
+                                <div class="video-container">
+                                    <iframe src="https://www.youtube.com/embed/SFsM8-0n1YM?feature=oembed&amp;modestbranding=1&amp;autohide=1&amp;showinfo=0" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-4 col-xs-12 column">
+                                <div class="video-container">
+                                    <iframe src="https://www.youtube.com/embed/f4TiLqzMV74?feature=oembed&amp;modestbranding=1&amp;autohide=1&amp;showinfo=0" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-4 col-xs-12 column">
+                                <div class="video-container">
+                                    <iframe src="https://www.youtube.com/embed/AijrNYxWFdU?feature=oembed&amp;modestbranding=1&amp;autohide=1&amp;showinfo=0" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row clearfix">
+                            <div class="col-md-3 col-sm-4 col-xs-12 column">
+                                <div class="video-container">
+                                    <iframe src="https://www.youtube.com/embed/26ydoG20zcE?feature=oembed&amp;modestbranding=1&amp;autohide=1&amp;showinfo=0" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-4 col-xs-12 column">
+                                <div class="video-container">
+                                    <iframe src="https://www.youtube.com/embed/j6dl0rhpgNI?feature=oembed&amp;modestbranding=1&amp;autohide=1&amp;showinfo=0" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-4 col-xs-12 column">
+                                <div class="video-container">
+                                    <iframe src="https://www.youtube.com/embed/nR4zy36HlP0?feature=oembed&amp;modestbranding=1&amp;autohide=1&amp;showinfo=0" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-4 col-xs-12 column">
+                                <div class="video-container">
+                                    <iframe src="https://www.youtube.com/embed/_4-E4tR5b0I?feature=oembed&amp;modestbranding=1&amp;autohide=1&amp;showinfo=0" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="grey section"></div>
+
+                <section class="white section" id="awards">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="section-title text-center">
+                                    <h4>Awarding Bodies</h4>
+                                    <p>Some of the awrading bodies we use</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2 col-sm-3 col-xs-6">
+                                <img src="/media/1394/cipd.png" alt="CIPD" class="img-responsive img-thumbnail">
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-6">
+                                <img src="/media/1620/aatapproved.png" alt="AAT" class="img-responsive img-thumbnail">
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-6">
+                                <img src="/media/1392/cim-asc-2014-15.png" alt="CIM" class="img-responsive img-thumbnail">
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-6">
+                                <img src="/media/1403/logo-cips.png" alt="CIPS" class="img-responsive img-thumbnail">
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-6">
+                                <img src="/media/1393/ilm.png" alt="ILM" class="img-responsive img-thumbnail">
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-6">
+                                <img src="/media/1699/ymca_awards-1.png" alt="YMCA" class="img-responsive img-thumbnail">
+                            </div>
+                            <hr />
+                        </div>
+                    </div>
+                </section>
+
+                <section class="grey section" id="contact">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="section-title text-center">
+                                    <h4>Contact Us</h4>
+                                    <p>by phone, email, or live web chat</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5 col-sm-5 col-xs-12">
+                                <div class="contact-details">
+                                    <div>
+                                        <i class="fa fa-home Surround"></i> <span>Breckenridge House</span>
+                                        <span>274 Sauchiehall Street</span>
+                                        <span>Glasgow</span>
+                                        <span>G2 3EH</span>
+                                        <span>Scotland</span>
+                                    </div>
+                                    <div><i class="fa fa-link Surround"></i> <a href="#">www.icslearn.co.uk</a></div>
+                                    <div><i class="fa fa-envelope Surround"></i> <a href="mailto:&#98;&#117;&#115;&#105;&#110;&#101;&#115;&#115;&#64;&#105;&#99;&#115;&#108;&#101;&#97;&#114;&#110;&#46;&#99;&#111;&#46;&#117;&#107;" title="Course Advisors">&#98;&#117;&#115;&#105;&#110;&#101;&#115;&#115;&#64;&#105;&#99;&#115;&#108;&#101;&#97;&#114;&#110;&#46;&#99;&#111;&#46;&#117;&#107;</a></div>
+                                    <div><i class="fa fa-envelope Surround"></i> <a href="mailto:&#115;&#116;&#117;&#100;&#101;&#110;&#116;&#115;&#101;&#114;&#118;&#105;&#99;&#101;&#115;&#64;&#105;&#99;&#115;&#108;&#101;&#97;&#114;&#110;&#46;&#99;&#111;&#46;&#117;&#107;" title="Student Services">&#115;&#116;&#117;&#100;&#101;&#110;&#116;&#115;&#101;&#114;&#118;&#105;&#99;&#101;&#115;&#64;&#105;&#99;&#115;&#108;&#101;&#97;&#114;&#110;&#46;&#99;&#111;&#46;&#117;&#107;</a></div>
+                                </div>
+                                <div><i class="fa fa-phone Surround"></i> <a href="tel:03339209906">0333 920 9906</a></div>
+                                <div><i class="fa fa-clock-o Surround"></i> Call Centre: Mon - Thu: 8:30am - 7pm | Fri: 9am - 5pm</div>
+                                <div><i class="fa fa-clock-o Surround"></i> Student Services: Mon - Thu: 9am - 6pm | Fri : 9:30am - 5pm</div>
+                            </div>
+                            <div class="col-sm-7 col-sm-7 col-xs-12">
+                                <div class="widget">
+                                    <div id="loading" class="alert alert-danger" style="display: none"></div>
+                                    <span style="display: none" id="responseGA"></span>
+                                    <form class="form-inline" name="newsletter-form" id="cgrForm" method="post" action="@SFDCURL" onsubmit="return validateForm();">
+                                        <input type="hidden" name="oid" value="@SFDCID" />
+                                        @*<input type="hidden" name="debug" value="1" />
+                                            <input type="hidden" name="debugEmail" value="david.mcgawn@icslearn.co.uk" />*@
+                                        <input type="hidden" name="retURL" value="@url#b2btrue" />
+                                        <input type="hidden" name="lead_source" id="lead_source" value="Website" />
+                                        <input type="hidden" name="00N240000021U6U" id="00N240000021U6U" value="Course Guide Request" />
+                                        <input type="hidden" name="00N24000001pXKN" id="00N24000001pXKN" value="" />
+                                        <input type="hidden" name="00N24000003Tqg0" id="00N24000003Tqg0" value="" />
+                                        <input type="hidden" name="00N24000002xMZj" id="00N24000002xMZj" value="" />
+                                        <input type="hidden" id="FaculyValue" value="Corporate">
+                                        <input type="hidden" name="Active_Lead__c" id="Active_Lead__c" value="TRUE" />
+                                        <input type="hidden" name="DistributionValue__c" id="DistributionValue__c" value="" />
+                                        <input type="text" class="form-control" id="first_name" name="first_name" onchange="ga('send', 'event', 'Forms', 'Fillin', 'First Name');" placeholder="First Name">
+                                        <input type="text" class="form-control" id="last_name" name="last_name" onchange="ga('send', 'event', 'Forms', 'Fillin', 'Last Name');" placeholder="Last Name">
+                                        <input type="email" class="form-control" id="email" onchange="QASemail()" name="email" placeholder="Email">
+                                        <input type="tel" class="form-control" onchange="ga('send', 'event', 'Forms', 'Fillin', 'Phone');" name="phone" id="phone" placeholder="Phone">
+                                        <input type="text" class="form-control" id="company" name="company" onchange="ga('send', 'event', 'Forms', 'Fillin', 'Company');" placeholder="Company">
+                                        <input type="text" class="form-control" id="00N8E000000pzDD" onchange="ga('send', 'event', 'Forms', 'Fillin', 'Job Title');" name="00N8E000000pzDD" placeholder="Job Title">
+                                        <select class="form-control" id="CourseCodeSelect" onchange="saveSelectedValues2();">
+                                            <option selected="selected" value="0">Business training interest area</option>
+                                            @{
+                                                var Passfaculty = "Corporate";
+                                                foreach (var pageCourse in Model.Content.AncestorOrSelf(1).Children.Where(x => x.Name == "Courses"))
+                                                {
+                                                    foreach (var subpageCourse in pageCourse.AsDynamic().Children.Where("courseListFaculty = @0", Passfaculty))
+                                                    {
+                                                        var content = Umbraco.TypedContent(@subpageCourse.Id);
+                                                        var schoolcode = subpageCourse.courseListSchoolCode; ;
+                                                        <option value="@schoolcode">@subpageCourse.Name</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                        <button type="submit" onclick="saveSelectedValues();" class="formWidth btn btn-primary">Request Information</button><br>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div itemscope itemtype="http://schema.org/BreadcrumbList">
+                    <ul class="breadcrumb">
+                        <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                            <a itemprop="item" title="Home" href="/"><span itemprop="name">Home</span></a>
+                        </li>
+                        <li class="active"><span itemprop="name">@Model.Content.Name</span></li>
+                    </ul>
+                </div>
+                <article class="map-section">
+                    <div id="map" class="wow slideInUp"></div>
+                </article>
+
+                <section class="copyright">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-6 col-sm-6 col-xs-12 text-left">
+                                <p>&copy; @DateTime.Now.Year.ToString() ICS Learn</p>
+                            </div>
+                            <div class="col-md-6 col-sm-6 col-xs-12 text-right">
+                                <ul class="list-inline">
+                                    <li><a href="https://www.icslearn.co.uk/policies/privacy/">Privacy Policy</a></li>
+                                    <li><a href="https://www.icslearn.co.uk/terms-conditions/">Terms &amp; Conditions</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script defer src="/scripts/Validation.js"></script>
+    <script defer src="/scripts/bootstrap.min.js"></script>
+    <script defer src="//widget.trustpilot.com/bootstrap/v5/tp.widget.sync.bootstrap.min.js"></script>
+    <script defer src="//cdn.bizible.com/_biz-a.js"></script>
+    <script src="/scripts/CourseGuideJavaScript.js"></script>
+    <script defer src="/scripts/analyticsb2b.js"></script>
+    <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtrm68DY-ruH-ZfWFDRf-s1BJGqnO7Hs0"></script>
+    <script defer src="/scripts/map.js"></script>
+    <script defer src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-52fb8e333557c879"></script>
+    <noscript><img height="1" width="1" style="display:none"src="https://www.facebook.com/tr?id=1090305677653429&ev=PageView&noscript=1"/></noscript>
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script type="application/ld+json">
+        { "@@context" : "http://schema.org",
+        "@@type" : "Organization",
+        "legalName" : "ICS Learn",
+        "description": "@metaDescription",
+        "url" : "https://www.icslearn.co.uk",
+        "contactPoint" : [{
+        "@@type" : "ContactPoint",
+        "telephone" : "+44 333 920 9906",
+        "contactType" : "customer service"
+        }],
+        "aggregateRating": {
+        "@@type": "AggregateRating",
+        "ratingValue": "4.7",
+        "reviewCount": "973"
+        },
+        "address": {
+        "@@type": "PostalAddress",
+        "addressLocality": "Glasgow",
+        "postalCode": "G2 3EH",
+        "addressRegion": "Strathclyde",
+        "addressCountry": "Scotland",
+        "streetAddress": "274 Sauchihall Street"
+        },
+        "email": "business(at)icslearn.co.uk",
+        "logo" : "https://www.icslearn.co.uk/images/logo.png",
+        "sameAs" : [ "https://www.facebook.com/ICSLearn",
+        "https://twitter.com/icslearn",
+        "https://plus.google.com/+icslearn",
+        "https://www.youtube.com/user/ICSLearn",
+        "https://www.linkedin.com/company/ics-international-correspondence-schools-",
+        "https://en.wikipedia.org/wiki/ICS_Learn_(International_Correspondence_Schools)"]
+        }
+    </script>
+</body>
+
+</html>

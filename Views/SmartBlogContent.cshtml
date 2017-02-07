@@ -1,0 +1,18 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System.Web.Mvc.Html;
+@using System.Web.Mvc;
+@{
+  Layout = "Master.cshtml";
+}
+<section>
+  <div class="row">
+    <div class="col-sm-12">
+      @RenderBody()
+    </div>
+   @*<div class="col-sm-4">
+      @Html.Partial("SmartListTags")
+      @Html.Partial("SmartListCategories")
+      @Html.Partial("SmartArchive")
+    </div>*@
+  </div>
+</section>

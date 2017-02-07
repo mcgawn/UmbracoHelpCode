@@ -1,0 +1,76 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Core.Models
+@{
+  if (CurrentPage.GetPropertyValue("sectionWhyOnOrOff") == true)
+  {
+    <section class="white section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section-title text-center">
+              <h4>@Umbraco.Field("whyTitle", recursive: true)</h4>
+              <p>@Umbraco.Field("whySummary", recursive: true)</p>
+            </div>
+          </div>
+        </div>
+        <div class="row service-center">
+          <div class="col-md-4 col-sm-6">
+            <div>
+              @if (CurrentPage.HasValue("fontAwesomeIcon"))
+              {
+                var fontAwesomeIcon = Umbraco.Media(CurrentPage.fontAwesomeIcon);
+                <img class="aligncenter" width="80" height="80" src="@fontAwesomeIcon.Url" alt="@fontAwesomeIcon.UrlName" />
+              }
+              <p><strong>@Umbraco.Field("titleOfFontAwesomeBlock", recursive: true)</strong></p>
+              <p>@Umbraco.Field("descriptionOfFontAwesomeBlock", recursive: true)</p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6">
+            <div>
+              @if (CurrentPage.HasValue("fontAwesomeIcon2"))
+              {
+                var fontAwesomeIcon2 = Umbraco.Media(CurrentPage.fontAwesomeIcon2);
+                <img class="aligncenter" width="80" height="80" src="@fontAwesomeIcon2.Url" alt="@fontAwesomeIcon2.UrlName" />
+              }
+              <p><strong>@Umbraco.Field("titleOfFontAwesomeBlock2", recursive: true)</strong></p>
+              <p>@Umbraco.Field("descriptionOfFontAwesomeBlock2", recursive: true)</p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6">
+            <div>
+              @if (CurrentPage.HasValue("fontAwesomeIcon3"))
+              {
+                var fontAwesomeIcon3 = Umbraco.Media(CurrentPage.fontAwesomeIcon3);
+                <img class="aligncenter" width="80" height="80" src="@fontAwesomeIcon3.Url" alt="@fontAwesomeIcon3.UrlName" />
+              }
+              <p><strong>@Umbraco.Field("titleOfFontAwesomeBlock3", recursive: true)</strong></p>
+              <p>@Umbraco.Field("descriptionOfFontAwesomeBlock3", recursive: true)</p>
+            </div>
+          </div>
+        </div>
+        <hr class="invis">
+        @if (CurrentPage.GetPropertyValue("sectionCTAOnOrOff") == true)
+        {
+          <div class="callout row">
+            <div class="col-md-12">
+              <div class="col-md-1">
+                @if (CurrentPage.HasValue("cTARowHomeFontAwesomeIcon"))
+                {
+                  var cTARowHomeFontAwesomeIcon = Umbraco.Media(CurrentPage.cTARowHomeFontAwesomeIcon);
+                  <img width="60" height="60" src="@cTARowHomeFontAwesomeIcon.Url" alt="@cTARowHomeFontAwesomeIcon.UrlName" />
+                }
+              </div>
+              <div class="col-md-8">
+                <h4>@Umbraco.Field("cTARowHomeDescription", recursive: true)</h4>
+              </div>
+
+              <div class="col-md-3">
+                <a id="emailMask2" onclick="reverceEmailSend()" href="mailto:@Umbraco.Field("cTARowEmail", recursive: true)" class="btn btn-primary btn-block">Get In Touch</a>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+}

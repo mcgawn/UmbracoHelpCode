@@ -1,0 +1,81 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web
+@using Umbraco.Core.Models;
+@using Umbraco.Core.Services;
+@using System.Linq;
+@{
+    string url = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"] + Model.Content.Url;
+    string SFDCURL = System.Configuration.ConfigurationManager.AppSettings["SFDCURL"];
+    string SFDCID = System.Configuration.ConfigurationManager.AppSettings["SFDCID"];
+    string faculty = CurrentPage.facultyName;
+}
+<div class="grey section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="section-title text-center">
+                    <h4>Download Course Information</h4>
+                    <p>Thanks for visiting our site, incase you missed our course pages you can download the information from here</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6"><img src="/media/3656/shutterstock_433250572.jpg" class="img-responsive2" alt="ICS Learn request more information"></div>
+            <div class="col-md-6">
+                <script src="/scripts/Validation.js"></script>
+                <div class="widget">
+                    <div id="loading" class="alert alert-danger" style="display: none"></div>
+                    <div style="display: none" id="response"></div>
+                    <span style="display: none" id="responseGA"></span>
+                    <form class="form-inline" name="newsletter-form" id="cgrForm" method="post" action="@SFDCURL" onsubmit="return validateForm();">
+                        <input type="hidden" name="oid" value="@SFDCID" />
+                        @*<input type="hidden" name="debug" value="1" />
+                        <input type="hidden" name="debugEmail" value="david.mcgawn@icslearn.co.uk" />*@
+                        <input type="hidden" name="retURL" value="@url#submittrue" />
+                        <input type="hidden" name="lead_source" id="lead_source" value="Website" />
+                        <input type="hidden" name="00N240000021U6U" id="00N240000021U6U" value="Course Guide Request Home" />
+                        <input type="hidden" name="00N24000001pXKN" id="00N24000001pXKN" value="" />
+                        <input type="hidden" name="00N24000003Tqg0" id="00N24000003Tqg0" value="" />
+                        <input type="hidden" name="00N24000002xMZj" id="00N24000002xMZj" value="" />
+                        <input type="hidden" id="FaculyValue" value="">
+                        <input type="hidden" name="Active_Lead__c" id="Active_Lead__c" value="TRUE" />
+                        <input type="hidden" name="DistributionValue__c" id="DistributionValue__c" value="" />
+                        <input type="text" class="form-control" id="first_name" name="first_name" onchange="ga('send', 'event', 'Forms', 'Fillin', 'First Name');" placeholder="First Name">
+                        <input type="text" class="form-control" id="last_name" name="last_name" onchange="ga('send', 'event', 'Forms', 'Fillin', 'Last Name');" placeholder="Last Name">
+                        <input type="email" class="form-control" id="email" onchange="QASemail()" name="email" placeholder="Email">
+                        <input type="tel" class="form-control" onchange="ga('send', 'event', 'Forms', 'Fillin', 'Mobile');" name="phone" id="phone" placeholder="Mobile">
+                        <select class="form-control" id="CourseInterestSelect" onchange="changeFacultyListofCourses();">
+                            <option selected="selected" value="0">Please Select An Interest Area</option>
+                            <option value="A Level">A Level</option>
+                            <option value="Accountancy">Accountancy</option>
+                            <option value="GCSE and IGCSE">GCSE and IGCSE</option>
+                            <option value="Human Resources">Human Resources</option>
+                            <option value="Learning and Development">Learning and Development</option>
+                            <option value="Leadership and Management">Leadership and Management</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Procurement and Supply">Procurement and Supply</option>
+                            <option value="Personal Fitness">Personal Fitness</option>
+                        </select>
+                        <select class="form-control" id="CourseCodeSelect" onchange="saveSelectedValues2();">
+                            <option selected="selected" value="0">Choose a Course</option>
+                            @{
+                                foreach (var pageCourse in Model.Content.AncestorOrSelf(1).Children.Where(x => x.Name == "Courselist"))
+                                {
+                                    foreach (var subpageCourse in pageCourse.AsDynamic().Children)
+                                    {
+                                        var content = Umbraco.TypedContent(@subpageCourse.Id);
+                                        var schoolcode = subpageCourse.courseListSchoolCode;
+                                        <option id="@subpageCourse.Name" value="@schoolcode">@subpageCourse.Name</option>
+                                    }
+                                }
+                            }
+                        </select>
+                        <p class="text-center" style="text-decoration:underline"><a href="/policies/privacy/">Privacy Policy</a></p>
+                        <button type="submit" onclick="saveSelectedValues();" class="formWidth btn btn-primary">Request Information</button><br>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+ </div>
+<div class="white section"></div>

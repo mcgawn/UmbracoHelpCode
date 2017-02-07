@@ -1,0 +1,323 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System.Text.RegularExpressions
+@using SimplestStore.Controllers
+@using SimplestStore.Models
+@using Umbraco.Core.Models
+@{
+  Layout = "Master.cshtml";
+  var seo = CurrentPage._seoFields;
+  var current = umbraco.NodeFactory.Node.GetCurrent();
+  var coursecode = @Umbraco.Field("schoolCode").ToString();
+  var coursename = @seo.title;
+  var courseDesc = @seo.description;
+  var currentPage = Model;
+  string websiteurl = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"];
+  string url = HttpContext.Current.Request.Url.AbsoluteUri;
+  var price = @Umbraco.Field("productPrice").ToString();
+  var Faculty = @Umbraco.Field("facultyName").ToString();
+  var pageNameCourse = @Umbraco.Field("pageName").ToString();
+  Response.Cookies["CourseName"].Value = pageNameCourse + " " + coursecode;
+  Response.Cookies["discountCodeAmount"].Value = "0; path=/";
+}
+<script>
+  document.cookie = "schoolcoder=" + "@coursecode; path=/";
+</script>
+<script type="application/ld+json">
+    {
+    "@@context": "http://schema.org",
+    "@@type": "Course",
+    "name": "@pageNameCourse",
+    "description": "@courseDesc",
+        "provider": {
+        "@@type": "Organization",
+        "name": "ICS Learn",
+        "sameAs": "@url"
+        }
+    }
+</script>
+<div itemscope itemtype="http://schema.org/Product">
+  <section class="grey page-title">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-right">
+          <h1 itemprop="name" style="color:#@Umbraco.Field("hexTitleColor") !important">@Umbraco.Field("pageName")</h1>
+        </div>
+      </div>
+        @{
+            string CheckForFacBF = Umbraco.Field("facultyName").ToString();
+            if (CheckForFacBF == "A Level" || CheckForFacBF == "GCSE and IGCSE")
+            {
+                @*<div class="row">
+                    <img style="padding-left:15px;padding-right:8px;padding-top:25px" class="img-responsive" alt="Black Friday 2016 - additional 15% off" src="/media/236578/black-friday-discount-banner.jpg" />
+                    <span style="padding-left:20px">*additional 15% off - <a href="/media/3663/terms-and-conditions-current-offers.pdf">T&Cs</a> Apply</span>
+                </div>*@
+                @*<div class="row">
+                    <img style="padding-left:15px;padding-right:8px;padding-top:25px" class="img-responsive" alt="Cyber Monday 2016 - additional 15% off" src="/media/236579/cyber-monday-discount-banner.jpg" />
+                        <span style="padding-left:20px">*additional 15% off - <a href="/media/3663/terms-and-conditions-current-offers.pdf">T&Cs</a> Apply</span>
+                 </div>*@
+            }
+            else
+            {
+                @*<div class="row">
+                    <img style="padding-left:15px;padding-right:8px;padding-top:25px" class="img-responsive" alt="Black Friday 2016 - additional 15% off" src="/media/236576/black-friday-homepage-2016.png" />
+                    <span style="padding-left:20px">*additional 15% off - <a href="/media/3663/terms-and-conditions-current-offers.pdf">T&Cs</a> Apply</span>
+                </div>*@
+                @*<div class="row">
+                    <img style="padding-left:15px;padding-right:8px;padding-top:25px" class="img-responsive" alt="Cyber Monday 2016 - additional 15% off" src="/media/236575/cyber-monday-homepage-2016.png" />
+                    <span style="padding-left:20px">*additional 15% off - <a href="/media/3663/terms-and-conditions-current-offers.pdf">T&Cs</a> Apply</span>
+                </div>*@
+            }
+        }
+    </div>
+  </section>
+
+  <section class="grey section">
+    <div class="container">
+      <div class="row">
+        <div id="course-left-sidebar" class="col-md-4">
+          <div class="course-meta">
+            <p class="course-category">
+              @{
+                string buy = Umbraco.Field("buyOnline").ToString();
+                if (buy == "Yes")
+                {
+                  var homePage = Model.Content.AncestorOrSelf(1);
+                  var currentBasket = new basketItem();
+                  if (homePage != null && homePage.Descendants("Basket").Any())
+                  {
+                    var basketPage = homePage.Descendants("Basket").First();
+                    if (basketPage != null && Model.Content.HasProperty("productPrice") && Model.Content.HasValue("productPrice"))
+                    {
+                      var pagePrice = Model.Content.GetPropertyValue("productPrice");
+                      var productPrice = Convert.ToDecimal(pagePrice);
+
+                      if (TempData["failure"] != null)
+                      {
+                      <p>@TempData["failure"]</p>
+                      }
+                      else if (TempData["success"] != null)
+                      {
+                        if (basketPage != null)
+                        {
+                          Response.Redirect(@basketPage.Url);
+                          <br />
+                        }
+                      }
+
+                      <div class="row">
+                        @using (Html.BeginUmbracoForm<BasketSurfaceController>("ProductPageAddToBasket", null, new { @class = "form" }))
+                        {
+                          var priceMessage = "";
+                          if (Model.Content.HasProperty("priceExtras") && Model.Content.HasValue("priceExtras"))
+                          {
+                            var priceExtrasIds = Model.Content.GetPropertyValue("priceExtras").ToString();
+                            priceMessage = currentBasket.GetCart().DiscountMessage(Model.Content, priceExtrasIds, null, out productPrice);
+                          }
+                          <input type="hidden" id="productPrice" name="productPrice" value="@productPrice" />
+                          if (!string.IsNullOrEmpty(priceMessage))
+                          {
+                            <div id="pricemessagecss" class="fade in col-sm-6 basketAlertCourse">
+                              @Html.Raw(priceMessage)
+                            </div>
+                            <div class="text-right col-sm-6">
+                              <button id="addToBasket" type="submit" class="btn btn-primary btn-block">Add to Basket</button>
+                              <hr />
+                              <a href="#RTapPass2" class="enquiry btn btn-block"><span class="fa fa-user"> </span> Enquire Now</a>
+                            </div>
+                          }
+                          else
+                          {
+                            <div id="pricemessagecss" class="fade in col-sm-6 basketAlertCourse">
+                              <span itemprop="offers" style="font-size:26px !important;" itemscope itemtype="http://schema.org/Offer">
+                                <span itemprop="priceCurrency" content="GBP">£</span>
+                                <span itemprop="price" id="FinalPrice" class="finalprice" style='color:#f57b20;'>@Umbraco.Field("productPrice")</span><br />
+                                <span><link itemprop="availability" href="http://schema.org/InStock" />&nbsp;Buy online</span>
+                              </span>
+                            </div>
+                            <div class="text-right col-sm-6">
+                              <button id="addToBasket" type="submit" class="btn btn-primary btn-block"><span class="fa fa-shopping-cart"> </span> Add to Basket</button>
+                              <hr />
+                              <a href="#RTapPass2" class="enquiry btn btn-block"><span class="fa fa-user"> </span> Enquire Now</a>
+                            </div>
+
+                          }
+
+                          <div class="col-sm-12 col-md-3">
+                            <input class="form-control" type="hidden" disabled value="@productPrice.ToString("c")" />
+                          </div>
+
+                        }
+                      </div>
+                    }
+                  }
+                }
+                else if (buy == "No")
+                {
+                  var homePage2 = Model.Content.AncestorOrSelf(1);
+                  var currentBasket2 = new basketItem();
+                  if (homePage2 != null && homePage2.Descendants("Basket").Any())
+                  {
+                    var basketPage = homePage2.Descendants("Basket").First();
+                    if (basketPage != null && Model.Content.HasProperty("productPrice") && Model.Content.HasValue("productPrice"))
+                    {
+                      var pagePrice = Model.Content.GetPropertyValue("productPrice");
+                      var productPrice = Convert.ToDecimal(pagePrice);
+
+                      <div class="row">
+                        @using (Html.BeginUmbracoForm<BasketSurfaceController>("ProductPageAddToBasket", null, new { @class = "form", role = "form" }))
+                        {
+                          var priceMessage = "";
+                          if (Model.Content.HasProperty("priceExtras") && Model.Content.HasValue("priceExtras"))
+                          {
+                            var priceExtrasIds = Model.Content.GetPropertyValue("priceExtras").ToString();
+                            priceMessage = currentBasket2.GetCart().DiscountMessage(Model.Content, priceExtrasIds, null, out productPrice);
+                          }
+                          <input type="hidden" id="productPrice" name="productPrice" value="@productPrice" />
+                          if (!string.IsNullOrEmpty(priceMessage))
+                          {
+                            <div id="pricemessagecss" class="fade in col-sm-11 basketAlertCourse">
+                              @Html.Raw(priceMessage)
+                            </div>
+                          }
+                          <div class="col-sm-12 col-md-3">
+                            <input class="form-control" type="hidden" disabled value="@productPrice.ToString("c")" />
+                          </div>
+
+                        }
+                      </div>
+                    }
+                  }
+                  else
+                  {
+                    if (homePage2 != null && homePage2.Descendants("Basket").Any())
+                    {
+                      var basketPage2 = homePage2.Descendants("Basket").First();
+                      if (basketPage2 != null && Model.Content.HasProperty("productPrice") && Model.Content.HasValue("productPrice"))
+                      {
+                        var pagePrice = Model.Content.GetPropertyValue("productPrice");
+                        var productPrice = Convert.ToDecimal(pagePrice);
+
+                        <div class="row">
+                          @using (Html.BeginUmbracoForm<BasketSurfaceController>("ProductPageAddToBasket", null, new { @class = "form", role = "form" }))
+                          {
+                            var priceMessage = "";
+                            if (Model.Content.HasProperty("priceExtras") && Model.Content.HasValue("priceExtras"))
+                            {
+                              var priceExtrasIds = Model.Content.GetPropertyValue("priceExtras").ToString();
+                              priceMessage = currentBasket2.GetCart().DiscountMessage(Model.Content, priceExtrasIds, null, out productPrice);
+                            }
+                            <input type="text" id="productPrice" name="productPrice" value="@productPrice" />
+                            if (!string.IsNullOrEmpty(priceMessage))
+                            {
+                              <div class="form-group">
+                                <div id="pricemessagecss" style="color:#@Umbraco.Field("hexTitleColor") !important" class="basketAlertCourse">
+                                  @Html.Raw(priceMessage)
+                                </div>
+                              </div>
+                            }
+                          }
+                        </div>
+                      }
+                    }
+                  }
+                }
+
+                else
+                {
+                  <span itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+
+                    @if (string.IsNullOrWhiteSpace(CurrentPage.productPrice) == false)
+                    {
+                      <span itemprop="priceCurrency" content="GBP">£</span>
+                      <span itemprop="price" id="FinalPrice" class="finalprice">@Umbraco.Field("productPrice")</span>
+                    }
+                    <span><link itemprop="availability" href="http://schema.org/InStock" />&nbsp;Enquire Now!</span>
+                  </span>
+                }
+              }
+              <br />
+              <hr>
+              @*@if (string.IsNullOrWhiteSpace(CurrentPage.paymentsFrom) == false)
+                {
+                  <p id="pricemessagecss">
+                    Or contact us for payment plans
+                    <br /><br />
+                    <span>Deposit @Umbraco.Field("depositPrice")</span>
+                    <span class="pull-right" id="paymentsFrom">@Umbraco.Field("paymentsFrom")</span>
+                    <br />
+                  </p><hr>
+                }*@
+
+              @if (string.IsNullOrWhiteSpace(CurrentPage.paymentsFrom) == false)
+              {
+                <p class="course-time"><span class="fa fa-credit-card"> </span>  Payment Plan : Deposit @Umbraco.Field("depositPrice") | @Umbraco.Field("paymentsFrom")</p><hr>
+              }
+              @if (string.IsNullOrWhiteSpace(CurrentPage.multiBuys) == false)
+              {
+                <p class="course-time"><span class="fa fa-percent"> </span> @Umbraco.Field("multiBuys")</p><hr>
+              }
+              @if (string.IsNullOrWhiteSpace(CurrentPage.syllabusCourse) == false)
+              {
+                <p class="course-time"><span class="fa fa-book"> </span>  Course Syllabus : @Umbraco.Field("syllabusCourse")</p><hr>
+              }
+
+              @if (string.IsNullOrWhiteSpace(CurrentPage.schoolCode) == false)
+              {
+                <p class="course-time"><span class="fa fa-book"> </span>  Course Code : @Umbraco.Field("schoolCode")</p><hr>
+              }
+
+              @if (string.IsNullOrWhiteSpace(CurrentPage.hoursOfStudy) == false)
+              {
+                <p class="course-time"><span class="fa fa-clock-o"> </span>  Guided Learning Hours : @Umbraco.Field("hoursOfStudy")</p><hr>
+              }
+
+              @if (string.IsNullOrWhiteSpace(CurrentPage.supportPeriod) == false)
+              {
+                <p class="course-time"><span class="fa fa-clock-o"> </span>  Support Period : @Umbraco.Field("supportPeriod")</p><hr>
+              }
+            </div>
+            <br>
+          @{Html.RenderPartial("~/Views/Partials/Contact Form Course.cshtml", Model);}
+            <br />
+            <div class="widget text-left">
+              <div class="widget-title">
+                <h4 style="color:#@Umbraco.Field("hexTitleColor") !important">Meet our course advisors</h4>
+              </div>
+              <iframe width="100%" height="163" src="https://www.youtube.com/embed/BQGNE285bI8?modestbranding=1&autohide=1&showinfo=0" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <br>
+            <div class="course-button">
+              <div class="btn btn-primary btn-block">Call <div class="fa fa-phone"> </div> <a id="RTapPass2" href=""> <span id="RTapID2"></span> </a> for more information</div>
+            </div>
+            <br />
+            @{string facultyforvid = Umbraco.Field("facultyName").ToString();}
+            @if (facultyforvid == "Human Resources")
+            {
+              <div class="widget text-left">
+                <div class="widget-title">
+                  <h4 style="color:#@Umbraco.Field("hexTitleColor") !important">CIPD Student</h4>
+                </div>
+                <iframe width="100%" height="163" src="https://www.youtube.com/embed/ElJs3id1k9U?modestbranding=1&autohide=1&showinfo=0" frameborder="0" allowfullscreen></iframe>
+              </div>
+            }
+            
+          </div>
+
+          <div id="course-content" class="col-md-8">
+            <div class="blog-wrapper">
+              <div class="course-description">
+                <br />
+                @CurrentPage.GetGridHtml("bodyText")
+              </div>
+              <br />
+              <div class="course-table">
+                @{Html.RenderPartial("~/Views/Partials/Accordian.cshtml", Model);}
+              </div>
+              <hr class="invis">
+            </div>
+          </div>
+        </div>
+        <hr class="invis">
+      </div>
+    </section>
+  </div>

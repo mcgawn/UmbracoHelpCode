@@ -1,0 +1,95 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Core.Models
+<header class="header" itemscope="itemscope" itemtype="http://schema.org/SiteNavigationElement">
+  <div class="container">
+    <div class="hovermenu ttmenu">
+      <div class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="fa fa-bars"></span>
+          </button>
+          <div class="logo">
+            <a class="navbar-brand" href="/"><img src="/images/logo.png" alt="ICS Learn Logo"></a>
+          </div>
+        </div>
+
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li class="dropdown ttmenu-half">
+              <a href="#" data-toggle="dropdown" class="dropdown-toggle">Courses <span class="fa fa-angle-down"></span></a>
+              <ul class="dropdown-menu menu-bg wbg">
+                <li>
+                  <div class="ttmenu-content">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="box">
+                          @foreach (var page in @Model.Content.AncestorOrSelf(1).Children.Where(x => x.Name == "Courses").Where("Visible"))
+                          {
+                            <ul>
+                              @foreach (var subpage in page.Children.Where("Visible"))
+                              {
+                                <li><a itemprop="url" href="@subpage.Url"><span itemprop="name">@subpage.Name</span></a></li>
+                              }
+                            </ul>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </li>
+            <li class="dropdown ttmenu-half">
+              <a href="#" data-toggle="dropdown" class="dropdown-toggle">How It Works <span class="fa fa-angle-down"></span></a>
+              <ul class="dropdown-menu menu-bg wbg">
+                <li>
+                  <div class="ttmenu-content">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="box">
+                          @foreach (var page in @Model.Content.AncestorOrSelf(1).Children.Where(x => x.Name == "How It Works").Where("Visible"))
+                          {
+                            if (page.Children.Where("Visible").Count() > 0)
+                            {
+                              <ul>
+                                @foreach (var subpage in page.Children.Where("Visible"))
+                                {
+                                  <li><a itemprop="url" href="@subpage.Url"><span itemprop="name">@subpage.Name</span></a></li>
+                                }
+                              </ul>
+                            }
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </li>
+            <li><a itemprop="url" href="/blog/"><span itemprop="name">Blog</span></a></li>
+            <li><a itemprop="url" href="/about-us/"><span itemprop="name">About</span></a></li>
+            <li><a itemprop="url" href="/contact-us/"><span itemprop="name">Contact</span></a></li>
+            @*<li><a itemprop="url" href="/search/" title="Search"><span itemprop="name"></span> <span class="fa fa-search"></span></a></li>*@ 
+            <li>
+              <div class="LiveAgent" id="liveagent_button_online_@Umbraco.Field("chatStartID", recursive: true)" onclick="liveagent.startChat('@Umbraco.Field("chatStartID", recursive: true)')">
+                <ul class="nav navbar-nav navbar-right">
+                  <li><a class="btn btn-primary" href="#"><span class="fa fa-comment"></span> Chat Online</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+          <script type="text/javascript">
+            if (!window._laq) { window._laq = []; }
+            window._laq.push(function () {
+              liveagent.showWhenOnline('@Umbraco.Field("chatStartID", recursive: true)', document.getElementById('liveagent_button_online_@Umbraco.Field("chatStartID", recursive: true)'));
+              liveagent.showWhenOffline('@Umbraco.Field("chatStartID", recursive: true)', document.getElementById('liveagent_button_offline_@Umbraco.Field("chatStartID", recursive: true)'));
+            });
+          </script>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

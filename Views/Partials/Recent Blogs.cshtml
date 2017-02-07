@@ -1,0 +1,124 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System.Web.Mvc.Html;
+@using Umbraco.Web;
+@using umbraco.NodeFactory;
+@using Umbraco.Core.Models;
+@using Umbraco.Core.Dynamics;
+@{string websiteurl = System.Configuration.ConfigurationManager.AppSettings["ICSBaseURL"];}
+
+@{
+  IPublishedContent objBlogRoot = Model.Content.AncestorOrSelf("SmartBlogBlog");
+  IEnumerable<IPublishedContent> colResults = null;
+  Boolean blnUseSummaryOnList = Boolean.Parse(SmartBlogLibraries.Global.GetConfig().GetElementsByTagName("useSummaryOnList")[0].InnerText);
+  if (!String.IsNullOrEmpty(Request.QueryString["q"]))
+  {
+    colResults = SmartBlogLibraries.Helpers.Search.SearchSite()
+        .Select(x => Umbraco.TypedContent(x.Id))
+        .Where(x =>
+            x != null
+            && x.Path.Split(',').Contains(objBlogRoot.Id.ToString())
+            && x.DocumentTypeAlias == "SmartBlogPost");
+  }
+  else
+  {
+    colResults = Model.Content.DescendantsOrSelf("SmartBlogPost");
+  }
+
+  if (colResults != null && colResults.Count() > 0)
+  {
+    if (colResults.Count() > 0)
+    {
+      Int32 intPage = 1;
+      if (!Int32.TryParse(Request.QueryString["p"], out intPage))
+      {
+        intPage = 1;
+      }
+      UInt16 intItemsPerPage = 4;
+      Int32 intSkip = (intPage - 1) * intItemsPerPage;
+      Int32 intResultCount = colResults.Count();
+
+      <section class="grey section" itemscope itemtype="http://schema.org/Blog">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="section-title text-center">
+                <h4>From Our Blog</h4>
+                <p>The latest in learning news, study tips and career advice</p>
+              </div>
+            </div>
+          </div>
+          <div class="row blog-widget">
+            @foreach (IPublishedContent objPost in colResults
+                        .OrderByDescending(x => x.GetPropertyValue<DateTime>("smartBlogDate"))
+                        .Skip(intSkip)
+                        .Take(intItemsPerPage))
+            {
+                String strAuthor = !String.IsNullOrEmpty(objPost.GetPropertyValue<String>("smartBlogAuthor"))
+                ? objPost.GetPropertyValue<String>("smartBlogAuthor")
+                : SmartBlogLibraries.Global.GetConfig().GetElementsByTagName("defaultAuthor")[0].InnerText;
+                var image = objPost.GetPropertyValue("smartBlogImage");
+                string result = Convert.ToString(image);
+                var bannerId = Umbraco.Media(result);
+                var bannerUrl = bannerId.Url;
+                try
+                {
+                    <div class="col-md-3 col-sm-6 col-xs-12" itemscope itemtype="http://schema.org/BlogPosting">
+                        <div class="blog-wrapper2">
+                            <div class="blog-title2">
+                                <a class="category_title" href="#" title="">ICS Learn</a>
+                                <h2 itemprop="name headline"><a itemprop="mainEntityOfPage" href="@Umbraco.NiceUrl(objPost.Id)" title="@objPost.Name">@objPost.Name</a></h2>
+                                <div class="post-meta">
+                                    <span>
+                                        <i class="fa fa-user"></i>
+                                        <span itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+                                            <span itemprop="name"><a href="#">@strAuthor</a></span>
+                                        </span>
+                                    </span>
+                                    @*<span>
+                                            <i class="fa fa-tag"></i>
+                                            <a href="#">Marketing</a>
+                                        </span>*@
+                                    <span>
+                                        <i class="fa fa-clock-o"></i>
+                                        <a href="#"><span itemprop="datePublished">@(objPost.GetPropertyValue<DateTime>("smartBlogDate").ToString(SmartBlogLibraries.Helpers.DateTime.DateFormatNormal))</span></a>
+                                        <meta itemprop="dateModified" content="@(objPost.GetPropertyValue<DateTime>("smartBlogDate").ToString(SmartBlogLibraries.Helpers.DateTime.DateFormatNormal))">
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="blog-image">
+                                  <span itemprop="image" itemscope itemtype="http://schema.org/ImageObject">
+                                    <a href="@Umbraco.NiceUrl(objPost.Id)"><img itemprop="Url" src="@bannerUrl" alt="@objPost.Name" class="img-responsive2" /></a>
+                                    <meta itemprop="width" content="600">
+                                    <meta itemprop="height" content="60">
+                                  </span>
+                                  <span itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+                                    <span itemprop="logo" itemscope itemtype="https://schema.org/ImageObject">
+                                      <meta itemprop="url" content="https://www.icslearn.co.uk/images/logo.png">
+                                      <meta itemprop="width" content="160">
+                                      <meta itemprop="height" content="160">
+                                    </span>
+                                    <meta itemprop="name" content="ICS Learn">
+                                  </span>
+                                </div>
+                            <div class="blog-desc">
+                                @if (blnUseSummaryOnList)
+                                {
+                                    <p><span itemprop="articleBody">@Html.Raw(objPost.GetPropertyValue<String>("smartBlogSummary"))</span></p>
+                                }
+                                else
+                                {
+                                    <p><span itemprop="articleBody">@Html.Raw(objPost.GetPropertyValue<String>("smartBlogBody"))</span></p>
+                                }
+                                <a href="@Umbraco.NiceUrl(objPost.Id)" class="btn btn-default btn-block">Read More on our blog</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+                catch (Exception) { }
+            }
+          </div>
+        </div>
+      </section>
+    }
+  }
+}
